@@ -37,14 +37,22 @@ object LocaleHelper {
     private fun updateResources(context: Context, language: String?): Context {
         val locale = Locale(language ?: "en")
         Locale.setDefault(locale)
-        val configuration = context.resources.configuration
+        val configuration = android.content.res.Configuration(context.resources.configuration)
         configuration.setLocale(locale)
         configuration.setLayoutDirection(locale)
-        
+
         // Also update legacy resources for older components/Skin compatibility
+        @Suppress("DEPRECATION")
         context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
-        
-        return context.createConfigurationContext(configuration)
+
+        // Override only the language: a full configuration override would freeze orientation,
+        // screen size and density in long-lived contexts such as the panel service.
+        val override = android.content.res.Configuration().apply {
+            fontScale = 0f
+            setLocale(locale)
+            setLayoutDirection(locale)
+        }
+        return context.createConfigurationContext(override)
     }
 
     private fun updateResourcesLegacy(context: Context, language: String?): Context {

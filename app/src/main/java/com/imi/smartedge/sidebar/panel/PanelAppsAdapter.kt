@@ -299,7 +299,7 @@ class PanelAppsAdapter(
                     return@setOnLongClickListener false // Let ItemTouchHelper handle it
                 }
 
-                if (!panelPrefs.dragToSplit) {
+                if (!panelPrefs.dragToSplit || app.type == AppInfo.Type.TOOL || app.type == AppInfo.Type.FOLDER) {
                     // Do nothing if drag-to-split is disabled and we're not in edit mode
                     return@setOnLongClickListener true
                 }

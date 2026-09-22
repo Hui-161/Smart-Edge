@@ -73,7 +73,29 @@ class PanelAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         isRunning = true
+        val filter = android.content.IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_USER_PRESENT)
+        }
+        try {
+            registerReceiver(screenStateReceiver, filter)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to register screen receiver", e)
+        }
         updateNotchTrigger()
+    }
+
+    /** Hide the notch trigger on the lock screen, show it again after unlocking. */
+    private val screenStateReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            updateNotchTrigger()
+        }
+    }
+
+    private fun isKeyguardLocked(): Boolean {
+        val keyguard = getSystemService(KEYGUARD_SERVICE) as? android.app.KeyguardManager ?: return false
+        return keyguard.isKeyguardLocked
     }
 
     // ── Notch trigger ─────────────────────────────────────────────────────────
@@ -90,7 +112,9 @@ class PanelAccessibilityService : AccessibilityService() {
     private fun updateNotchTrigger() {
         val wm = getSystemService(WINDOW_SERVICE) as android.view.WindowManager
         val isLandscape = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
-        val shouldShow = panelPrefs.serviceEnabled && panelPrefs.notchGesturesEnabled && !isLandscape
+        // Hidden in landscape (fullscreen videos/games) and on the lock screen
+        val shouldShow = panelPrefs.serviceEnabled && panelPrefs.notchGesturesEnabled && !isLandscape &&
+                         !isKeyguardLocked()
         if (!shouldShow) {
             removeNotchTrigger()
             return
@@ -317,6 +341,9 @@ class PanelAccessibilityService : AccessibilityService() {
     override fun onUnbind(intent: Intent?): Boolean {
         isRunning = false
         removeNotchTrigger()
+        try {
+            unregisterReceiver(screenStateReceiver)
+        } catch (e: Exception) {}
         val stopIntent = Intent(this, FloatingPanelService::class.java).apply {
             action = FloatingPanelService.ACTION_STOP
         }

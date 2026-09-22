@@ -31,6 +31,7 @@ class ToolsSettingsActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.feature_contacts_already_added, Toast.LENGTH_SHORT).show()
         }
         renderFavoriteContacts()
+        applyOnly()
     }
 
     private val readContactsPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -284,6 +285,7 @@ class ToolsSettingsActivity : AppCompatActivity() {
                           else getString(R.string.feature_contacts_import_none)
             Toast.makeText(this@ToolsSettingsActivity, message, Toast.LENGTH_SHORT).show()
             renderFavoriteContacts()
+            applyOnly()
         }
     }
 

@@ -158,6 +158,19 @@ class EdgeHandleViewTest {
         assertTrue(volumeChanges.isEmpty())
     }
 
+    @Test
+    fun tapFollowedBySlide_doesNotFireStrayTapAction() {
+        prefs.tapAction = PanelPreferences.ACTION_OPEN_LAUNCHER
+        prefs.doubleTapAction = PanelPreferences.ACTION_FLASHLIGHT
+        handle.seekTarget = EdgeHandleView.SEEK_BRIGHTNESS
+        tap()
+        idle(100)
+        slideUp()
+        assertTrue(brightnessChanges.isNotEmpty())
+        assertEquals("the interrupted tap must not open the panel after the slide", 0, triggers)
+        assertTrue(startedServiceActions().none { it == FloatingPanelService.ACTION_TOGGLE_FLASHLIGHT })
+    }
+
     private fun slideUp() {
         touch(MotionEvent.ACTION_DOWN, y = 250f)
         for (step in 1..20) {

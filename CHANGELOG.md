@@ -7,6 +7,9 @@
 ---
 
 ### Unreleased
+- **fix(core)**: App language override no longer freezes orientation/screen size in the panel service (handle visibility after rotating).
+- **fix(handle)**: Switching left/right/both keeps the correct panel side; tap sequences interrupted by a slide or swipe are dropped; stable handle height when moved.
+- **fix(notch)**: Notch trigger hidden on the lock screen; tap counter resets after swipe/hold.
 - **feat(handle)**: Handles on the left, right or both edges; with both, sliding the right handle changes brightness and the left one volume. The sidebar opens on the edge you swipe from.
 - **fix(handle)**: Single tap opens the sidebar again by default; double/triple tap no longer fires the single-tap action when tapped slowly; single tap reacts immediately when no multi-tap action is set.
 - **fix(notch)**: Notch gestures work again: the trigger is an accessibility overlay above the status bar, sized to the camera cutout; swiping down on it still opens the notifications.

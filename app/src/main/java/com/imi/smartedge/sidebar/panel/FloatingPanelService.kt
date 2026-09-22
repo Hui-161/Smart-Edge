@@ -615,7 +615,7 @@ class FloatingPanelService : Service() {
                 val screenH = resources.displayMetrics.heightPixels
                 val safeMargin = (10 * density).toInt()
                 val h = if (isPillVisible) (panelPrefs.handleHeight * density).toInt()
-                        else (screenH * 0.60f).toInt()
+                        else (panelPrefs.handleHeight * 1.5f * density).toInt()
                 val maxOffset = (screenH / 2) - (h / 2) - safeMargin
                 val requestedOffset = (panelPrefs.handleVerticalOffset * density).toInt()
 
@@ -644,7 +644,8 @@ class FloatingPanelService : Service() {
             allowSideFlip = !bothSides
             this.seekTarget = seekTarget
             onTrigger = {
-                if (bothSides) usePanelSide(if (isRight) PanelPreferences.SIDE_RIGHT else PanelPreferences.SIDE_LEFT)
+                // Read the current mode: the handle is reused when the side setting changes
+                if (panelPrefs.handleBothSides) usePanelSide(if (isRightSide) PanelPreferences.SIDE_RIGHT else PanelPreferences.SIDE_LEFT)
                 refreshApps {
                     openPanel()
                 }
@@ -657,7 +658,7 @@ class FloatingPanelService : Service() {
             }
             onPositionChanged = {
                 // Keep the other edge's handle at the same height
-                if (bothSides) addEdgeHandle()
+                if (panelPrefs.handleBothSides) addEdgeHandle()
             }
             onSideChanged = { newSide ->
                 // Pill was dragged to the opposite edge — sync the whole service UI

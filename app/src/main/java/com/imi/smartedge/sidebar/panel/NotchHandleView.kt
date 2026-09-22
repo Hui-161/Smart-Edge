@@ -58,6 +58,8 @@ class NotchHandleView @JvmOverloads constructor(
     }
 
     private val longPressRunnable = Runnable {
+        tapCount = 0
+        handler.removeCallbacks(tapRunnable)
         if (panelPrefs.notchLongPressAction != PanelPreferences.ACTION_NONE) {
             performAction(panelPrefs.notchLongPressAction)
             vibrateHaptic(40)
@@ -107,8 +109,10 @@ class NotchHandleView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 handler.removeCallbacks(longPressRunnable)
-                if (swipedDown) {
+                if (swipedDown || event.action == MotionEvent.ACTION_CANCEL) {
                     swipedDown = false
+                    tapCount = 0
+                    handler.removeCallbacks(tapRunnable)
                     return true
                 }
                 if (event.action == MotionEvent.ACTION_UP) {
@@ -132,6 +136,8 @@ class NotchHandleView @JvmOverloads constructor(
                 // The trigger covers the top of the status bar: keep pulling down the notification shade working
                 if (!swipedDown && event.rawY - downRawY > swipeDownThreshold) {
                     swipedDown = true
+                    tapCount = 0
+                    handler.removeCallbacks(tapRunnable)
                     handler.removeCallbacks(longPressRunnable)
                     ActionDispatcher.performAction(context, PanelPreferences.ACTION_NOTIFICATIONS, panelPrefs)
                     return true

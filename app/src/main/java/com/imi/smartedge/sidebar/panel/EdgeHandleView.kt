@@ -559,9 +559,9 @@ class EdgeHandleView @JvmOverloads constructor(
                     }
                 }
                 if (!wasTap && tapCount > 0) {
-                    // Sequence interrupted by a swipe/hold: finish it with the taps counted so far
+                    // Sequence interrupted by a slide, swipe or hold: drop it, no stray tap action
                     handler.removeCallbacks(tapRunnable)
-                    handler.post(tapRunnable)
+                    tapCount = 0
                 }
 
                 isSlidingSeek = false
