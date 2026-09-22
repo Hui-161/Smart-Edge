@@ -102,6 +102,22 @@ object AutomationManager {
         return false
     }
 
+    /** Runs a shell command via Shizuku/Root and returns its trimmed stdout, or null on failure. */
+    fun executeForOutput(command: String): String? {
+        return try {
+            val process = when {
+                isShizukuAvailable() -> Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+                isRootAvailable() -> Runtime.getRuntime().exec(arrayOf("su", "-c", command))
+                else -> return null
+            }
+            val output = process.inputStream.bufferedReader().use { it.readText() }.trim()
+            if (process.waitFor() == 0) output else null
+        } catch (e: Exception) {
+            Log.e(TAG, "Command failed: $command", e)
+            null
+        }
+    }
+
     fun performBack() = execute("input keyevent 4")
     fun performHome() = execute("input keyevent 3")
     fun performRecents() = execute("input keyevent 187")

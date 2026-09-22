@@ -20,6 +20,8 @@ object ExtraDimHelper {
     private const val TAG = "ExtraDimHelper"
     private const val KEY_ACTIVATED = "reduce_bright_colors_activated"
     private const val ACTION_EXTRA_DIM_SETTINGS = "android.settings.REDUCE_BRIGHT_COLORS_SETTINGS"
+    private const val PREFS_NAME = "extra_dim_prefs"
+    private const val KEY_LAST_STATE = "last_state"
 
     enum class Result { ENABLED, DISABLED, OPENED_SETTINGS, UNSUPPORTED }
 
@@ -28,32 +30,75 @@ object ExtraDimHelper {
     fun canToggleDirectly(context: Context): Boolean =
         context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
 
-    fun isActive(context: Context): Boolean =
-        Settings.Secure.getInt(context.contentResolver, KEY_ACTIVATED, 0) == 1
+    /**
+     * Current Extra dim state. Apps targeting Android 12+ may not read this key through
+     * Settings.Secure (it is not marked @Readable and throws a SecurityException), so the
+     * state is read from the ColorDisplayManager service, via Shizuku/Root, or finally
+     * taken from the last value this app wrote.
+     */
+    fun isActive(context: Context): Boolean {
+        try {
+            return Settings.Secure.getInt(context.contentResolver, KEY_ACTIVATED, 0) == 1
+        } catch (e: SecurityException) {
+            // Expected on Android 12+ for third-party apps
+        }
+        readFromColorDisplayService(context)?.let { return it }
+        AutomationManager.executeForOutput("settings get secure $KEY_ACTIVATED")?.let { output ->
+            return output == "1"
+        }
+        return prefs(context).getBoolean(KEY_LAST_STATE, false)
+    }
 
     /** Toggles Extra dim. May run a shell command, so call it off the main thread. */
     fun toggle(context: Context): Result {
         if (!isSupported()) return Result.UNSUPPORTED
-        val newState = !isActive(context)
-        val value = if (newState) 1 else 0
+        return try {
+            val newState = !isActive(context)
+            val value = if (newState) 1 else 0
 
-        val success = if (canToggleDirectly(context)) {
-            try {
-                Settings.Secure.putInt(context.contentResolver, KEY_ACTIVATED, value)
-            } catch (e: SecurityException) {
-                Log.e(TAG, "WRITE_SECURE_SETTINGS rejected", e)
-                false
+            var success = false
+            if (canToggleDirectly(context)) {
+                success = try {
+                    Settings.Secure.putInt(context.contentResolver, KEY_ACTIVATED, value)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Writing Extra dim setting failed", e)
+                    false
+                }
             }
-        } else if (AutomationManager.isAutomationPossible()) {
-            AutomationManager.execute("settings put secure $KEY_ACTIVATED $value")
-        } else {
-            false
-        }
+            if (!success && AutomationManager.isAutomationPossible()) {
+                success = AutomationManager.execute("settings put secure $KEY_ACTIVATED $value")
+            }
 
-        if (success) return if (newState) Result.ENABLED else Result.DISABLED
-        openSettings(context)
-        return Result.OPENED_SETTINGS
+            if (success) {
+                prefs(context).edit().putBoolean(KEY_LAST_STATE, newState).apply()
+                if (newState) Result.ENABLED else Result.DISABLED
+            } else {
+                openSettings(context)
+                Result.OPENED_SETTINGS
+            }
+        } catch (e: Exception) {
+            // Never crash the panel service because of a vendor-specific settings implementation
+            Log.e(TAG, "Toggling Extra dim failed", e)
+            openSettings(context)
+            Result.OPENED_SETTINGS
+        }
     }
+
+    /** Hidden ColorDisplayManager API, which does not require a permission. */
+    private fun readFromColorDisplayService(context: Context): Boolean? {
+        return try {
+            val manager = context.getSystemService("color_display") ?: return null
+            org.lsposed.hiddenapibypass.HiddenApiBypass.invoke(
+                manager.javaClass, manager, "isReduceBrightColorsActivated"
+            ) as? Boolean
+        } catch (e: Throwable) {
+            Log.w(TAG, "ColorDisplayManager not accessible", e)
+            null
+        }
+    }
+
+    private fun prefs(context: Context) =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     fun openSettings(context: Context) {
         val intents = listOf(
