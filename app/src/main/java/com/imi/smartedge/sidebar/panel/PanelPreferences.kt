@@ -58,6 +58,15 @@ class PanelPreferences(context: Context) {
         private const val KEY_CLIPBOARD_HISTORY_ENABLED = "clipboard_history_enabled"
         private const val KEY_SHOW_CONTACTS_BUTTON = "show_contacts_button"
         private const val KEY_SHOW_EXTRA_DIM_BUTTON = "show_extra_dim_button"
+        private const val KEY_CONTACTS_PAGE_ENABLED = "contacts_page_enabled"
+        private const val KEY_TOOLS_PAGE_ENABLED = "tools_page_enabled"
+        private const val KEY_LAST_PANEL_PAGE = "last_panel_page"
+        private const val KEY_TOOLS_PAGE_ITEMS = "tools_page_items"
+
+        // Pages of the edge panel (switched by swiping inwards)
+        const val PAGE_APPS = "apps"
+        const val PAGE_CONTACTS = "contacts"
+        const val PAGE_TOOLS = "tools"
         private const val KEY_SHOW_POWER_MENU = "show_power_menu"
         private const val KEY_SHOW_VOLUME_KEYS = "show_volume_keys"
         private const val KEY_SHOW_BRIGHTNESS_KEYS = "show_brightness_keys"
@@ -219,6 +228,7 @@ class PanelPreferences(context: Context) {
             KEY_FREEFORM_WINDOW_MODE to freeformWindowMode
         )
         strings.forEach { (k, v) -> obj.put(k, v) }
+        obj.put(KEY_TOOLS_PAGE_ITEMS, getToolsPageItems().joinToString(DELIMITER))
 
         // Ints
         val ints = mapOf(
@@ -275,7 +285,9 @@ class PanelPreferences(context: Context) {
             KEY_AUTO_SHOW_KEYBOARD to autoShowKeyboard,
             KEY_CLIPBOARD_HISTORY_ENABLED to clipboardHistoryEnabled,
             KEY_SHOW_CONTACTS_BUTTON to showContactsButton,
-            KEY_SHOW_EXTRA_DIM_BUTTON to showExtraDimButton
+            KEY_SHOW_EXTRA_DIM_BUTTON to showExtraDimButton,
+            KEY_CONTACTS_PAGE_ENABLED to contactsPageEnabled,
+            KEY_TOOLS_PAGE_ENABLED to toolsPageEnabled
         )
         bools.forEach { (k, v) -> obj.put(k, v) }
 
@@ -337,6 +349,9 @@ class PanelPreferences(context: Context) {
                 if (obj.has(KEY_CLIPBOARD_HISTORY_ENABLED)) putBoolean(KEY_CLIPBOARD_HISTORY_ENABLED, obj.getBoolean(KEY_CLIPBOARD_HISTORY_ENABLED))
                 if (obj.has(KEY_SHOW_CONTACTS_BUTTON)) putBoolean(KEY_SHOW_CONTACTS_BUTTON, obj.getBoolean(KEY_SHOW_CONTACTS_BUTTON))
                 if (obj.has(KEY_SHOW_EXTRA_DIM_BUTTON)) putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, obj.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON))
+                if (obj.has(KEY_CONTACTS_PAGE_ENABLED)) putBoolean(KEY_CONTACTS_PAGE_ENABLED, obj.getBoolean(KEY_CONTACTS_PAGE_ENABLED))
+                if (obj.has(KEY_TOOLS_PAGE_ENABLED)) putBoolean(KEY_TOOLS_PAGE_ENABLED, obj.getBoolean(KEY_TOOLS_PAGE_ENABLED))
+                if (obj.has(KEY_TOOLS_PAGE_ITEMS)) putString(KEY_TOOLS_PAGE_ITEMS, obj.getString(KEY_TOOLS_PAGE_ITEMS))
                 if (obj.has(KEY_GESTURES_ENABLED)) putBoolean(KEY_GESTURES_ENABLED, obj.getBoolean(KEY_GESTURES_ENABLED))
                 if (obj.has(KEY_SHOW_IN_LANDSCAPE)) putBoolean(KEY_SHOW_IN_LANDSCAPE, obj.getBoolean(KEY_SHOW_IN_LANDSCAPE))
                 if (obj.has(KEY_TAP_TO_OPEN)) putBoolean(KEY_TAP_TO_OPEN, obj.getBoolean(KEY_TAP_TO_OPEN))
@@ -518,6 +533,37 @@ class PanelPreferences(context: Context) {
     var showExtraDimButton: Boolean
         get() = prefs.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, false)
         set(value) = prefs.edit { putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, value) }
+
+    var contactsPageEnabled: Boolean
+        get() = prefs.getBoolean(KEY_CONTACTS_PAGE_ENABLED, true)
+        set(value) = prefs.edit { putBoolean(KEY_CONTACTS_PAGE_ENABLED, value) }
+
+    var toolsPageEnabled: Boolean
+        get() = prefs.getBoolean(KEY_TOOLS_PAGE_ENABLED, true)
+        set(value) = prefs.edit { putBoolean(KEY_TOOLS_PAGE_ENABLED, value) }
+
+    /** Page shown when the panel was last closed, restored on the next opening. */
+    var lastPanelPage: String
+        get() = prefs.getString(KEY_LAST_PANEL_PAGE, PAGE_APPS) ?: PAGE_APPS
+        set(value) = prefs.edit { putString(KEY_LAST_PANEL_PAGE, value) }
+
+    /** Enabled pages in their fixed order: apps, contacts, tools. */
+    fun getEnabledPages(): List<String> {
+        val pages = mutableListOf(PAGE_APPS)
+        if (contactsPageEnabled) pages.add(PAGE_CONTACTS)
+        if (toolsPageEnabled) pages.add(PAGE_TOOLS)
+        return pages
+    }
+
+    fun getToolsPageItems(): List<String> {
+        val raw = prefs.getString(KEY_TOOLS_PAGE_ITEMS, null)
+            ?: return EdgeTools.DEFAULT_TOOLS_PAGE
+        return raw.split(DELIMITER).filter { it.isNotBlank() }
+    }
+
+    fun setToolsPageItems(ids: List<String>) {
+        prefs.edit { putString(KEY_TOOLS_PAGE_ITEMS, ids.joinToString(DELIMITER)) }
+    }
 
     var showPowerMenu: Boolean
         get() = prefs.getBoolean(KEY_SHOW_POWER_MENU, false)

@@ -282,4 +282,30 @@
     <string name="label_support">Apoyo</string>
     <string name="label_select_icon_pack">Seleccionar paquete de iconos</string>
     <string name="label_notification_access">Acceso a notificaciones de Smart Edge</string>
+
+    <!-- Edge pages and saved texts -->
+    <string name="edge_tool_flashlight">Linterna</string>
+    <string name="edge_tool_rotation">Rotación</string>
+    <string name="edge_tool_camera">Cámara</string>
+    <string name="edge_tool_notifications">Notificaciones</string>
+    <string name="edge_tool_quick_settings">Ajustes rápidos</string>
+    <string name="edge_tool_lock">Bloquear</string>
+    <string name="edge_snippets_title">Guardado</string>
+    <string name="edge_snippets_empty">Aún no hay textos guardados (p. ej. IBAN o teléfono).</string>
+    <string name="edge_history_title">Historial</string>
+    <string name="edge_page_indicator">Página %1$d de %2$d</string>
+    <string name="section_edge_pages">Páginas del menú Edge</string>
+    <string name="feature_pages_desc">Desliza hacia dentro en la barra lateral abierta (de derecha a izquierda si está a la derecha) para cambiar de página. Los puntos inferiores muestran la página activa. Se abrirá la última página usada.</string>
+    <string name="feature_page_apps_desc">Página 1 – Apps: añade o quita apps con el botón de flecha en la parte inferior de la barra.</string>
+    <string name="feature_contacts_page_label">Página 2 – Contactos</string>
+    <string name="feature_contacts_page_desc">Muestra tus contactos favoritos (gestiónalos abajo en “Contactos favoritos”)</string>
+    <string name="feature_tools_page_label">Página 3 – Herramientas</string>
+    <string name="feature_tools_page_choose">Elegir herramientas</string>
+    <string name="feature_tools_page_none">Ninguna herramienta seleccionada</string>
+    <string name="feature_snippets_label">Textos guardados</string>
+    <string name="feature_snippets_desc">Textos guardados permanentemente en la parte superior del portapapeles, p. ej. IBAN o teléfono. Toca para copiar. Solo se guardan en este dispositivo y se excluyen de las copias de seguridad.</string>
+    <string name="feature_snippets_add">Añadir texto</string>
+    <string name="feature_snippets_edit">Editar texto</string>
+    <string name="feature_snippets_label_hint">Etiqueta (p. ej. IBAN)</string>
+    <string name="feature_snippets_text_hint">Texto para copiar</string>
 </resources>

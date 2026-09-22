@@ -308,4 +308,30 @@
     <string name="label_support">Unterstützen</string>
     <string name="label_select_icon_pack">Symbolpaket auswählen</string>
     <string name="label_notification_access">Smart-Edge-Benachrichtigungszugriff</string>
+
+    <!-- Edge pages and saved texts -->
+    <string name="edge_tool_flashlight">Taschenlampe</string>
+    <string name="edge_tool_rotation">Drehen</string>
+    <string name="edge_tool_camera">Kamera</string>
+    <string name="edge_tool_notifications">Mitteilungen</string>
+    <string name="edge_tool_quick_settings">Schnellmenü</string>
+    <string name="edge_tool_lock">Sperren</string>
+    <string name="edge_snippets_title">Gespeichert</string>
+    <string name="edge_snippets_empty">Noch keine gespeicherten Texte (z. B. IBAN oder Telefonnummer).</string>
+    <string name="edge_history_title">Verlauf</string>
+    <string name="edge_page_indicator">Seite %1$d von %2$d</string>
+    <string name="section_edge_pages">Edge-Menüseiten</string>
+    <string name="feature_pages_desc">Wische bei geöffneter Seitenleiste nach innen (bei rechter Leiste von rechts nach links), um zwischen den Seiten zu wechseln. Die Punkte unten zeigen die aktive Seite. Beim nächsten Öffnen erscheint die zuletzt genutzte Seite.</string>
+    <string name="feature_page_apps_desc">Seite 1 – Apps: Apps über den Pfeil-Button unten in der Seitenleiste hinzufügen oder entfernen.</string>
+    <string name="feature_contacts_page_label">Seite 2 – Kontakte</string>
+    <string name="feature_contacts_page_desc">Zeigt deine Favoriten-Kontakte (Verwaltung unten unter „Favoriten-Kontakte“)</string>
+    <string name="feature_tools_page_label">Seite 3 – Werkzeuge</string>
+    <string name="feature_tools_page_choose">Werkzeuge auswählen</string>
+    <string name="feature_tools_page_none">Keine Werkzeuge ausgewählt</string>
+    <string name="feature_snippets_label">Gespeicherte Texte</string>
+    <string name="feature_snippets_desc">Dauerhaft gespeicherte Texte oben in der Zwischenablage, z. B. IBAN oder Telefonnummer. Antippen zum Kopieren. Nur auf diesem Gerät gespeichert und von Backups ausgenommen.</string>
+    <string name="feature_snippets_add">Text hinzufügen</string>
+    <string name="feature_snippets_edit">Text bearbeiten</string>
+    <string name="feature_snippets_label_hint">Bezeichnung (z. B. IBAN)</string>
+    <string name="feature_snippets_text_hint">Text zum Kopieren</string>
 </resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older: keep personal data (clipboard, contacts, saved texts) out of cloud backups -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="clipboard_history_prefs.xml" />
+    <exclude domain="sharedpref" path="favorite_contacts_prefs.xml" />
+    <exclude domain="sharedpref" path="clipboard_snippets_prefs.xml" />
+</full-backup-content>

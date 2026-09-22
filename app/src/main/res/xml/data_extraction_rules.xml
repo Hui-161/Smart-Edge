@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: keep personal data (clipboard, contacts, saved texts) out of cloud backups and device transfers -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="clipboard_history_prefs.xml" />
+        <exclude domain="sharedpref" path="favorite_contacts_prefs.xml" />
+        <exclude domain="sharedpref" path="clipboard_snippets_prefs.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="clipboard_history_prefs.xml" />
+        <exclude domain="sharedpref" path="favorite_contacts_prefs.xml" />
+        <exclude domain="sharedpref" path="clipboard_snippets_prefs.xml" />
+    </device-transfer>
+</data-extraction-rules>

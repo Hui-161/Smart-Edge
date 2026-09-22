@@ -7,6 +7,12 @@
 ---
 
 ### Unreleased
+- **feat(edge)**: Edge menu pages (Apps → Contacts → Tools): swipe inwards on the open sidebar to switch, page dots at the bottom, last page is remembered. Pages and tools are configurable in Dashboard Tools settings.
+- **feat(edge)**: Saved texts (e.g. IBAN, phone number) at the top of the clipboard list, copied as sensitive clip.
+- **feat(build)**: Commit-based versionCode/versionName and a fixed dev signing key (CI secret) so test APKs install as updates.
+- **fix(privacy)**: Clipboard history, favorite contacts and saved texts are excluded from Android cloud backups.
+- **feat(i18n)**: German translation.
+- **fix(edge)**: Extra Dim no longer crashes on Android 12+.
 - **feat(edge)**: Clipboard history in the sidebar (pin, delete, tap to copy). Stored only on-device, sensitive clips (passwords) are skipped; optional background capture via Shizuku/Root.
 - **feat(edge)**: Favorite contacts in the sidebar with one-tap call and SMS. Add contacts via the system picker or import starred phone favorites.
 - **feat(edge)**: "Extra Dim" toggle (Android 12+) as sidebar button, Tools folder item and handle gesture action.

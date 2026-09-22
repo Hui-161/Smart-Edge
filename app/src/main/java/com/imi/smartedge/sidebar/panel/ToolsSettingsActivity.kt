@@ -109,6 +109,116 @@ class ToolsSettingsActivity : AppCompatActivity() {
         binding.featureExtraDimButton.isEnabled = ExtraDimHelper.isSupported()
         renderFavoriteContacts()
         updateExtraDimStatus()
+
+        // Edge panel pages
+        binding.featureContactsPage.isChecked = panelPrefs.contactsPageEnabled
+        binding.featureToolsPage.isChecked = panelPrefs.toolsPageEnabled
+        updateToolsPageSummary()
+        renderSnippets()
+    }
+
+    private fun updateToolsPageSummary() {
+        val names = panelPrefs.getToolsPageItems().mapNotNull { EdgeTools.find(it) }.map { getString(it.labelRes) }
+        binding.tvToolsPageSummary.text = if (names.isEmpty()) getString(R.string.feature_tools_page_none)
+                                          else names.joinToString(", ")
+        binding.btnToolsPageItems.isEnabled = panelPrefs.toolsPageEnabled
+    }
+
+    private fun showToolsPagePicker() {
+        val tools = EdgeTools.ALL
+        val selected = panelPrefs.getToolsPageItems().toMutableSet()
+        val labels = tools.map { getString(it.labelRes) }.toTypedArray()
+        val checked = tools.map { it.id in selected }.toBooleanArray()
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.feature_tools_page_choose)
+            .setMultiChoiceItems(labels, checked) { _, which, isChecked ->
+                checked[which] = isChecked
+            }
+            .setPositiveButton(R.string.btn_save) { _, _ ->
+                panelPrefs.setToolsPageItems(tools.filterIndexed { i, _ -> checked[i] }.map { it.id })
+                updateToolsPageSummary()
+                applyOnly()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun renderSnippets() {
+        val container = binding.layoutSnippets
+        container.removeAllViews()
+        val snippets = ClipboardSnippetsManager.getSnippets(this)
+        if (snippets.isEmpty()) {
+            container.addView(TextView(this).apply {
+                setText(R.string.edge_snippets_empty)
+                textSize = 11f
+                setPadding(0, 8, 0, 0)
+            })
+            return
+        }
+        snippets.forEachIndexed { index, snippet ->
+            val row = android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                isClickable = true
+                isFocusable = true
+                setOnClickListener { showSnippetDialog(index, snippet) }
+            }
+            row.addView(TextView(this).apply {
+                text = if (snippet.label.isBlank()) snippet.text else "${snippet.label}\n${snippet.text}"
+                textSize = 13f
+                maxLines = 3
+                setPadding(0, 12, 0, 12)
+            }, android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+            row.addView(TextView(this).apply {
+                setText(R.string.feature_contacts_remove)
+                textSize = 12f
+                setTextColor(binding.tvExtraDimStatus.currentTextColor) // colorPrimary
+                setPadding(24, 16, 8, 16)
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    ClipboardSnippetsManager.remove(this@ToolsSettingsActivity, index)
+                    renderSnippets()
+                    applyOnly()
+                }
+            })
+            container.addView(row)
+        }
+    }
+
+    /** Add (index = -1) or edit a saved text. */
+    private fun showSnippetDialog(index: Int, existing: ClipboardSnippetsManager.Snippet?) {
+        val padding = (20 * resources.displayMetrics.density).toInt()
+        val labelInput = android.widget.EditText(this).apply {
+            setHint(R.string.feature_snippets_label_hint)
+            setSingleLine()
+            setText(existing?.label.orEmpty())
+        }
+        val textInput = android.widget.EditText(this).apply {
+            setHint(R.string.feature_snippets_text_hint)
+            minLines = 2
+            setText(existing?.text.orEmpty())
+        }
+        val form = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(padding, padding / 2, padding, 0)
+            addView(labelInput)
+            addView(textInput)
+        }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(if (existing == null) R.string.feature_snippets_add else R.string.feature_snippets_edit)
+            .setView(form)
+            .setPositiveButton(R.string.btn_save) { _, _ ->
+                val text = textInput.text.toString().trim()
+                if (text.isEmpty()) return@setPositiveButton
+                val snippet = ClipboardSnippetsManager.Snippet(labelInput.text.toString().trim(), text)
+                if (index >= 0) ClipboardSnippetsManager.update(this, index, snippet)
+                else ClipboardSnippetsManager.add(this, snippet)
+                renderSnippets()
+                applyOnly()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onResume() {
@@ -271,6 +381,21 @@ class ToolsSettingsActivity : AppCompatActivity() {
             panelPrefs.showExtraDimButton = isChecked
             applyOnly()
         }
+
+        binding.featureContactsPage.setOnCheckedChangeListener { _, isChecked ->
+            panelPrefs.contactsPageEnabled = isChecked
+            applyOnly()
+        }
+
+        binding.featureToolsPage.setOnCheckedChangeListener { _, isChecked ->
+            panelPrefs.toolsPageEnabled = isChecked
+            updateToolsPageSummary()
+            applyOnly()
+        }
+
+        binding.btnToolsPageItems.setOnClickListener { showToolsPagePicker() }
+
+        binding.btnSnippetAdd.setOnClickListener { showSnippetDialog(-1, null) }
 
         binding.btnExtraDimGrant.setOnClickListener {
             SecureSettingsDialog.show(this) { updateExtraDimStatus() }

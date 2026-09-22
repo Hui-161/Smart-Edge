@@ -709,6 +709,7 @@ class FloatingPanelService : Service() {
                 currentFolderId = null // Simple logic for now: only 1-level folders
                 refreshApps()
             }
+            onNextPage = { switchToNextPage() }
             onToolClick = { toolId ->
                 when (toolId) {
                     "smartedge.tool.screenshot" -> triggerScreenshot()
@@ -719,6 +720,19 @@ class FloatingPanelService : Service() {
                     TOOL_CLIPBOARD -> toggleQuickList(QuickListPanelView.Mode.CLIPBOARD)
                     TOOL_CONTACTS -> toggleQuickList(QuickListPanelView.Mode.CONTACTS)
                     TOOL_EXTRA_DIM -> toggleExtraDim()
+                    EdgeTools.FLASHLIGHT -> toggleFlashlight()
+                    EdgeTools.ROTATION -> toggleAutoRotation()
+                    EdgeTools.CAMERA -> launchCamera()
+                    EdgeTools.LOCK_SCREEN -> runPanelAction(PanelPreferences.ACTION_LOCK_SCREEN)
+                    EdgeTools.POWER_MENU -> runPanelAction(PanelPreferences.ACTION_POWER_MENU)
+                    EdgeTools.NOTIFICATIONS -> runPanelAction(PanelPreferences.ACTION_NOTIFICATIONS)
+                    EdgeTools.QUICK_SETTINGS -> runPanelAction(PanelPreferences.ACTION_QUICK_SETTINGS)
+                    EdgeTools.CONTACTS_SETUP -> openToolsSettings("feature_contacts_button")
+                    else -> if (toolId.startsWith(EdgeTools.CONTACT_PREFIX)) {
+                        val index = toolId.removePrefix(EdgeTools.CONTACT_PREFIX).toIntOrNull()
+                        val contact = index?.let { FavoriteContactsManager.getContacts(this@FloatingPanelService).getOrNull(it) }
+                        if (contact != null) openQuickList(QuickListPanelView.Mode.CONTACT_DETAIL, contact)
+                    }
                 }
             }
             visibility = View.GONE 
@@ -752,16 +766,42 @@ class FloatingPanelService : Service() {
             onEntryUsed = { closePanel() }
             // Toast instead of the in-panel indicator, which disappears together with the panel
             onMessage = { android.widget.Toast.makeText(this@FloatingPanelService, it, android.widget.Toast.LENGTH_SHORT).show() }
-            onOpenSettings = {
-                closePanel(immediate = true)
-                val intent = Intent(this@FloatingPanelService, ToolsSettingsActivity::class.java).apply {
-                    putExtra(SettingsMainActivity.EXTRA_SCROLL_TO, "feature_contacts_button")
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                startActivity(intent)
-            }
+            onOpenSettings = { target -> openToolsSettings(target) }
             visibility = View.GONE
         }
+    }
+
+    private fun openToolsSettings(scrollToViewId: String) {
+        closePanel(immediate = true)
+        val intent = Intent(this, ToolsSettingsActivity::class.java).apply {
+            putExtra(SettingsMainActivity.EXTRA_SCROLL_TO, scrollToViewId)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        startActivity(intent)
+    }
+
+    /** Runs a system action (lock screen, notifications, ...) and closes the panel first. */
+    private fun runPanelAction(actionId: Int) {
+        closePanel(immediate = true)
+        handler.postDelayed({ ActionDispatcher.performAction(this, actionId, panelPrefs) }, 150)
+    }
+
+    /** Page currently shown, falling back to the apps page if the saved one was disabled. */
+    private fun currentPage(): String {
+        val page = panelPrefs.lastPanelPage
+        return if (page in panelPrefs.getEnabledPages()) page else PanelPreferences.PAGE_APPS
+    }
+
+    private fun switchToNextPage() {
+        val pages = panelPrefs.getEnabledPages()
+        if (pages.size <= 1) return
+        val next = pages[(pages.indexOf(currentPage()) + 1) % pages.size]
+        panelPrefs.lastPanelPage = next
+        closeQuickList()
+        if (panelPrefs.hapticEnabled) {
+            sidePanelView?.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK)
+        }
+        sidePanelView?.animatePageChange { showNewPage -> refreshApps(showNewPage) }
     }
 
     private fun toggleQuickList(mode: QuickListPanelView.Mode) {
@@ -772,21 +812,17 @@ class FloatingPanelService : Service() {
         }
     }
 
-    private fun openQuickList(mode: QuickListPanelView.Mode) {
+    private fun openQuickList(mode: QuickListPanelView.Mode, contact: FavoriteContactsManager.Contact? = null) {
         val list = quickListView ?: return
-        if (mode == QuickListPanelView.Mode.CLIPBOARD && !panelPrefs.clipboardHistoryEnabled) {
-            showIndicator(getString(R.string.edge_clipboard_disabled))
-            return
-        }
         if (isPickerOpen) closePicker()
-        if (mode == QuickListPanelView.Mode.CLIPBOARD) {
+        if (mode == QuickListPanelView.Mode.CLIPBOARD && panelPrefs.clipboardHistoryEnabled) {
             // The overlay has focus now, so the latest clip is readable
             ClipboardHistoryManager.captureCurrentClip(this)
         }
 
         val wasOpen = isQuickListOpen
         isQuickListOpen = true
-        list.show(mode)
+        list.show(mode, contact)
 
         val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
         val displayMetrics = resources.displayMetrics
@@ -1030,6 +1066,7 @@ class FloatingPanelService : Service() {
     private fun openPanel() {
         if (isPanelOpen || !panelPrefs.serviceEnabled) return
         isPanelOpen = true
+        sidePanelView?.resetPageAnimation()
         refreshApps() // Load apps in background while panel opens
         initRootLayout()
         if (rootLayout?.parent == null) {
@@ -1233,6 +1270,8 @@ class FloatingPanelService : Service() {
     private fun refreshApps(onComplete: (() -> Unit)? = null) {
         serviceScope.launch {
             val repository = AppRepository(this@FloatingPanelService)
+            val page = currentPage()
+            sidePanelView?.setPage(page, panelPrefs.getEnabledPages())
             
             val apps = if (currentFolderId != null) {
                 when (currentFolderId) {
@@ -1254,9 +1293,7 @@ class FloatingPanelService : Service() {
                         tools.add(AppInfo("smartedge.shortcut.reboot", getString(R.string.action_power_menu), type = AppInfo.Type.SHORTCUT))
 
                         // Edge features
-                        if (panelPrefs.clipboardHistoryEnabled) {
-                            tools.add(AppInfo(TOOL_CLIPBOARD, getString(R.string.edge_tool_clipboard), type = AppInfo.Type.TOOL))
-                        }
+                        tools.add(AppInfo(TOOL_CLIPBOARD, getString(R.string.edge_tool_clipboard), type = AppInfo.Type.TOOL))
                         tools.add(AppInfo(TOOL_CONTACTS, getString(R.string.edge_tool_contacts), type = AppInfo.Type.TOOL))
                         if (ExtraDimHelper.isSupported()) {
                             tools.add(AppInfo(TOOL_EXTRA_DIM, getString(R.string.edge_tool_extra_dim), type = AppInfo.Type.TOOL))
@@ -1266,6 +1303,10 @@ class FloatingPanelService : Service() {
                     }
                     else -> emptyList<AppInfo>()
                 }
+            } else if (page == PanelPreferences.PAGE_CONTACTS) {
+                contactsPageItems()
+            } else if (page == PanelPreferences.PAGE_TOOLS) {
+                toolsPageItems()
             } else {
                 val baseApps = repository.getPanelApps().toMutableList()
                 
@@ -1285,7 +1326,9 @@ class FloatingPanelService : Service() {
                     TOOL_EXTRA_DIM to getString(R.string.edge_tool_extra_dim)
                 )
                 val enabledEdgeTools = mutableListOf<String>()
-                if (panelPrefs.clipboardHistoryEnabled) enabledEdgeTools.add(TOOL_CLIPBOARD)
+                if (panelPrefs.clipboardHistoryEnabled || ClipboardSnippetsManager.getSnippets(this@FloatingPanelService).isNotEmpty()) {
+                    enabledEdgeTools.add(TOOL_CLIPBOARD)
+                }
                 if (panelPrefs.showContactsButton) enabledEdgeTools.add(TOOL_CONTACTS)
                 if (panelPrefs.showExtraDimButton && ExtraDimHelper.isSupported()) enabledEdgeTools.add(TOOL_EXTRA_DIM)
 
@@ -1305,6 +1348,24 @@ class FloatingPanelService : Service() {
             }
             
             sidePanelView?.setApps(apps, onComplete)
+        }
+    }
+
+    private fun contactsPageItems(): List<AppInfo> {
+        val contacts = FavoriteContactsManager.getContacts(this)
+        if (contacts.isEmpty()) {
+            return listOf(AppInfo(EdgeTools.CONTACTS_SETUP, getString(R.string.feature_contacts_add), type = AppInfo.Type.TOOL))
+        }
+        return contacts.mapIndexed { index, contact ->
+            AppInfo(EdgeTools.CONTACT_PREFIX + index, contact.name, type = AppInfo.Type.TOOL)
+        }
+    }
+
+    private fun toolsPageItems(): List<AppInfo> {
+        return panelPrefs.getToolsPageItems().mapNotNull { id ->
+            val tool = EdgeTools.find(id) ?: return@mapNotNull null
+            if (id == TOOL_EXTRA_DIM && !ExtraDimHelper.isSupported()) return@mapNotNull null
+            AppInfo(tool.id, getString(tool.labelRes), type = AppInfo.Type.TOOL)
         }
     }
 

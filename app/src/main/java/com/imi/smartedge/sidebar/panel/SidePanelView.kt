@@ -32,6 +32,12 @@ class SidePanelView @JvmOverloads constructor(
     var onFolderOpen: ((String) -> Unit)? = null
     var onBackNavigation: (() -> Unit)? = null
     var onToolClick: ((String) -> Unit)? = null
+    /** Swipe away from the screen edge (right-to-left for a right-side panel): show the next page. */
+    var onNextPage: (() -> Unit)? = null
+
+    /** Currently shown page (PanelPreferences.PAGE_*). Tools section and picker button belong to the apps page. */
+    var currentPage: String = PanelPreferences.PAGE_APPS
+        private set
 
     private val binding: SidePanelLayoutBinding = SidePanelLayoutBinding.inflate(LayoutInflater.from(context), this, true)
     private val adapter: PanelAppsAdapter
@@ -83,6 +89,12 @@ class SidePanelView @JvmOverloads constructor(
                 return true
             } else if (!isRight && velocityX < -1200f) {
                 onClose?.invoke()
+                return true
+            }
+            // Swiping inwards switches to the next page (not while editing or inside a folder)
+            val inward = if (isRight) velocityX < -1200f else velocityX > 1200f
+            if (inward && !isPickerOpenInternal && navigationStack.isEmpty() && onNextPage != null) {
+                onNextPage?.invoke()
                 return true
             }
             return false
@@ -141,7 +153,7 @@ class SidePanelView @JvmOverloads constructor(
 
         binding.rvPanelApps.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
-                if (panelPrefs.rememberScroll) {
+                if (panelPrefs.rememberScroll && currentPage == PanelPreferences.PAGE_APPS && navigationStack.isEmpty()) {
                     panelPrefs.lastSidebarScroll = recyclerView.computeVerticalScrollOffset()
                 }
             }
@@ -414,7 +426,7 @@ class SidePanelView @JvmOverloads constructor(
         val isGameMode = false // panelPrefs.getGameApps().contains(panelPrefs.currentForegroundPackage)
         val showSysInfoEffective = panelPrefs.showSysInfo || isGameMode
         
-        if (panelPrefs.showTools && navigationStack.isEmpty()) {
+        if (panelPrefs.showTools && navigationStack.isEmpty() && currentPage == PanelPreferences.PAGE_APPS) {
             nonAppHeightDp += 50f // Divider + Screenshot + Labels
             if (panelPrefs.showPowerMenu) nonAppHeightDp += 42f
             if (showSysInfoEffective) nonAppHeightDp += 24f
@@ -502,10 +514,67 @@ class SidePanelView @JvmOverloads constructor(
         }
     }
 
+    /** Switches the page chrome and updates the dots; the items are set via [setApps]. */
+    fun setPage(page: String, pages: List<String>) {
+        currentPage = page
+        updatePageIndicator(pages.indexOf(page).coerceAtLeast(0), pages.size)
+        updateNavigationUI()
+    }
+
+    /**
+     * Slides the current items out in swipe direction, then calls [loadPage] with a callback
+     * that slides the new items in once they are set.
+     */
+    fun animatePageChange(loadPage: (showNewPage: () -> Unit) -> Unit) {
+        val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
+        val distance = context.dpToPx(24).toFloat() * (if (isRight) -1 else 1)
+        val rv = binding.rvPanelApps
+        rv.animate().cancel()
+        rv.animate().alpha(0f).translationX(distance).setDuration(110).withEndAction {
+            loadPage {
+                rv.translationX = -distance
+                rv.animate().alpha(1f).translationX(0f).setDuration(160).start()
+            }
+        }.start()
+    }
+
+    /** Resets a page animation that was interrupted (e.g. panel closed mid-swipe). */
+    fun resetPageAnimation() {
+        binding.rvPanelApps.animate().cancel()
+        binding.rvPanelApps.alpha = 1f
+        binding.rvPanelApps.translationX = 0f
+    }
+
+    private fun updatePageIndicator(activeIndex: Int, count: Int) {
+        val container = binding.pageIndicator
+        container.removeAllViews()
+        if (count <= 1) {
+            container.visibility = View.GONE
+            return
+        }
+        container.visibility = View.VISIBLE
+        val accent = try { Color.parseColor(panelPrefs.accentColor) } catch (e: Exception) { Color.WHITE }
+        for (i in 0 until count) {
+            val active = i == activeIndex
+            val size = context.dpToPx(if (active) 7 else 5)
+            container.addView(View(context).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(if (active) accent else Color.parseColor("#66FFFFFF"))
+                }
+            }, android.widget.LinearLayout.LayoutParams(size, size).apply {
+                marginStart = context.dpToPx(3)
+                marginEnd = context.dpToPx(3)
+            })
+        }
+        container.contentDescription = context.getString(R.string.edge_page_indicator, activeIndex + 1, count)
+    }
+
     private fun updateNavigationUI() {
         val inFolder = navigationStack.isNotEmpty()
+        val onAppsPage = currentPage == PanelPreferences.PAGE_APPS
         binding.btnBack.visibility = if (inFolder) View.VISIBLE else View.GONE
-        binding.btnClose.visibility = if (inFolder) View.GONE else View.VISIBLE
+        binding.btnClose.visibility = if (inFolder || !onAppsPage) View.GONE else View.VISIBLE
         applyTheme()
         updateSideLayout()
     }
@@ -520,7 +589,7 @@ class SidePanelView @JvmOverloads constructor(
             updateSideLayout()
             
             // Restore scroll position if enabled (only for root level)
-            if (panelPrefs.rememberScroll && navigationStack.isEmpty()) {
+            if (panelPrefs.rememberScroll && navigationStack.isEmpty() && currentPage == PanelPreferences.PAGE_APPS) {
                 binding.rvPanelApps.post {
                     binding.rvPanelApps.scrollBy(0, panelPrefs.lastSidebarScroll)
                 }
@@ -551,7 +620,7 @@ class SidePanelView @JvmOverloads constructor(
 
     fun applyTheme() {
         val inFolder = navigationStack.isNotEmpty()
-        val showTools = panelPrefs.showTools && !inFolder
+        val showTools = panelPrefs.showTools && !inFolder && currentPage == PanelPreferences.PAGE_APPS
         binding.toolsContainer.visibility = if (showTools) View.VISIBLE else View.GONE
         
         val showPower = panelPrefs.showPowerMenu

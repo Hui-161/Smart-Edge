@@ -164,14 +164,22 @@ class PanelAppsAdapter(
             // Fetch from mutableApps so it stays synchronous with rapid dragging
             val app = if (position < mutableApps.size) mutableApps[position] else return
             
-            if (app.type == AppInfo.Type.FOLDER || app.type == AppInfo.Type.TOOL || app.packageName.startsWith("smartedge.shortcut.")) {
+            if (app.packageName.startsWith(EdgeTools.CONTACT_PREFIX)) {
+                // Favorite contact on the contacts page: round letter avatar
+                Glide.with(context).clear(holder.ivIcon)
+                holder.ivIcon.imageTintList = null
+                holder.ivIcon.background = null
+                holder.ivIcon.setPadding(context.dpToPx(2), context.dpToPx(2), context.dpToPx(2), context.dpToPx(2))
+                holder.ivIcon.setImageDrawable(LetterAvatarDrawable(app.appName))
+            } else if (app.type == AppInfo.Type.FOLDER || app.type == AppInfo.Type.TOOL || app.packageName.startsWith("smartedge.shortcut.")) {
                 Glide.with(context).clear(holder.ivIcon)
                 val iconRes = when {
                     app.type == AppInfo.Type.FOLDER -> R.drawable.ic_section_tools
                     app.packageName == "smartedge.tool.screenshot" -> android.R.drawable.ic_menu_camera
                     app.packageName == "smartedge.tool.tools" -> R.drawable.ic_section_tools
-                    app.packageName == "smartedge.tool.volume_up" -> R.drawable.ic_brightness_up // Using placeholders if specific ones not available
-                    app.packageName == "smartedge.tool.volume_down" -> R.drawable.ic_brightness_down
+                    app.packageName == "smartedge.tool.volume_up" -> R.drawable.ic_tool_volume_up
+                    app.packageName == "smartedge.tool.volume_down" -> R.drawable.ic_tool_volume_down
+                    app.packageName == EdgeTools.CONTACTS_SETUP -> R.drawable.ic_plus
                     app.packageName == "smartedge.tool.brightness_up" -> R.drawable.ic_brightness_up
                     app.packageName == "smartedge.tool.brightness_down" -> R.drawable.ic_brightness_down
                     app.packageName == FloatingPanelService.TOOL_CLIPBOARD -> R.drawable.ic_copy
@@ -179,13 +187,7 @@ class PanelAppsAdapter(
                     app.packageName == FloatingPanelService.TOOL_EXTRA_DIM -> R.drawable.ic_edge_extra_dim
                     app.packageName == "smartedge.shortcut.one_hand" -> android.R.drawable.ic_menu_crop
                     app.packageName == "smartedge.shortcut.reboot" -> android.R.drawable.ic_lock_power_off
-                    else -> android.R.drawable.sym_def_app_icon
-                }
-                
-                // Specific adjustments for placeholders to look like volume
-                if (app.packageName.contains("volume")) {
-                    holder.ivIcon.setImageResource(R.drawable.ic_plus) // Better placeholder for +
-                    if (app.packageName.endsWith("down")) holder.ivIcon.setImageResource(R.drawable.ic_minus)
+                    else -> EdgeTools.find(app.packageName)?.iconRes ?: android.R.drawable.sym_def_app_icon
                 }
 
                 holder.ivIcon.setImageResource(iconRes)

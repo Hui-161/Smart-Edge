@@ -85,7 +85,9 @@ object ExtraDimHelper {
     }
 
     /** Hidden ColorDisplayManager API, which does not require a permission. */
+    @android.annotation.SuppressLint("WrongConstant") // Context.COLOR_DISPLAY_SERVICE is hidden
     private fun readFromColorDisplayService(context: Context): Boolean? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return null
         return try {
             val manager = context.getSystemService("color_display") ?: return null
             org.lsposed.hiddenapibypass.HiddenApiBypass.invoke(

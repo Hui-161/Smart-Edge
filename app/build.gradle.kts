@@ -6,6 +6,14 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+// Every commit gets a higher versionCode, so new builds install as updates over older ones
+val gitCommitCount: Int = try {
+    providers.exec { commandLine("git", "rev-list", "--count", "HEAD") }
+        .standardOutput.asText.get().trim().toInt()
+} catch (e: Exception) {
+    0
+}
+
 android {
     namespace = "com.imi.smartedge.sidebar.panel"
     compileSdk = 34
@@ -14,8 +22,8 @@ android {
         applicationId = "com.imi.smartedge.sidebar.panel"
         minSdk = 26
         targetSdk = 34
-        versionCode = 14
-        versionName = "1.3.6"
+        versionCode = 1000 + gitCommitCount
+        versionName = "1.4.0.$gitCommitCount"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resConfigs("en", "es", "de")
@@ -36,7 +44,24 @@ android {
         }
     }
 
+    // Fixed signing key for test builds, so every new APK installs as an update.
+    // Provided by the DEV_KEYSTORE_BASE64 secret in CI (decoded to app/signing/dev.keystore, never committed).
+    val devKeystore = file("signing/dev.keystore")
+    if (devKeystore.exists()) {
+        signingConfigs {
+            create("dev") {
+                storeFile = devKeystore
+                storePassword = System.getenv("DEV_KEYSTORE_PASSWORD") ?: "android"
+                keyAlias = System.getenv("DEV_KEY_ALIAS") ?: "androiddebugkey"
+                keyPassword = System.getenv("DEV_KEY_PASSWORD") ?: "android"
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfigs.findByName("dev")?.let { signingConfig = it }
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true

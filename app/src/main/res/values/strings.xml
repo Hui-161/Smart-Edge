@@ -308,4 +308,30 @@
     <string name="label_support">Support</string>
     <string name="label_select_icon_pack">Select Icon Pack</string>
     <string name="label_notification_access">Smart Edge Notification Access</string>
+
+    <!-- Edge pages and saved texts -->
+    <string name="edge_tool_flashlight">Flashlight</string>
+    <string name="edge_tool_rotation">Rotation</string>
+    <string name="edge_tool_camera">Camera</string>
+    <string name="edge_tool_notifications">Notifications</string>
+    <string name="edge_tool_quick_settings">Quick Settings</string>
+    <string name="edge_tool_lock">Lock</string>
+    <string name="edge_snippets_title">Saved</string>
+    <string name="edge_snippets_empty">No saved texts yet (e.g. IBAN or phone number).</string>
+    <string name="edge_history_title">History</string>
+    <string name="edge_page_indicator">Page %1$d of %2$d</string>
+    <string name="section_edge_pages">Edge Menu Pages</string>
+    <string name="feature_pages_desc">Swipe inwards on the open sidebar (right to left for a right-side panel) to switch between pages. The dots at the bottom show the active page. The last page you used opens next time.</string>
+    <string name="feature_page_apps_desc">Page 1 – Apps: add or remove apps with the arrow button at the bottom of the sidebar.</string>
+    <string name="feature_contacts_page_label">Page 2 – Contacts</string>
+    <string name="feature_contacts_page_desc">Shows your favorite contacts (manage them under “Favorite Contacts” below)</string>
+    <string name="feature_tools_page_label">Page 3 – Tools</string>
+    <string name="feature_tools_page_choose">Choose Tools</string>
+    <string name="feature_tools_page_none">No tools selected</string>
+    <string name="feature_snippets_label">Saved Texts</string>
+    <string name="feature_snippets_desc">Permanently saved texts shown at the top of the clipboard, e.g. IBAN or phone number. Tap to copy. Stored only on this device and excluded from backups.</string>
+    <string name="feature_snippets_add">Add Text</string>
+    <string name="feature_snippets_edit">Edit Text</string>
+    <string name="feature_snippets_label_hint">Label (e.g. IBAN)</string>
+    <string name="feature_snippets_text_hint">Text to copy</string>
 </resources>
