@@ -20,10 +20,15 @@ object AutomationManager {
 
     fun isRootAvailable(): Boolean {
         return try {
-            val process = Runtime.getRuntime().exec("su -c id")
-            val reader = process.inputStream.bufferedReader()
-            val output = reader.readLine()
-            process.waitFor() == 0 && output != null && output.contains("uid=0")
+            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", "id"))
+            process.outputStream.close() // never wait for input (e.g. a password prompt)
+            // Don't block the caller if su hangs (pending root dialog, broken su binary)
+            if (!process.waitFor(2, java.util.concurrent.TimeUnit.SECONDS)) {
+                process.destroy()
+                return false
+            }
+            val output = process.inputStream.bufferedReader().use { it.readText() }
+            process.exitValue() == 0 && output.contains("uid=0")
         } catch (e: Exception) {
             false
         }

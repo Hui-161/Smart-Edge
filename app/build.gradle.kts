@@ -91,6 +91,9 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
+            all {
+                it.testLogging { events("started", "passed", "failed", "skipped") }
+            }
         }
     }
 
