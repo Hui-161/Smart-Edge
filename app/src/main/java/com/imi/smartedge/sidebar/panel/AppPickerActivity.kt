@@ -34,6 +34,10 @@ class AppPickerActivity : AppCompatActivity() {
     private lateinit var pickerAdapter: AppPickerAdapter
     private var allApps: List<AppInfo> = emptyList()
 
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAppPickerM3Binding.inflate(layoutInflater)

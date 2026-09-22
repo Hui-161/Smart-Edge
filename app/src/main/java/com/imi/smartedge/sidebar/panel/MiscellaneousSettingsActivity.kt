@@ -67,13 +67,14 @@ class MiscellaneousSettingsActivity : AppCompatActivity() {
     private fun updateLanguageLabel() {
         binding.tvLanguageValue.text = when (panelPrefs.appLanguage) {
             "es" -> "Español"
+            "de" -> "Deutsch"
             else -> "English"
         }
     }
 
     private fun showLanguagePicker() {
-        val languages = arrayOf("English", "Español")
-        val codes = arrayOf("en", "es")
+        val languages = arrayOf("English", "Español", "Deutsch")
+        val codes = arrayOf("en", "es", "de")
         val currentIndex = codes.indexOf(panelPrefs.appLanguage).let { if (it == -1) 0 else it }
 
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)

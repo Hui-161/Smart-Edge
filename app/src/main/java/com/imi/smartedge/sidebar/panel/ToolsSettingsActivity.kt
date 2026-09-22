@@ -44,6 +44,10 @@ class ToolsSettingsActivity : AppCompatActivity() {
         if (!granted) Toast.makeText(this, R.string.feature_contacts_permission_denied, Toast.LENGTH_SHORT).show()
     }
 
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsToolsBinding.inflate(layoutInflater)
