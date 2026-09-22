@@ -37,9 +37,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
-
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
@@ -49,3 +46,8 @@ jobs:
           name: smart-edge-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
+
+      # After the upload, so a slow or failing test run never blocks the APK
+      - name: Run unit tests
+        timeout-minutes: 20
+        run: ./gradlew testDebugUnitTest --stacktrace
