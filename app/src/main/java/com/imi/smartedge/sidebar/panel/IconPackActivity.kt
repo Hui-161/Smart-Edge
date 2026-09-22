@@ -31,7 +31,7 @@ class IconPackActivity : AppCompatActivity() {
         setContentView(R.layout.activity_icon_pack)
 
         supportActionBar?.apply {
-            title = "Select Icon Pack"
+            title = getString(R.string.msg_select_icon_pack)
             setDisplayHomeAsUpEnabled(true)
         }
 
@@ -43,7 +43,7 @@ class IconPackActivity : AppCompatActivity() {
 
         val packs = mutableListOf<IconPackInfo>()
         // Add "None" option
-        packs.add(IconPackInfo("none", "System Default", getDrawable(android.R.drawable.sym_def_app_icon)!!))
+        packs.add(IconPackInfo("none", getString(R.string.icon_pack_default), getDrawable(android.R.drawable.sym_def_app_icon)!!))
         packs.addAll(iconPackManager.getInstalledIconPacks())
 
         rv.adapter = IconPackAdapter(packs, panelPrefs.selectedIconPack) { item ->

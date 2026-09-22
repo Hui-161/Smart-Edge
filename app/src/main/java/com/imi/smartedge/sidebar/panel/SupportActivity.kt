@@ -28,12 +28,12 @@ class SupportActivity : AppCompatActivity() {
     private fun setupUI() {
 
 
-        binding.toolbar.title = "Support SidePanel"
+        binding.toolbar.title = getString(R.string.msg_support_title)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
         // Setup Copy Listeners
         binding.btnCopyMobileBanking.setOnClickListener {
-            copyToClipboard("Mobile Number", binding.tvMobileNumber.text.toString())
+            copyToClipboard(getString(R.string.msg_label_mobile_number), binding.tvMobileNumber.text.toString())
         }
 
         binding.btnCopyWebMoney.setOnClickListener {
@@ -62,6 +62,6 @@ class SupportActivity : AppCompatActivity() {
         val clip = ClipData.newPlainText(label, text)
         clipboard.setPrimaryClip(clip)
         
-        binding.root.showModernToast("$label copied to clipboard!", Snackbar.LENGTH_SHORT)
+        binding.root.showModernToast(getString(R.string.msg_label_copied, label), Snackbar.LENGTH_SHORT)
     }
 }

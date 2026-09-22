@@ -144,6 +144,11 @@ class FloatingPanelService : Service() {
         const val TOOL_EXTRA_DIM = "smartedge.tool.extra_dim"
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        // Apply the in-app language (not only the system language) to panel texts
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
+    }
+
     override fun onCreate() {
         super.onCreate()
         isRunning = true
@@ -418,7 +423,7 @@ class FloatingPanelService : Service() {
     private fun toggleAutoRotation() {
         try {
             if (!android.provider.Settings.System.canWrite(this)) {
-                showIndicator("Requires Write Settings Permission")
+                showIndicator(getString(R.string.msg_requires_write_settings))
                 val intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
                     data = android.net.Uri.parse("package:$packageName")
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -439,7 +444,7 @@ class FloatingPanelService : Service() {
     private fun openFavoriteApp() {
         val pkg = panelPrefs.favoriteAppPackage
         if (pkg.isEmpty()) {
-            showIndicator("Favorite app not set")
+            showIndicator(getString(R.string.toast_fav_app_unset))
             return
         }
         try {
@@ -449,7 +454,7 @@ class FloatingPanelService : Service() {
                 startActivity(intent)
                 closePanel(immediate = true)
             } else {
-                showIndicator("App not found")
+                showIndicator(getString(R.string.toast_app_not_found))
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to open favorite app", e)
@@ -1235,18 +1240,18 @@ class FloatingPanelService : Service() {
                         val tools = mutableListOf<AppInfo>()
                         
                         // Always include screenshot in the folder if the folder is active
-                        tools.add(AppInfo("smartedge.tool.screenshot", "Screenshot", type = AppInfo.Type.TOOL))
+                        tools.add(AppInfo("smartedge.tool.screenshot", getString(R.string.action_screenshot), type = AppInfo.Type.TOOL))
                         
                         // Add Volume tools
-                        tools.add(AppInfo("smartedge.tool.volume_up", "Volume +", type = AppInfo.Type.TOOL))
-                        tools.add(AppInfo("smartedge.tool.volume_down", "Volume -", type = AppInfo.Type.TOOL))
+                        tools.add(AppInfo("smartedge.tool.volume_up", getString(R.string.msg_tool_volume_up), type = AppInfo.Type.TOOL))
+                        tools.add(AppInfo("smartedge.tool.volume_down", getString(R.string.msg_tool_volume_down), type = AppInfo.Type.TOOL))
                         
                         // Add Brightness tools
-                        tools.add(AppInfo("smartedge.tool.brightness_up", "Brightness +", type = AppInfo.Type.TOOL))
-                        tools.add(AppInfo("smartedge.tool.brightness_down", "Brightness -", type = AppInfo.Type.TOOL))
+                        tools.add(AppInfo("smartedge.tool.brightness_up", getString(R.string.msg_tool_brightness_up), type = AppInfo.Type.TOOL))
+                        tools.add(AppInfo("smartedge.tool.brightness_down", getString(R.string.msg_tool_brightness_down), type = AppInfo.Type.TOOL))
                         
                         // Always include power menu in the folder if the folder is active
-                        tools.add(AppInfo("smartedge.shortcut.reboot", "Power Menu", type = AppInfo.Type.SHORTCUT))
+                        tools.add(AppInfo("smartedge.shortcut.reboot", getString(R.string.action_power_menu), type = AppInfo.Type.SHORTCUT))
 
                         // Edge features
                         if (panelPrefs.clipboardHistoryEnabled) {
@@ -1266,7 +1271,7 @@ class FloatingPanelService : Service() {
                 
                 // Add "Tools" folder button at the top if enabled
                 if (panelPrefs.showToolsPanelButton) {
-                    val toolsBtn = AppInfo("smartedge.tool.tools", "Tools", type = AppInfo.Type.TOOL)
+                    val toolsBtn = AppInfo("smartedge.tool.tools", getString(R.string.msg_tools), type = AppInfo.Type.TOOL)
                     if (baseApps.none { it.identifier == toolsBtn.identifier }) {
                         baseApps.add(0, toolsBtn)
                     }
@@ -1345,7 +1350,7 @@ class FloatingPanelService : Service() {
             .setSmallIcon(android.R.drawable.ic_menu_view)
             .setContentIntent(openMainPending)
             .addAction(android.R.drawable.ic_menu_view,
-                "Open Sidebar", openPending)
+                getString(R.string.msg_open_sidebar), openPending)
             .addAction(android.R.drawable.ic_menu_close_clear_cancel,
                 getString(R.string.stop_panel), stopPending)
             .setPriority(NotificationCompat.PRIORITY_MIN)
@@ -1394,13 +1399,13 @@ class FloatingPanelService : Service() {
             }
         }
 
-        tvTopZone = createZone("TOP SPLIT", Gravity.TOP).apply { 
+        tvTopZone = createZone(getString(R.string.msg_drop_zone_top_split), Gravity.TOP).apply { 
             layoutParams.height = (resources.displayMetrics.heightPixels * 0.28).toInt()
         }
-        tvBottomZone = createZone("BOTTOM SPLIT", Gravity.BOTTOM).apply { 
+        tvBottomZone = createZone(getString(R.string.msg_drop_zone_bottom_split), Gravity.BOTTOM).apply { 
             layoutParams.height = (resources.displayMetrics.heightPixels * 0.28).toInt()
         }
-        tvFreeformZone = createZone("FREEFORM WINDOW", Gravity.CENTER).apply { 
+        tvFreeformZone = createZone(getString(R.string.msg_drop_zone_freeform), Gravity.CENTER).apply { 
             layoutParams.height = (resources.displayMetrics.heightPixels * 0.30).toInt()
         }
 
@@ -1480,14 +1485,14 @@ class FloatingPanelService : Service() {
         val current = audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)
         val max = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
         val percent = if (max > 0) (current * 100) / max else 0
-        showIndicator("Volume: $percent%")
+        showIndicator(getString(R.string.msg_volume_percent, percent))
     }
 
     fun adjustBrightness(delta: Int) {
         if (delta == 0) return
         try {
             if (!android.provider.Settings.System.canWrite(this)) {
-                android.widget.Toast.makeText(this, "Requires 'Write System Settings' permission", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(this, R.string.msg_requires_write_system_settings, android.widget.Toast.LENGTH_SHORT).show()
                 val intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
                     data = android.net.Uri.parse("package:$packageName")
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -1524,7 +1529,7 @@ class FloatingPanelService : Service() {
             } catch (e: Exception) {}
 
             val percent = (brightness * 100) / 255
-            showIndicator("Brightness: $percent%")
+            showIndicator(getString(R.string.msg_brightness_percent, percent))
         } catch (e: Exception) {
             android.util.Log.e("FloatingPanelService", "Failed to adjust brightness", e)
         }

@@ -99,11 +99,11 @@ class InteractionSettingsActivity : AppCompatActivity() {
         binding.featureFreeform.isChecked = panelPrefs.freeformEnabled
         binding.layoutFreeformSize.visibility = if (panelPrefs.freeformEnabled) View.VISIBLE else View.GONE
         val sizeModeStr = when(panelPrefs.freeformWindowMode) {
-            PanelPreferences.FREEFORM_MODE_STANDARD -> "Standard (80%)"
-            PanelPreferences.FREEFORM_MODE_PORTRAIT -> "Portrait (Narrow)"
-            PanelPreferences.FREEFORM_MODE_MAXIMIZED -> "Maximized"
-            PanelPreferences.FREEFORM_MODE_CUSTOM -> "Custom (${panelPrefs.freeformCustomWidth}x${panelPrefs.freeformCustomHeight})"
-            else -> "Standard (80%)"
+            PanelPreferences.FREEFORM_MODE_STANDARD -> getString(R.string.freeform_mode_standard)
+            PanelPreferences.FREEFORM_MODE_PORTRAIT -> getString(R.string.freeform_mode_portrait)
+            PanelPreferences.FREEFORM_MODE_MAXIMIZED -> getString(R.string.freeform_mode_maximized)
+            PanelPreferences.FREEFORM_MODE_CUSTOM -> getString(R.string.freeform_mode_custom, panelPrefs.freeformCustomWidth, panelPrefs.freeformCustomHeight)
+            else -> getString(R.string.freeform_mode_standard)
         }
         binding.tvFreeformSizeValue.text = sizeModeStr
 
@@ -123,12 +123,12 @@ class InteractionSettingsActivity : AppCompatActivity() {
         binding.featureShowLogs.isChecked = panelPrefs.showLogs
 
         binding.tvAnimFeelValue.text = when (panelPrefs.animSpeed) {
-            200 -> "Calm (Slow)"
-            400 -> "Balanced (Default)"
-            700 -> "Snappy"
-            1000 -> "Instant"
-            0 -> "Disabled"
-            else -> "Balanced (Default)"
+            200 -> getString(R.string.anim_feel_calm)
+            400 -> getString(R.string.anim_feel_balanced)
+            700 -> getString(R.string.anim_feel_snappy)
+            1000 -> getString(R.string.anim_feel_instant)
+            0 -> getString(R.string.anim_feel_disabled)
+            else -> getString(R.string.anim_feel_balanced)
         }
 
         binding.sbPickerGap.value = panelPrefs.pickerGap.toFloat()
@@ -210,15 +210,15 @@ class InteractionSettingsActivity : AppCompatActivity() {
         })
 
         binding.layoutTapGestures.setOnClickListener {
-            val mainOptions = arrayOf("Single Tap Action", "Double Tap Action", "Triple Tap Action", "Long Press Action")
+            val mainOptions = arrayOf(getString(R.string.msg_single_tap_action), getString(R.string.msg_double_tap_action), getString(R.string.msg_triple_tap_action), getString(R.string.msg_long_press_action))
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.tap_gestures)
                 .setItems(mainOptions) { _, which ->
                     when (which) {
-                        0 -> showActionPicker("Single Tap", panelPrefs.tapAction) { panelPrefs.tapAction = it }
-                        1 -> showActionPicker("Double Tap", panelPrefs.doubleTapAction) { panelPrefs.doubleTapAction = it }
-                        2 -> showActionPicker("Triple Tap", panelPrefs.tripleTapAction) { panelPrefs.tripleTapAction = it }
-                        3 -> showActionPicker("Long Press", panelPrefs.longPressAction) { panelPrefs.longPressAction = it }
+                        0 -> showActionPicker(getString(R.string.msg_single_tap), panelPrefs.tapAction) { panelPrefs.tapAction = it }
+                        1 -> showActionPicker(getString(R.string.msg_double_tap), panelPrefs.doubleTapAction) { panelPrefs.doubleTapAction = it }
+                        2 -> showActionPicker(getString(R.string.msg_triple_tap), panelPrefs.tripleTapAction) { panelPrefs.tripleTapAction = it }
+                        3 -> showActionPicker(getString(R.string.msg_long_press), panelPrefs.longPressAction) { panelPrefs.longPressAction = it }
                     }
                 }
                 .setNegativeButton(android.R.string.cancel, null)
@@ -232,15 +232,15 @@ class InteractionSettingsActivity : AppCompatActivity() {
         }
 
         binding.layoutNotchTapGestures.setOnClickListener {
-            val mainOptions = arrayOf("Single Tap Action", "Double Tap Action", "Triple Tap Action", "Long Press Action")
+            val mainOptions = arrayOf(getString(R.string.msg_single_tap_action), getString(R.string.msg_double_tap_action), getString(R.string.msg_triple_tap_action), getString(R.string.msg_long_press_action))
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.notch_tap_gestures)
                 .setItems(mainOptions) { _, which ->
                     when (which) {
-                        0 -> showActionPicker("Notch Single Tap", panelPrefs.notchTapAction) { panelPrefs.notchTapAction = it }
-                        1 -> showActionPicker("Notch Double Tap", panelPrefs.notchDoubleTapAction) { panelPrefs.notchDoubleTapAction = it }
-                        2 -> showActionPicker("Notch Triple Tap", panelPrefs.notchTripleTapAction) { panelPrefs.notchTripleTapAction = it }
-                        3 -> showActionPicker("Notch Long Press", panelPrefs.notchLongPressAction) { panelPrefs.notchLongPressAction = it }
+                        0 -> showActionPicker(getString(R.string.msg_notch_single_tap), panelPrefs.notchTapAction) { panelPrefs.notchTapAction = it }
+                        1 -> showActionPicker(getString(R.string.msg_notch_double_tap), panelPrefs.notchDoubleTapAction) { panelPrefs.notchDoubleTapAction = it }
+                        2 -> showActionPicker(getString(R.string.msg_notch_triple_tap), panelPrefs.notchTripleTapAction) { panelPrefs.notchTripleTapAction = it }
+                        3 -> showActionPicker(getString(R.string.msg_notch_long_press), panelPrefs.notchLongPressAction) { panelPrefs.notchLongPressAction = it }
                     }
                 }
                 .setNegativeButton(android.R.string.cancel, null)
@@ -283,13 +283,13 @@ class InteractionSettingsActivity : AppCompatActivity() {
         }
 
         binding.featureAnimFeel.setOnClickListener {
-            val options = arrayOf("Calm (Slow)", "Balanced (Default)", "Snappy", "Instant", "Disabled")
+            val options = arrayOf(getString(R.string.anim_feel_calm), getString(R.string.anim_feel_balanced), getString(R.string.anim_feel_snappy), getString(R.string.anim_feel_instant), getString(R.string.anim_feel_disabled))
             val values = intArrayOf(200, 400, 700, 1000, 0)
             var selectedIndex = values.indexOf(panelPrefs.animSpeed)
             if (selectedIndex == -1) selectedIndex = 1
 
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Animation Feel")
+                .setTitle(R.string.dialog_anim_feel)
                 .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
                     panelPrefs.animSpeed = values[which]
                     binding.tvAnimFeelValue.text = options[which]
@@ -362,12 +362,12 @@ class InteractionSettingsActivity : AppCompatActivity() {
         }
 
         freeformSizeLayout?.setOnClickListener {
-            val options = arrayOf("Standard (80%)", "Portrait (Narrow)", "Maximized")
+            val options = arrayOf(getString(R.string.freeform_mode_standard), getString(R.string.freeform_mode_portrait), getString(R.string.freeform_mode_maximized))
             val values = arrayOf(PanelPreferences.FREEFORM_MODE_STANDARD, PanelPreferences.FREEFORM_MODE_PORTRAIT, PanelPreferences.FREEFORM_MODE_MAXIMIZED)
             val currentIdx = values.indexOf(panelPrefs.freeformWindowMode).coerceAtLeast(0)
 
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Freeform Window Size")
+                .setTitle(R.string.msg_freeform_window_size)
                 .setSingleChoiceItems(options, currentIdx) { dialog, which ->
                     panelPrefs.freeformWindowMode = values[which]
                     tvFreeformSizeValue?.text = options[which]
@@ -673,7 +673,7 @@ class InteractionSettingsActivity : AppCompatActivity() {
         PanelPreferences.ACTION_FLASHLIGHT -> getString(R.string.action_flashlight)
         PanelPreferences.ACTION_CAMERA -> getString(R.string.action_camera)
         PanelPreferences.ACTION_AUTO_ROTATION -> getString(R.string.action_rotation)
-        PanelPreferences.ACTION_OPEN_FAVORITE_APP -> "Fav: ${panelPrefs.favoriteAppPackage.substringAfterLast(".").take(10)}"
+        PanelPreferences.ACTION_OPEN_FAVORITE_APP -> getString(R.string.msg_fav_app_short, panelPrefs.favoriteAppPackage.substringAfterLast(".").take(10))
         PanelPreferences.ACTION_MOVE_HANDLE -> getString(R.string.action_move_handle)
         PanelPreferences.ACTION_EXTRA_DIM -> getString(R.string.action_extra_dim)
         else -> getString(R.string.action_none)

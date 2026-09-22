@@ -66,11 +66,11 @@ class SidePanelView @JvmOverloads constructor(
             val availableMegs = mi.availMem / 1048576L
             val totalMegs = mi.totalMem / 1048576L
             val usedMegs = totalMegs - availableMegs
-            binding.tvRamUsage.text = "RAM: ${usedMegs}MB"
+            binding.tvRamUsage.text = context.getString(R.string.msg_ram_usage, usedMegs)
 
             val intent = context.registerReceiver(null, android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED))
             val temp = intent?.getIntExtra(android.os.BatteryManager.EXTRA_TEMPERATURE, 0) ?: 0
-            binding.tvBatTemp.text = "BAT: ${temp / 10}°C"
+            binding.tvBatTemp.text = context.getString(R.string.msg_battery_temp, temp / 10)
         } catch (e: Exception) {}
     }
 
@@ -270,7 +270,7 @@ class SidePanelView @JvmOverloads constructor(
             val current = audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)
             val max = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
             val percent = if (max > 0) (current * 100) / max else 0
-            showIndicator("Volume: $percent%")
+            showIndicator(context.getString(R.string.msg_volume_percent, percent))
         }
 
         // Click listeners for single taps
@@ -299,7 +299,7 @@ class SidePanelView @JvmOverloads constructor(
             SpringAnimator.scalePulse(view)
             try {
                 if (!android.provider.Settings.System.canWrite(context)) {
-                    android.widget.Toast.makeText(context, "Requires 'Write System Settings' permission", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(context, R.string.msg_requires_write_system_settings, android.widget.Toast.LENGTH_SHORT).show()
                     val intent = Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
                         data = android.net.Uri.parse("package:${context.packageName}")
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -323,7 +323,7 @@ class SidePanelView @JvmOverloads constructor(
                     } catch (e: Exception) {}
 
                     val percent = (brightness * 100) / 255
-                    showIndicator("Brightness: $percent%")
+                    showIndicator(context.getString(R.string.msg_brightness_percent, percent))
                 }
             } catch (e: Exception) {
                 actionRunnables[view.id]?.let { handler.removeCallbacks(it) }

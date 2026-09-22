@@ -30,7 +30,7 @@ class ToggleActivity : AppCompatActivity() {
             
             val resultIntent = Intent().apply {
                 putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent)
-                putExtra(Intent.EXTRA_SHORTCUT_NAME, "Toggle Sidebar")
+                putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.shortcut_toggle_long))
                 val iconResource = Intent.ShortcutIconResource.fromContext(this@ToggleActivity, R.mipmap.ic_launcher)
                 putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource)
             }
@@ -42,7 +42,7 @@ class ToggleActivity : AppCompatActivity() {
 
         // 2. Check basic permissions
         if (!Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, "Overlay permission required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.msg_overlay_permission_required, Toast.LENGTH_SHORT).show()
             val pIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
             startActivity(pIntent)
             finish()
@@ -50,7 +50,7 @@ class ToggleActivity : AppCompatActivity() {
         }
 
         if (!PanelAccessibilityService.isRunning) {
-            Toast.makeText(this, "Accessibility service required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.msg_accessibility_service_required, Toast.LENGTH_SHORT).show()
             finish()
             return
         }

@@ -1,5 +1,6 @@
 package com.imi.smartedge.sidebar.panel
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
@@ -9,6 +10,11 @@ class PanelTileService : TileService() {
     
     companion object {
         private var isProcessingToggle = false
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        // Apply the in-app language (not only the system language) to panel texts
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
     }
 
     override fun onStartListening() {
@@ -33,21 +39,21 @@ class PanelTileService : TileService() {
         val tile = qsTile ?: return
         if (isEnabled && isAccessibilityEnabled) {
             tile.state = Tile.STATE_ACTIVE
-            tile.label = "Sidebar"
+            tile.label = getString(R.string.shortcut_toggle_short)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                tile.subtitle = "Service Active"
+                tile.subtitle = getString(R.string.msg_service_active)
             }
         } else if (isEnabled && !isAccessibilityEnabled) {
             tile.state = Tile.STATE_INACTIVE
-            tile.label = "Sidebar"
+            tile.label = getString(R.string.shortcut_toggle_short)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                tile.subtitle = "Accessibility Missing"
+                tile.subtitle = getString(R.string.msg_accessibility_missing)
             }
         } else {
             tile.state = Tile.STATE_INACTIVE
-            tile.label = "Sidebar"
+            tile.label = getString(R.string.shortcut_toggle_short)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                tile.subtitle = "Service Stopped"
+                tile.subtitle = getString(R.string.msg_service_stopped)
             }
         }
         tile.updateTile()

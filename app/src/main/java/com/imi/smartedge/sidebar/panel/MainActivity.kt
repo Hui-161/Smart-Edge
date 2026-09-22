@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
             }
 
             val shortcut = android.content.pm.ShortcutInfo.Builder(this, "toggle_sidebar")
-                .setShortLabel("Toggle Sidebar")
+                .setShortLabel(getString(R.string.label_toggle_sidebar))
                 .setIcon(android.graphics.drawable.Icon.createWithResource(this, R.mipmap.ic_launcher))
                 .setIntent(toggleIntent)
                 .build()
@@ -163,17 +163,17 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
             binding.btnStartStop.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#2ECC71"))
             binding.btnStartStop.setIconTintResource(android.R.color.white)
             
-            binding.btnStartStopClassic.text = "Stop"
+            binding.btnStartStopClassic.text = getString(R.string.msg_stop)
             binding.btnStartStopClassic.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#2ECC71"))
             binding.btnStartStopClassic.setTextColor(Color.WHITE)
 
             val statusSuffix = when {
                 automationActive && AutomationManager.isRootAvailable() -> " (Root)"
                 automationActive && AutomationManager.isShizukuAvailable() -> " (Shizuku)"
-                panelPrefs.useAutomationForGestures -> " (Service Stopped)"
+                panelPrefs.useAutomationForGestures -> " (${getString(R.string.msg_service_stopped)})"
                 else -> ""
             }
-            binding.tvStatus.text = if (automationActive) "Active$statusSuffix" else if (panelPrefs.useAutomationForGestures) getString(R.string.status_automation_stopped) else getString(R.string.status_service_active)
+            binding.tvStatus.text = if (automationActive) getString(R.string.msg_status_active) + statusSuffix else if (panelPrefs.useAutomationForGestures) getString(R.string.status_automation_stopped) else getString(R.string.status_service_active)
             theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
             binding.tvStatus.setTextColor(typedValue.data)
             binding.statusDot.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#2ECC71"))
@@ -182,11 +182,11 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
             binding.btnStartStop.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#F1C40F"))
             binding.btnStartStop.setIconTintResource(android.R.color.white)
             
-            binding.btnStartStopClassic.text = "Fix"
+            binding.btnStartStopClassic.text = getString(R.string.msg_fix)
             binding.btnStartStopClassic.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#F1C40F"))
             binding.btnStartStopClassic.setTextColor(Color.WHITE)
 
-            binding.tvStatus.text = "Accessibility Required"
+            binding.tvStatus.text = getString(R.string.msg_accessibility_required)
             binding.tvStatus.setTextColor(Color.parseColor("#F1C40F"))
             binding.statusDot.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#F1C40F"))
         } else {
@@ -194,11 +194,11 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
             binding.btnStartStop.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#475569"))
             binding.btnStartStop.setIconTintResource(com.google.android.material.R.color.material_dynamic_neutral90)
             
-            binding.btnStartStopClassic.text = "Start"
+            binding.btnStartStopClassic.text = getString(R.string.msg_start)
             binding.btnStartStopClassic.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#475569"))
             binding.btnStartStopClassic.setTextColor(Color.WHITE)
 
-            binding.tvStatus.text = "Service is Stopped"
+            binding.tvStatus.text = getString(R.string.main_service_stopped)
             theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurfaceVariant, typedValue, true)
             binding.tvStatus.setTextColor(typedValue.data)
             binding.statusDot.imageTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
@@ -240,9 +240,9 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
         }
 
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle("System Activity Logs")
+            .setTitle(R.string.main_logs_title)
             .setView(scroll)
-            .setPositiveButton("Close", null)
+            .setPositiveButton(R.string.msg_close, null)
             .show()
     }
 
@@ -350,7 +350,7 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
 
         val automationEnabled = panelPrefs.useAutomationForGestures && AutomationManager.isAutomationPossible()
         if (!automationEnabled && !isAccessibilityServiceEnabled()) {
-            binding.root.showModernToast("Please enable 'SidePanel' in Accessibility Settings", com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+            binding.root.showModernToast(getString(R.string.msg_enable_accessibility_prompt), com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
             openAccessibilitySettings()
             return
         }
@@ -369,12 +369,12 @@ class MainActivity : AppCompatActivity(), android.content.SharedPreferences.OnSh
         
         val automationEnabled = panelPrefs.useAutomationForGestures && AutomationManager.isAutomationPossible()
         if (!automationEnabled && !isAccessibilityServiceEnabled()) {
-            binding.root.showModernToast("Please enable 'SidePanel' in Accessibility Settings", Snackbar.LENGTH_LONG)
+            binding.root.showModernToast(getString(R.string.msg_enable_accessibility_prompt), Snackbar.LENGTH_LONG)
             openAccessibilitySettings()
             return
         }
         
-        binding.root.showModernToast("Opening Sidebar...")
+        binding.root.showModernToast(getString(R.string.msg_opening_sidebar))
         val intent = Intent(this, FloatingPanelService::class.java).apply {
             action = FloatingPanelService.ACTION_OPEN
         }

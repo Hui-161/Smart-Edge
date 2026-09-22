@@ -73,11 +73,11 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
                 subtitle = "Xiaomi · POCO · Redmi",
                 icon = android.R.drawable.ic_menu_manage,
                 steps = listOf(
-                    "Tap \"Open Settings\" below",
-                    "Scroll down and tap \"Installed apps\"",
-                    "Find \"Smart Edge\" and tap it",
-                    "Toggle the switch to ON",
-                    "Tap \"Allow\" on the confirmation dialog"
+                    getString(R.string.msg_a11y_step_open_settings),
+                    getString(R.string.msg_a11y_step_scroll_tap_installed),
+                    getString(R.string.msg_a11y_step_find_tap),
+                    getString(R.string.msg_a11y_step_toggle_on),
+                    getString(R.string.msg_a11y_step_allow_dialog)
                 )
             )
             isSamsung() -> OemGuide(
@@ -85,11 +85,11 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
                 subtitle = "Samsung Galaxy",
                 icon = android.R.drawable.ic_menu_manage,
                 steps = listOf(
-                    "Tap \"Open Settings\" below",
-                    "Scroll down to \"Installed apps\"",
-                    "Tap \"Smart Edge\"",
-                    "Toggle the switch to ON",
-                    "Tap \"Allow\" on the prompt"
+                    getString(R.string.msg_a11y_step_open_settings),
+                    getString(R.string.msg_a11y_step_scroll_to_installed),
+                    getString(R.string.msg_a11y_step_tap_app),
+                    getString(R.string.msg_a11y_step_toggle_on),
+                    getString(R.string.msg_a11y_step_allow_prompt)
                 )
             )
             isOppoColorOS() -> OemGuide(
@@ -97,11 +97,11 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
                 subtitle = "OPPO · Realme · OnePlus",
                 icon = android.R.drawable.ic_menu_manage,
                 steps = listOf(
-                    "Tap \"Open Settings\" below",
-                    "Tap \"Downloaded apps\" or \"Installed services\"",
-                    "Find and tap \"Smart Edge\"",
-                    "Toggle the switch to ON",
-                    "Confirm with \"Allow\""
+                    getString(R.string.msg_a11y_step_open_settings),
+                    getString(R.string.msg_a11y_step_tap_downloaded_or_services),
+                    getString(R.string.msg_a11y_step_find_and_tap),
+                    getString(R.string.msg_a11y_step_toggle_on),
+                    getString(R.string.msg_a11y_step_confirm_allow)
                 )
             )
             isVivo() -> OemGuide(
@@ -109,11 +109,11 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
                 subtitle = "Vivo",
                 icon = android.R.drawable.ic_menu_manage,
                 steps = listOf(
-                    "Tap \"Open Settings\" below",
-                    "Scroll to \"Installed apps\" section",
-                    "Select \"Smart Edge\"",
-                    "Turn the toggle ON",
-                    "Tap \"OK\" to confirm"
+                    getString(R.string.msg_a11y_step_open_settings),
+                    getString(R.string.msg_a11y_step_scroll_installed_section),
+                    getString(R.string.msg_a11y_step_select_app),
+                    getString(R.string.msg_a11y_step_turn_toggle_on),
+                    getString(R.string.msg_a11y_step_ok_confirm)
                 )
             )
             isHuawei() -> OemGuide(
@@ -121,23 +121,23 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
                 subtitle = "Huawei · Honor",
                 icon = android.R.drawable.ic_menu_manage,
                 steps = listOf(
-                    "Tap \"Open Settings\" below",
-                    "Go to \"Installed apps\"",
-                    "Find \"Smart Edge\" in the list",
-                    "Enable the toggle",
-                    "Tap \"OK\" to confirm"
+                    getString(R.string.msg_a11y_step_open_settings),
+                    getString(R.string.msg_a11y_step_go_installed),
+                    getString(R.string.msg_a11y_step_find_in_list),
+                    getString(R.string.msg_a11y_step_enable_toggle),
+                    getString(R.string.msg_a11y_step_ok_confirm)
                 )
             )
             else -> OemGuide(
                 title = "Android",
-                subtitle = "Stock / Pixel / Other",
+                subtitle = getString(R.string.msg_a11y_oem_other),
                 icon = android.R.drawable.ic_menu_manage,
                 steps = listOf(
-                    "Tap \"Open Settings\" below",
-                    "Go to \"Downloaded apps\" or \"Installed services\"",
-                    "Find \"Smart Edge\" and tap it",
-                    "Toggle the switch to ON",
-                    "Tap \"Allow\" on the confirmation"
+                    getString(R.string.msg_a11y_step_open_settings),
+                    getString(R.string.msg_a11y_step_go_downloaded_or_services),
+                    getString(R.string.msg_a11y_step_find_tap),
+                    getString(R.string.msg_a11y_step_toggle_on),
+                    getString(R.string.msg_a11y_step_allow_confirmation)
                 )
             )
         }
@@ -221,13 +221,13 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
         val tvTitle = TextView(ctx).apply {
-            text = "Enable Accessibility"
+            text = ctx.getString(R.string.msg_enable_accessibility)
             textSize = 18f
             setTextColor(android.graphics.Color.WHITE)
             typeface = android.graphics.Typeface.DEFAULT_BOLD
         }
         val tvSubtitle = TextView(ctx).apply {
-            text = "Steps for ${guide.title}  •  ${guide.subtitle}"
+            text = ctx.getString(R.string.msg_a11y_steps_for, guide.title, guide.subtitle)
             textSize = 12f
             setTextColor(android.graphics.Color.parseColor("#99FFFFFF"))
         }
@@ -298,7 +298,7 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
 
         // "Open Settings" button
         val btnOpen = Button(ctx).apply {
-            text = "Open Accessibility Settings"
+            text = ctx.getString(R.string.msg_open_accessibility_settings)
             setTextColor(android.graphics.Color.WHITE)
             textSize = 15f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
@@ -321,7 +321,7 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
 
         // "Use System Automation instead" secondary button
         val btnAutomation = Button(ctx).apply {
-            text = "Use System Automation instead"
+            text = ctx.getString(R.string.msg_use_system_automation)
             setTextColor(android.graphics.Color.parseColor("#4A9EFF"))
             textSize = 14f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
@@ -351,7 +351,7 @@ class AccessibilityGuideDialog : BottomSheetDialogFragment() {
         root.addView(btnAutomation)
 
         val tvNote = TextView(ctx).apply {
-            text = "Automation (Root/Shizuku) can handle gestures without using the Accessibility Service, saving RAM and CPU."
+            text = ctx.getString(R.string.msg_automation_note)
             textSize = 11f
             setTextColor(android.graphics.Color.parseColor("#66FFFFFF"))
             gravity = android.view.Gravity.CENTER

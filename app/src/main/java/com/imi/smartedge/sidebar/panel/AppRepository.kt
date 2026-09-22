@@ -135,7 +135,7 @@ class AppRepository(context: Context) {
 
         // Add Pseudo Shortcuts
         val oneHandPkg = "smartedge.shortcut.one_hand"
-        list.add(AppInfo(oneHandPkg, "One-Handed Mode", panelIdentifiers.contains(oneHandPkg), AppInfo.Type.SHORTCUT))
+        list.add(AppInfo(oneHandPkg, appContext.getString(R.string.msg_one_handed_mode), panelIdentifiers.contains(oneHandPkg), AppInfo.Type.SHORTCUT))
         
         val sortedList = list.sortedBy { it.appName.lowercase() }
 
@@ -206,6 +206,22 @@ class AppRepository(context: Context) {
     }
 
     /**
+     * Localized display names for the built-in tools and folders.
+     */
+    private fun builtInToolName(id: String): String? = when (id) {
+        "smartedge.tool.tools", "smartedge.folder.tools" -> appContext.getString(R.string.msg_tools)
+        "smartedge.tool.screenshot" -> appContext.getString(R.string.action_screenshot)
+        "smartedge.tool.volume_up" -> appContext.getString(R.string.msg_tool_volume_up)
+        "smartedge.tool.volume_down" -> appContext.getString(R.string.msg_tool_volume_down)
+        "smartedge.tool.brightness_up" -> appContext.getString(R.string.msg_tool_brightness_up)
+        "smartedge.tool.brightness_down" -> appContext.getString(R.string.msg_tool_brightness_down)
+        FloatingPanelService.TOOL_CLIPBOARD -> appContext.getString(R.string.edge_tool_clipboard)
+        FloatingPanelService.TOOL_CONTACTS -> appContext.getString(R.string.edge_tool_contacts)
+        FloatingPanelService.TOOL_EXTRA_DIM -> appContext.getString(R.string.edge_tool_extra_dim)
+        else -> null
+    }
+
+    /**
      * Resolves a list of identifiers into AppInfo objects.
      */
     suspend fun getAppsForIdentifiers(identifiers: List<String>): List<AppInfo> = withContext(Dispatchers.IO) {
@@ -214,17 +230,17 @@ class AppRepository(context: Context) {
         identifiers.mapNotNull { id ->
             when {
                 id == "smartedge.shortcut.one_hand" -> {
-                    AppInfo(id, "One-Handed Mode", true, AppInfo.Type.SHORTCUT, appearanceKey = panelPrefs.appearanceKey)
+                    AppInfo(id, appContext.getString(R.string.msg_one_handed_mode), true, AppInfo.Type.SHORTCUT, appearanceKey = panelPrefs.appearanceKey)
                 }
                 id == "smartedge.shortcut.reboot" -> {
-                    AppInfo(id, "Power Menu", true, AppInfo.Type.SHORTCUT, appearanceKey = panelPrefs.appearanceKey)
+                    AppInfo(id, appContext.getString(R.string.action_power_menu), true, AppInfo.Type.SHORTCUT, appearanceKey = panelPrefs.appearanceKey)
                 }
                 id.startsWith("smartedge.folder.") -> {
-                    val name = id.substringAfterLast(".").replaceFirstChar { it.uppercase() }
+                    val name = builtInToolName(id) ?: id.substringAfterLast(".").replaceFirstChar { it.uppercase() }
                     AppInfo(id, name, true, AppInfo.Type.FOLDER, appearanceKey = panelPrefs.appearanceKey)
                 }
                 id.startsWith("smartedge.tool.") -> {
-                    val name = id.substringAfterLast(".").replaceFirstChar { it.uppercase() }
+                    val name = builtInToolName(id) ?: id.substringAfterLast(".").replaceFirstChar { it.uppercase() }
                     AppInfo(id, name, true, AppInfo.Type.TOOL, appearanceKey = panelPrefs.appearanceKey)
                 }
                 id.startsWith("intent:") -> {
@@ -235,7 +251,7 @@ class AppRepository(context: Context) {
                         val resolveInfo = packageManager.resolveActivity(intent, 0)
                         val name = resolveInfo?.loadLabel(packageManager)?.toString() 
                                    ?: intent.component?.shortClassName?.substringAfterLast(".")
-                                   ?: "Unknown Activity"
+                                   ?: appContext.getString(R.string.msg_unknown_activity)
 
                         AppInfo(
                             packageName = pkg,

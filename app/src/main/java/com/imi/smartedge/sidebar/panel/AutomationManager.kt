@@ -66,13 +66,13 @@ object AutomationManager {
 
         if (suExists) {
             com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
-                .setTitle("Root Detected")
+                .setTitle(R.string.msg_root_detected_title)
                 .setIcon(android.R.drawable.ic_dialog_info)
-                .setMessage("Smart Edge has detected root access. Using root for gestures is more efficient and saves battery compared to the Accessibility Service.\n\nWould you like to grant root permission now?")
-                .setPositiveButton("Grant Permission") { _, _ ->
+                .setMessage(R.string.msg_root_detected_msg)
+                .setPositiveButton(R.string.msg_grant_permission) { _, _ ->
                     requestRootPermission(onResult)
                 }
-                .setNegativeButton("Not Now") { _, _ ->
+                .setNegativeButton(R.string.msg_not_now) { _, _ ->
                     onResult(false)
                 }
                 .show()

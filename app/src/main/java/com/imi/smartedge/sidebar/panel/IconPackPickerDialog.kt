@@ -104,13 +104,13 @@ class IconPackPickerDialog : BottomSheetDialogFragment() {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
         val tvTitle = TextView(ctx).apply {
-            text = "Select Icon Pack"
+            text = ctx.getString(R.string.msg_select_icon_pack)
             textSize = 20f
             setTextColor(Color.WHITE)
             typeface = Typeface.DEFAULT_BOLD
         }
         val tvStatus = TextView(ctx).apply {
-            text = "Current: ${panelPrefs.iconPackLabel}"
+            text = ctx.getString(R.string.msg_icon_pack_current, if (panelPrefs.selectedIconPack == PanelPreferences.DEFAULT_ICON_PACK) ctx.getString(R.string.icon_pack_default) else panelPrefs.iconPackLabel)
             textSize = 12f
             setTextColor(Color.parseColor("#99FFFFFF"))
         }
@@ -123,7 +123,7 @@ class IconPackPickerDialog : BottomSheetDialogFragment() {
         val searchContainer = com.google.android.material.textfield.TextInputLayout(ctx).apply {
             boxBackgroundMode = com.google.android.material.textfield.TextInputLayout.BOX_BACKGROUND_OUTLINE
             setBoxCornerRadii(14 * density, 14 * density, 14 * density, 14 * density)
-            hint = "Search icon packs..."
+            hint = ctx.getString(R.string.msg_search_icon_packs)
             setPadding(0, 0, 0, (16 * density).toInt())
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -149,7 +149,7 @@ class IconPackPickerDialog : BottomSheetDialogFragment() {
         }
         
         val allPacks = mutableListOf<IconPackInfo>()
-        allPacks.add(IconPackInfo("none", "System Default", ctx.getDrawable(android.R.drawable.sym_def_app_icon)!!))
+        allPacks.add(IconPackInfo("none", ctx.getString(R.string.icon_pack_default), ctx.getDrawable(android.R.drawable.sym_def_app_icon)!!))
         allPacks.addAll(iconPackManager.getInstalledIconPacks())
 
         val adapter = PackAdapter(allPacks) { item ->
@@ -290,7 +290,7 @@ class IconPackPickerDialog : BottomSheetDialogFragment() {
 
             holder.icon.setImageDrawable(item.icon)
             holder.name.text = item.label
-            holder.pkg.text = if (item.packageName == "none") "Default app icons" else item.packageName
+            holder.pkg.text = if (item.packageName == "none") holder.itemView.context.getString(R.string.msg_default_app_icons) else item.packageName
             holder.radio.isChecked = isSelected
 
             // Highlight background for selected item

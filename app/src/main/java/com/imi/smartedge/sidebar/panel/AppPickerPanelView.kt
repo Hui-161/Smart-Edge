@@ -346,8 +346,8 @@ class AppPickerPanelView @JvmOverloads constructor(
     fun setEditMode(enabled: Boolean) {
         if (isEditMode == enabled) return
         isEditMode = enabled
-        tvHeader.text = if (isEditMode) "Manage Smart Edge" else "All Apps"
-        btnEdit.text = if (isEditMode) "DONE" else "EDIT"
+        tvHeader.text = context.getString(if (isEditMode) R.string.msg_manage_smart_edge else R.string.msg_all_apps)
+        btnEdit.text = context.getString(if (isEditMode) R.string.msg_done_caps else R.string.msg_edit_caps)
         
         val accentColor = try {
             if (panelPrefs.useCustomAccent) Color.parseColor(panelPrefs.accentColor)
@@ -409,7 +409,7 @@ class AppPickerPanelView @JvmOverloads constructor(
 
         // --- SHOW LOADING STATE ---
         val originalHeaderText = tvHeader.text
-        tvHeader.text = if (currentType == AppInfo.Type.ACTIVITY) "Scanning Activities..." else "Loading Apps..."
+        tvHeader.text = context.getString(if (currentType == AppInfo.Type.ACTIVITY) R.string.msg_scanning_activities else R.string.loading_apps)
         
         _scope.launch {
             val apps = withContext(Dispatchers.IO) { 
@@ -419,7 +419,7 @@ class AppPickerPanelView @JvmOverloads constructor(
             allApps = apps
             
             // --- RESTORE HEADER STATE ---
-            tvHeader.text = if (isEditMode) "Manage Smart Edge" else (if (currentType == AppInfo.Type.ACTIVITY) "All Activities" else "All Apps")
+            tvHeader.text = context.getString(if (isEditMode) R.string.msg_manage_smart_edge else (if (currentType == AppInfo.Type.ACTIVITY) R.string.msg_all_activities else R.string.msg_all_apps))
 
             // Apply current search query after data is loaded
             val query = etSearch.text.toString()

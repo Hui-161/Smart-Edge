@@ -94,7 +94,7 @@ class SettingsMainActivity : AppCompatActivity() {
 
         // Add static actions that aren't in standard layouts
         allSettings.add(SettingItem(getString(R.string.add_apps), getString(R.string.manage_apps_desc), getString(R.string.misc_section_general), "apps choose select picker manage add remove", AppPickerActivity::class.java))
-        allSettings.add(SettingItem(getString(R.string.view_repo_title), getString(R.string.view_repo_desc), "Project", "github source code open repo smartedge", SettingsMainActivity::class.java, "btnGithubTop"))
+        allSettings.add(SettingItem(getString(R.string.view_repo_title), getString(R.string.view_repo_desc), getString(R.string.msg_category_project), "github source code open repo smartedge", SettingsMainActivity::class.java, "btnGithubTop"))
         allSettings.add(SettingItem(getString(R.string.btn_reset), getString(R.string.reset_defaults_desc), getString(R.string.misc_section_general), "reset all factory wipe restore settings", SettingsMainActivity::class.java, "btnReset"))
     }
 
@@ -158,11 +158,11 @@ class SettingsMainActivity : AppCompatActivity() {
     }
 
     private fun getCategoryFromLayout(layoutId: Int): String = when (layoutId) {
-        R.layout.activity_settings_appearance -> "Appearance"
-        R.layout.activity_settings_interaction -> "Interaction"
-        R.layout.activity_settings_handle -> "Handle"
-        R.layout.activity_settings_tools -> "Tools"
-        else -> "General"
+        R.layout.activity_settings_appearance -> getString(R.string.section_appearance)
+        R.layout.activity_settings_interaction -> getString(R.string.section_interaction)
+        R.layout.activity_settings_handle -> getString(R.string.msg_category_handle)
+        R.layout.activity_settings_tools -> getString(R.string.msg_tools)
+        else -> getString(R.string.section_general)
     }
 
     private fun setupSearch() {
@@ -259,7 +259,7 @@ class SettingsMainActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/Imtiaz-Official/Smart-Edge"))
             startActivity(intent)
         } catch (e: Exception) {
-            binding.root.showModernToast("Could not open browser")
+            binding.root.showModernToast(getString(R.string.toast_browser_error))
         }
     }
 

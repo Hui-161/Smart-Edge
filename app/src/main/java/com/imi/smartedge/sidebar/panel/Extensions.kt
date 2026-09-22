@@ -344,7 +344,7 @@ fun Context.openFreeformDeveloperSettings() {
         try {
             startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         } catch (e2: Exception) {
-            android.widget.Toast.makeText(this, "Developer Options not found", android.widget.Toast.LENGTH_SHORT).show()
+            android.widget.Toast.makeText(this, R.string.msg_dev_options_not_found, android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -444,7 +444,7 @@ fun Context.openColorPicker(initialColor: Int, onPick: (Int) -> Unit) {
 
     // 1. Hex Input and Preview
     val hexInputLayout = com.google.android.material.textfield.TextInputLayout(this, null, com.google.android.material.R.attr.textInputOutlinedStyle).apply {
-        hint = "Hex Color (#AARRGGBB)"
+        hint = this@openColorPicker.getString(R.string.msg_hex_color_hint)
         endIconMode = com.google.android.material.textfield.TextInputLayout.END_ICON_CLEAR_TEXT
         setBoxCornerRadii(dpToPx(12).toFloat(), dpToPx(12).toFloat(), dpToPx(12).toFloat(), dpToPx(12).toFloat())
         layoutParams = android.widget.LinearLayout.LayoutParams(
@@ -563,11 +563,11 @@ fun Context.openColorPicker(initialColor: Int, onPick: (Int) -> Unit) {
     })
 
     com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-        .setTitle("Choose Color")
+        .setTitle(R.string.msg_choose_color)
         .setView(rootLayout)
-        .setPositiveButton("Select") { _, _ ->
+        .setPositiveButton(R.string.msg_select) { _, _ ->
             onPick(currentColor)
         }
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton(R.string.msg_cancel, null)
         .show()
 }

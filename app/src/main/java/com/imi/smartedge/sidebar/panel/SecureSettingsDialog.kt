@@ -133,7 +133,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
         val tvTitle = TextView(ctx).apply {
-            text = "Native Gesture Engine"
+            text = ctx.getString(R.string.msg_native_gesture_engine)
             textSize = 20f
             setTextColor(Color.WHITE)
             typeface = Typeface.DEFAULT_BOLD
@@ -141,7 +141,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         
         val isGranted = ctx.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
         tvStatus = TextView(ctx).apply {
-            text = if (isGranted) "Permission: Granted" else "Permission: Missing"
+            text = ctx.getString(if (isGranted) R.string.msg_permission_granted else R.string.msg_permission_missing)
             textSize = 12f
             setTextColor(if (isGranted) Color.parseColor("#00FF00") else Color.parseColor("#99FFFFFF"))
             if (isGranted) typeface = Typeface.DEFAULT_BOLD
@@ -152,9 +152,9 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         // Add Automation Status
         tvAutoStatus = TextView(ctx).apply {
             val autoStatus = when {
-                AutomationManager.isRootAvailable() -> "Engine: Root Active"
-                AutomationManager.isShizukuAvailable() -> "Engine: Shizuku Active"
-                else -> "Engine: Service Not Running"
+                AutomationManager.isRootAvailable() -> ctx.getString(R.string.msg_engine_root_active)
+                AutomationManager.isShizukuAvailable() -> ctx.getString(R.string.msg_engine_shizuku_active)
+                else -> ctx.getString(R.string.msg_engine_not_running)
             }
             text = autoStatus
             textSize = 11f
@@ -168,7 +168,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         root.addView(headerRow)
 
         val tvDesc = TextView(ctx).apply {
-            text = "Enable high-performance gestures without traditional Accessibility Services."
+            text = ctx.getString(R.string.msg_secure_settings_desc)
             textSize = 14f
             setTextColor(Color.parseColor("#B3FFFFFF"))
             layoutParams = LinearLayout.LayoutParams(
@@ -187,7 +187,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         })
 
         // Shizuku Row
-        root.addView(createAutomationRow(ctx, density, "Shizuku", "Wireless ADB automation",
+        root.addView(createAutomationRow(ctx, density, "Shizuku", ctx.getString(R.string.msg_shizuku_desc),
             onGrant = {
                 try {
                     if (rikka.shizuku.Shizuku.pingBinder()) {
@@ -217,7 +217,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         ))
 
         // Root Row
-        root.addView(createAutomationRow(ctx, density, "Root Access", "Direct system grant",
+        root.addView(createAutomationRow(ctx, density, ctx.getString(R.string.msg_root_access), ctx.getString(R.string.msg_root_desc),
             onGrant = {
                 AutomationManager.requestRootPermission { success ->
                     if (success) {
@@ -249,7 +249,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         }
 
         val adbTitle = TextView(ctx).apply {
-            text = "MANUAL SETUP (ADB)"
+            text = ctx.getString(R.string.msg_manual_setup_adb)
             textSize = 11f
             setTextColor(Color.parseColor("#66FFFFFF"))
             typeface = Typeface.DEFAULT_BOLD
@@ -259,7 +259,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         adbHeaderRow.addView(adbTitle)
 
         val btnCopy = TextView(ctx).apply {
-            text = "Copy"
+            text = ctx.getString(R.string.msg_copy)
             setTextColor(Color.parseColor("#4A9EFF"))
             textSize = 11f
             typeface = Typeface.DEFAULT_BOLD
@@ -272,7 +272,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
             setOnClickListener {
                 val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(ClipData.newPlainText("ADB Command", adbCommand))
-                root.showModernToast("Command copied to clipboard")
+                root.showModernToast(ctx.getString(R.string.msg_command_copied))
             }
         }
         adbHeaderRow.addView(btnCopy)
@@ -296,14 +296,14 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
             setOnClickListener {
                 val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(ClipData.newPlainText("ADB Command", adbCommand))
-                root.showModernToast("Command copied to clipboard")
+                root.showModernToast(ctx.getString(R.string.msg_command_copied))
             }
         }
         root.addView(adbBox)
 
         // Close Button
         val btnClose = Button(ctx).apply {
-            text = "Done"
+            text = ctx.getString(R.string.done)
             setTextColor(Color.WHITE)
             textSize = 15f
             typeface = Typeface.DEFAULT_BOLD
@@ -358,7 +358,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         row.addView(textCol)
 
         val btnRevoke = Button(ctx).apply {
-            text = "Revoke"
+            text = ctx.getString(R.string.msg_revoke)
             setTextColor(Color.parseColor("#FF5252"))
             textSize = 13f
             typeface = Typeface.DEFAULT_BOLD
@@ -376,7 +376,7 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         row.addView(btnRevoke)
 
         val btnGrant = Button(ctx).apply {
-            text = "Grant"
+            text = ctx.getString(R.string.msg_grant)
             setTextColor(Color.parseColor("#4A9EFF"))
             textSize = 13f
             typeface = Typeface.DEFAULT_BOLD
@@ -398,19 +398,19 @@ class SecureSettingsDialog : BottomSheetDialogFragment() {
         
         val ctx = requireContext()
         val isGranted = ctx.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
-        tvStatus.text = if (isGranted) "Permission: Granted" else "Permission: Missing"
+        tvStatus.text = ctx.getString(if (isGranted) R.string.msg_permission_granted else R.string.msg_permission_missing)
         tvStatus.setTextColor(if (isGranted) Color.parseColor("#00FF00") else Color.parseColor("#99FFFFFF"))
         tvStatus.typeface = if (isGranted) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         
         val isAutomationPossible = AutomationManager.isAutomationPossible()
         tvAutoStatus.text = if (isAutomationPossible) {
             when {
-                AutomationManager.isRootAvailable() -> "Engine: Root Active"
-                AutomationManager.isShizukuAvailable() -> "Engine: Shizuku Active"
-                else -> "Engine: Active"
+                AutomationManager.isRootAvailable() -> ctx.getString(R.string.msg_engine_root_active)
+                AutomationManager.isShizukuAvailable() -> ctx.getString(R.string.msg_engine_shizuku_active)
+                else -> ctx.getString(R.string.msg_engine_active)
             }
         } else {
-            "Engine: Service Not Running"
+            ctx.getString(R.string.msg_engine_not_running)
         }
         tvAutoStatus.setTextColor(if (isAutomationPossible) Color.parseColor("#00FF00") else Color.parseColor("#B3FFFFFF"))
         tvAutoStatus.typeface = if (isAutomationPossible) Typeface.DEFAULT_BOLD else Typeface.DEFAULT

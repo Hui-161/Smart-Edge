@@ -99,7 +99,7 @@ class PanelAccessibilityService : AccessibilityService() {
             ACTION_ONE_HANDED -> {
                 val handler = android.os.Handler(android.os.Looper.getMainLooper())
                 handler.post {
-                    android.widget.Toast.makeText(this, "One-Handed Mode triggered", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(this, R.string.msg_one_handed_triggered, android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
             ACTION_PREVIOUS_APP -> {
@@ -123,7 +123,7 @@ class PanelAccessibilityService : AccessibilityService() {
                 if (shortcut == "smartedge.shortcut.one_hand") {
                     val handler = android.os.Handler(android.os.Looper.getMainLooper())
                     handler.post {
-                        android.widget.Toast.makeText(this, "One-Handed Mode triggered", android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(this, R.string.msg_one_handed_triggered, android.widget.Toast.LENGTH_SHORT).show()
                     }
                     // Attempting standard fallback if the OEM supports it via AccessibilityService
                     // true specific one-handed mode intents are heavily fragmented

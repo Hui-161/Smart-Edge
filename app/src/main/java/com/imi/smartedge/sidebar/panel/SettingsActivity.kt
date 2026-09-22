@@ -58,10 +58,10 @@ class SettingsActivity : AppCompatActivity() {
         binding.switchAutoStart.isChecked = panelPrefs.autoStart
         binding.switchGestures.isChecked = panelPrefs.gesturesEnabled
         binding.tvTapGesturesValue.text = when {
-            panelPrefs.tripleTapToOpen -> "Triple Tap"
-            panelPrefs.doubleTapToOpen -> "Double Tap"
-            panelPrefs.tapToOpen -> "Single Tap"
-            else -> "Disabled"
+            panelPrefs.tripleTapToOpen -> getString(R.string.msg_triple_tap)
+            panelPrefs.doubleTapToOpen -> getString(R.string.msg_double_tap)
+            panelPrefs.tapToOpen -> getString(R.string.msg_single_tap)
+            else -> getString(R.string.anim_feel_disabled)
         }
         binding.switchShowPill.isChecked = panelPrefs.showPill
         binding.switchHaptic.isChecked = panelPrefs.hapticEnabled
@@ -69,12 +69,12 @@ class SettingsActivity : AppCompatActivity() {
 
         val animSpeed = panelPrefs.animSpeed
         binding.tvAnimFeelValue.text = when (animSpeed) {
-            200 -> "Calm (Slow)"
-            400 -> "Balanced (Default)"
-            700 -> "Snappy"
-            1000 -> "Instant"
-            0 -> "Disabled"
-            else -> "Balanced (Default)"
+            200 -> getString(R.string.anim_feel_calm)
+            400 -> getString(R.string.anim_feel_balanced)
+            700 -> getString(R.string.anim_feel_snappy)
+            1000 -> getString(R.string.anim_feel_instant)
+            0 -> getString(R.string.anim_feel_disabled)
+            else -> getString(R.string.anim_feel_balanced)
         }
 
         binding.switchBlur.isChecked = panelPrefs.blurEnabled
@@ -102,17 +102,17 @@ class SettingsActivity : AppCompatActivity() {
         binding.tvPickerGapValue.text = "${panelPrefs.pickerGap}dp"
 
         binding.tvUIStyleValue.text = when (panelPrefs.uiTheme) {
-            PanelPreferences.THEME_HYPEROS -> "HyperOS (Glass)"
-            PanelPreferences.THEME_REALME -> "Realme UI"
-            PanelPreferences.THEME_RICH -> "Rich UI (Glow)"
-            else -> "OriginOS (Rounded)"
+            PanelPreferences.THEME_HYPEROS -> getString(R.string.theme_hyperos)
+            PanelPreferences.THEME_REALME -> getString(R.string.theme_realme)
+            PanelPreferences.THEME_RICH -> getString(R.string.theme_rich)
+            else -> getString(R.string.theme_origin)
         }
 
         binding.tvIconShapeValue.text = when (panelPrefs.iconShape) {
-            PanelPreferences.SHAPE_SQUIRCLE -> "Squircle"
-            PanelPreferences.SHAPE_SQUARE -> "Square"
-            PanelPreferences.SHAPE_CIRCLE -> "Circle"
-            else -> "System Default"
+            PanelPreferences.SHAPE_SQUIRCLE -> getString(R.string.msg_shape_squircle)
+            PanelPreferences.SHAPE_SQUARE -> getString(R.string.msg_shape_square)
+            PanelPreferences.SHAPE_CIRCLE -> getString(R.string.msg_shape_circle)
+            else -> getString(R.string.icon_pack_default)
         }
 
         binding.switchTools.isChecked = panelPrefs.showTools
@@ -120,7 +120,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.switchUseCustomAccent.isChecked = panelPrefs.useCustomAccent
 
         val pack = panelPrefs.selectedIconPack
-        binding.tvCurrentIconPack.text = if (pack == "none") "System Default" else pack
+        binding.tvCurrentIconPack.text = if (pack == "none") getString(R.string.icon_pack_default) else pack
 
         try {
             val accentColor = Color.parseColor(panelPrefs.accentColor)
@@ -158,8 +158,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.btnPickBg.isEnabled = true
         binding.btnSelectIconPack.isEnabled = true
 
-        binding.tvSupportStatus.text = "Support Development"
-        binding.btnGoPremium.text = "Donate"
+        binding.tvSupportStatus.text = getString(R.string.msg_support_development)
+        binding.btnGoPremium.text = getString(R.string.msg_donate)
         binding.btnGoPremium.visibility = View.VISIBLE
     }
 
@@ -185,14 +185,14 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.layoutTapGestures.setOnClickListener {
-            val options = arrayOf("Disabled", "Single Tap", "Double Tap", "Triple Tap")
+            val options = arrayOf(getString(R.string.anim_feel_disabled), getString(R.string.msg_single_tap), getString(R.string.msg_double_tap), getString(R.string.msg_triple_tap))
             var selectedIndex = 0
             if (panelPrefs.tapToOpen) selectedIndex = 1
             if (panelPrefs.doubleTapToOpen) selectedIndex = 2
             if (panelPrefs.tripleTapToOpen) selectedIndex = 3
 
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Tap to Open")
+                .setTitle(R.string.msg_tap_to_open)
                 .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
                     panelPrefs.tapToOpen = (which == 1)
                     panelPrefs.doubleTapToOpen = (which == 2)
@@ -218,21 +218,21 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.layoutAnimFeel.setOnClickListener {
-            val options = arrayOf("Calm (Slow)", "Balanced (Default)", "Snappy", "Instant", "Disabled")
+            val options = arrayOf(getString(R.string.anim_feel_calm), getString(R.string.anim_feel_balanced), getString(R.string.anim_feel_snappy), getString(R.string.anim_feel_instant), getString(R.string.anim_feel_disabled))
             val values = intArrayOf(200, 400, 700, 1000, 0)
 
             var selectedIndex = values.indexOf(panelPrefs.animSpeed)
             if (selectedIndex == -1) selectedIndex = 1 // Default to Balanced
 
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Animation Feel")
+                .setTitle(R.string.dialog_anim_feel)
                 .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
                     panelPrefs.animSpeed = values[which]
                     binding.tvAnimFeelValue.text = options[which]
                     applyOnly()
                     dialog.dismiss()
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.msg_cancel, null)
                 .show()
         }
 
@@ -407,7 +407,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.layoutUIStyle.setOnClickListener {
-            val options = arrayOf("OriginOS (Rounded)", "HyperOS (Glass)", "Realme UI", "Rich UI (Glow)")
+            val options = arrayOf(getString(R.string.theme_origin), getString(R.string.theme_hyperos), getString(R.string.theme_realme), getString(R.string.theme_rich))
             val values = arrayOf(
                 PanelPreferences.THEME_ORIGIN,
                 PanelPreferences.THEME_HYPEROS,
@@ -418,7 +418,7 @@ class SettingsActivity : AppCompatActivity() {
             val selectedIndex = values.indexOf(panelPrefs.uiTheme).let { if (it == -1) 0 else it }
 
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("UI Style Theme")
+                .setTitle(R.string.ui_style_theme)
                 .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
                     panelPrefs.uiTheme = values[which]
                     binding.tvUIStyleValue.text = options[which]
@@ -433,12 +433,12 @@ class SettingsActivity : AppCompatActivity() {
                     applyAndShow()
                     dialog.dismiss()
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.msg_cancel, null)
                 .show()
         }
 
         binding.layoutIconShape.setOnClickListener {
-            val options = arrayOf("System Default", "Circle", "Squircle", "Square")
+            val options = arrayOf(getString(R.string.icon_pack_default), getString(R.string.msg_shape_circle), getString(R.string.msg_shape_squircle), getString(R.string.msg_shape_square))
             val values = arrayOf(
                 PanelPreferences.SHAPE_SYSTEM,
                 PanelPreferences.SHAPE_CIRCLE,
@@ -449,14 +449,14 @@ class SettingsActivity : AppCompatActivity() {
             val selectedIndex = values.indexOf(panelPrefs.iconShape).let { if (it == -1) 0 else it }
 
             com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Icon Shape")
+                .setTitle(R.string.icon_shape)
                 .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
                     panelPrefs.iconShape = values[which]
                     binding.tvIconShapeValue.text = options[which]
                     applyAndShow()
                     dialog.dismiss()
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.msg_cancel, null)
                 .show()
         }
 
@@ -485,19 +485,19 @@ class SettingsActivity : AppCompatActivity() {
             panelPrefs.resetToDefaults()
             loadCurrentSettings() 
             applyAndShow()
-            binding.root.showModernToast("Settings Reset to Defaults")
+            binding.root.showModernToast(getString(R.string.msg_settings_reset_defaults))
         }
 
         binding.btnResetUIColors.setOnClickListener {
             panelPrefs.resetUIColors()
             loadCurrentSettings() 
             applyOnly()
-            binding.root.showModernToast("UI Colors Restored to Default")
+            binding.root.showModernToast(getString(R.string.msg_ui_colors_restored))
         }
 
         binding.btnPickAccent.setOnClickListener {
             if (panelPrefs.uiTheme == PanelPreferences.THEME_ORIGIN) {
-                binding.root.showModernToast("Accent color is locked for OriginOS theme")
+                binding.root.showModernToast(getString(R.string.msg_accent_locked_origin))
                 return@setOnClickListener
             }
             openColorPicker(Color.parseColor(panelPrefs.accentColor)) { newColor ->
@@ -510,7 +510,7 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.btnPickBg.setOnClickListener {
             if (panelPrefs.uiTheme == PanelPreferences.THEME_ORIGIN) {
-                binding.root.showModernToast("Background color is locked for OriginOS theme")
+                binding.root.showModernToast(getString(R.string.msg_bg_locked_origin))
                 return@setOnClickListener
             }
             openColorPicker(Color.parseColor(panelPrefs.panelBackgroundColor)) { newColor ->
@@ -523,7 +523,7 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.switchUseCustomAccent.setOnTouchListener { _, _ ->
             if (panelPrefs.uiTheme == PanelPreferences.THEME_ORIGIN) {
-                binding.root.showModernToast("Custom accent is disabled for OriginOS theme")
+                binding.root.showModernToast(getString(R.string.msg_custom_accent_disabled_origin))
                 true 
             } else {
                 false
