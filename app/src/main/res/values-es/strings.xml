@@ -226,4 +226,55 @@
     <string name="action_lock_screen">Bloqueo de Pantalla</string>
     <string name="action_power_menu">Menú de Apagado</string>
     <string name="action_move_handle">Mover tirador (Arrastrar)</string>
+
+    <!-- Edge Features: Clipboard, Contacts, Extra Dim -->
+    <string name="action_extra_dim">Alternar atenuación extra</string>
+    <string name="edge_tool_clipboard">Portapapeles</string>
+    <string name="edge_tool_contacts">Contactos</string>
+    <string name="edge_tool_extra_dim">Atenuación extra</string>
+    <string name="edge_clipboard_title">Historial del portapapeles</string>
+    <string name="edge_clipboard_clear">Borrar</string>
+    <string name="edge_clipboard_empty">Aún no hay nada copiado. Copia un texto y vuelve a abrir la barra lateral.</string>
+    <string name="edge_clipboard_disabled">El historial del portapapeles está desactivado. Actívalo en Ajustes → Herramientas.</string>
+    <string name="edge_clipboard_copied">Copiado al portapapeles</string>
+    <string name="edge_clipboard_pin">Fijar</string>
+    <string name="edge_clipboard_delete">Eliminar</string>
+    <string name="edge_contacts_title">Contactos favoritos</string>
+    <string name="edge_contacts_manage">Editar</string>
+    <string name="edge_contacts_empty">Aún no hay contactos favoritos. Toca “Editar” para añadir.</string>
+    <string name="edge_contacts_call">Llamar</string>
+    <string name="edge_contacts_sms">Enviar SMS</string>
+    <string name="edge_contacts_no_app">No se encontró ninguna app para esta acción</string>
+    <string name="edge_extra_dim_on">Atenuación extra: activada</string>
+    <string name="edge_extra_dim_off">Atenuación extra: desactivada</string>
+    <string name="edge_extra_dim_unsupported">La atenuación extra requiere Android 12 o superior</string>
+    <string name="edge_extra_dim_settings_hint">Concede “Ajustes seguros” para alternar la atenuación extra directamente</string>
+
+    <string name="section_edge_features">Funciones Edge</string>
+    <string name="feature_clipboard_label">Historial del portapapeles</string>
+    <string name="feature_clipboard_desc">Recuerda los textos copiados y los muestra en la barra lateral. Solo se guarda en este dispositivo; los textos marcados como sensibles (p. ej. contraseñas) se omiten.</string>
+    <string name="feature_clipboard_hint">Sin Shizuku/Root, Android solo permite leer el portapapeles mientras la barra lateral está abierta: el último texto copiado se guarda cada vez que la abres.</string>
+    <string name="feature_clipboard_background">Permitir captura en segundo plano (Shizuku/Root)</string>
+    <string name="feature_clipboard_background_ok">Acceso al portapapeles en segundo plano concedido</string>
+    <string name="feature_clipboard_background_failed">No se pudo conceder el acceso. Se requiere Shizuku o Root.</string>
+    <string name="feature_clipboard_clear_all">Eliminar historial del portapapeles</string>
+    <string name="feature_clipboard_cleared">Historial del portapapeles eliminado</string>
+    <string name="feature_contacts_label">Contactos favoritos</string>
+    <string name="feature_contacts_desc">Llama o envía mensajes a tus contactos favoritos directamente desde la barra lateral</string>
+    <string name="feature_contacts_add">Añadir contacto</string>
+    <string name="feature_contacts_import">Importar favoritos del teléfono</string>
+    <string name="feature_contacts_imported">%1$d contacto(s) importado(s)</string>
+    <string name="feature_contacts_import_none">No se encontraron nuevos contactos destacados con número</string>
+    <string name="feature_contacts_already_added">Contacto ya añadido o lista llena</string>
+    <string name="feature_contacts_permission_denied">Permiso denegado</string>
+    <string name="feature_contacts_remove">Quitar</string>
+    <string name="feature_contacts_list_empty">Aún no hay contactos añadidos</string>
+    <string name="feature_direct_call_label">Llamar directamente</string>
+    <string name="feature_direct_call_desc">Inicia llamadas al instante en lugar de abrir el marcador (requiere permiso de teléfono)</string>
+    <string name="feature_extra_dim_label">Botón de atenuación extra</string>
+    <string name="feature_extra_dim_desc">Alterna la función de accesibilidad “Atenuación extra” desde la barra lateral (Android 12+)</string>
+    <string name="feature_extra_dim_grant">Conceder ajustes seguros</string>
+    <string name="feature_extra_dim_status_ok">Alternado directo disponible</string>
+    <string name="feature_extra_dim_status_missing">Sin “Ajustes seguros” (o Shizuku/Root) el botón abre la página de ajustes de atenuación extra</string>
+    <string name="feature_extra_dim_status_unsupported">No disponible: requiere Android 12 o superior</string>
 </resources>

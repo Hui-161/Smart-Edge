@@ -31,6 +31,8 @@ class FloatingPanelService : Service() {
     private var notchHandleView: NotchHandleView? = null
     private var sidePanelView: SidePanelView? = null
     private var pickerPanelView: AppPickerPanelView? = null
+    private var quickListView: QuickListPanelView? = null
+    private var isQuickListOpen = false
     
     private var rootLayout: android.widget.FrameLayout? = null
     private var rootParams: WindowManager.LayoutParams? = null
@@ -63,6 +65,16 @@ class FloatingPanelService : Service() {
     
     private val serviceScope = CoroutineScope(Dispatchers.Main + Job())
     private val handler = Handler(Looper.getMainLooper())
+
+    private val clipboardListener = android.content.ClipboardManager.OnPrimaryClipChangedListener {
+        // Only delivered while we may read the clipboard (focused overlay or READ_CLIPBOARD app-op)
+        if (panelPrefs.clipboardHistoryEnabled) {
+            ClipboardHistoryManager.captureCurrentClip(this)
+            if (isQuickListOpen && quickListView?.mode == QuickListPanelView.Mode.CLIPBOARD) {
+                quickListView?.reload()
+            }
+        }
+    }
 
     private val packageReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -125,6 +137,11 @@ class FloatingPanelService : Service() {
         const val ACTION_LAUNCH_CAMERA = "com.imi.smartedge.sidebar.panel.LAUNCH_CAMERA"
         const val ACTION_TOGGLE_ROTATION = "com.imi.smartedge.sidebar.panel.TOGGLE_ROTATION"
         const val ACTION_OPEN_FAV_APP = "com.imi.smartedge.sidebar.panel.OPEN_FAV_APP"
+        const val ACTION_TOGGLE_EXTRA_DIM = "com.imi.smartedge.sidebar.panel.TOGGLE_EXTRA_DIM"
+
+        const val TOOL_CLIPBOARD = "smartedge.tool.clipboard"
+        const val TOOL_CONTACTS = "smartedge.tool.contacts"
+        const val TOOL_EXTRA_DIM = "smartedge.tool.extra_dim"
     }
 
     override fun onCreate() {
@@ -159,6 +176,14 @@ class FloatingPanelService : Service() {
 
         initSidePanel()
         initPickerPanel()
+        initQuickList()
+
+        try {
+            (getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager)
+                .addPrimaryClipChangedListener(clipboardListener)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to register clipboard listener", e)
+        }
         
         // Force enable notch gestures for debugging if we're in a debug build
         // val isDebug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
@@ -331,6 +356,7 @@ class FloatingPanelService : Service() {
             ACTION_LAUNCH_CAMERA -> launchCamera()
             ACTION_TOGGLE_ROTATION -> toggleAutoRotation()
             ACTION_OPEN_FAV_APP -> openFavoriteApp()
+            ACTION_TOGGLE_EXTRA_DIM -> toggleExtraDim()
         }
         return if (panelPrefs.serviceEnabled) START_STICKY else START_NOT_STICKY
     }
@@ -441,6 +467,10 @@ class FloatingPanelService : Service() {
             TileService.requestListeningState(this, android.content.ComponentName(this, PanelTileService::class.java))
         }
         NotificationTrackingService.onNotificationsChanged = null
+        try {
+            (getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager)
+                .removePrimaryClipChangedListener(clipboardListener)
+        } catch (e: Exception) {}
         serviceScope.cancel()
         try {
             unregisterReceiver(systemDialogsReceiver)
@@ -681,6 +711,9 @@ class FloatingPanelService : Service() {
                     "smartedge.tool.volume_down" -> adjustVolume(android.media.AudioManager.ADJUST_LOWER)
                     "smartedge.tool.brightness_up" -> adjustBrightness(15)
                     "smartedge.tool.brightness_down" -> adjustBrightness(-15)
+                    TOOL_CLIPBOARD -> toggleQuickList(QuickListPanelView.Mode.CLIPBOARD)
+                    TOOL_CONTACTS -> toggleQuickList(QuickListPanelView.Mode.CONTACTS)
+                    TOOL_EXTRA_DIM -> toggleExtraDim()
                 }
             }
             visibility = View.GONE 
@@ -709,13 +742,134 @@ class FloatingPanelService : Service() {
         }
     }
 
+    private fun initQuickList() {
+        quickListView = QuickListPanelView(this).apply {
+            onEntryUsed = { closePanel() }
+            // Toast instead of the in-panel indicator, which disappears together with the panel
+            onMessage = { android.widget.Toast.makeText(this@FloatingPanelService, it, android.widget.Toast.LENGTH_SHORT).show() }
+            onOpenSettings = {
+                closePanel(immediate = true)
+                val intent = Intent(this@FloatingPanelService, ToolsSettingsActivity::class.java).apply {
+                    putExtra(SettingsMainActivity.EXTRA_SCROLL_TO, "feature_contacts_button")
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
+            }
+            visibility = View.GONE
+        }
+    }
+
+    private fun toggleQuickList(mode: QuickListPanelView.Mode) {
+        if (isQuickListOpen && quickListView?.mode == mode) {
+            closeQuickList()
+        } else {
+            openQuickList(mode)
+        }
+    }
+
+    private fun openQuickList(mode: QuickListPanelView.Mode) {
+        val list = quickListView ?: return
+        if (mode == QuickListPanelView.Mode.CLIPBOARD && !panelPrefs.clipboardHistoryEnabled) {
+            showIndicator(getString(R.string.edge_clipboard_disabled))
+            return
+        }
+        if (isPickerOpen) closePicker()
+        if (mode == QuickListPanelView.Mode.CLIPBOARD) {
+            // The overlay has focus now, so the latest clip is readable
+            ClipboardHistoryManager.captureCurrentClip(this)
+        }
+
+        val wasOpen = isQuickListOpen
+        isQuickListOpen = true
+        list.show(mode)
+
+        val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
+        val displayMetrics = resources.displayMetrics
+        val lp = android.widget.FrameLayout.LayoutParams(dpToPx(260), android.widget.FrameLayout.LayoutParams.WRAP_CONTENT)
+        lp.gravity = if (isRight) Gravity.CENTER_VERTICAL or Gravity.END
+                     else Gravity.CENTER_VERTICAL or Gravity.START
+        // Same horizontal alignment as the app picker
+        val gapPx = ((72 + 12 + panelPrefs.pickerGap) * displayMetrics.density).toInt()
+        if (isRight) lp.marginEnd = gapPx else lp.marginStart = gapPx
+        list.layoutParams = lp
+        val maxHeightDp = Math.max(300f, panelPrefs.pickerMaxHeight.toFloat())
+        list.setMaxListHeight((maxHeightDp * displayMetrics.density).toInt() - dpToPx(70))
+
+        if (wasOpen) return // Only the content changed
+        list.alpha = 0f
+        list.visibility = View.VISIBLE
+        list.post {
+            val listWidth = list.width.toFloat()
+            if (listWidth <= 0) return@post
+            val stiffness = panelPrefs.animSpeed.toFloat()
+            val useSlide = panelPrefs.pickerAnimType == PanelPreferences.ANIM_TYPE_SLIDE
+            SpringAnimator.animateOpen(list, if (isRight) -listWidth else listWidth, isPicker = true, stiffness = stiffness, slide = useSlide)
+        }
+    }
+
+    private fun closeQuickList(immediate: Boolean = false) {
+        if (!isQuickListOpen) return
+        isQuickListOpen = false
+        val list = quickListView ?: return
+        if (immediate) {
+            list.visibility = View.GONE
+            return
+        }
+        val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
+        val listWidth = list.width.toFloat()
+        val stiffness = panelPrefs.animSpeed.toFloat()
+        val useSlide = panelPrefs.pickerAnimType == PanelPreferences.ANIM_TYPE_SLIDE
+        SpringAnimator.animateClose(list, if (isRight) listWidth else -listWidth, isPicker = true, stiffness = stiffness, slide = useSlide) {
+            if (!isQuickListOpen) list.visibility = View.GONE
+        }
+    }
+
+    private fun toggleExtraDim() {
+        if (!ExtraDimHelper.isSupported()) {
+            notifyUser(getString(R.string.edge_extra_dim_unsupported))
+            return
+        }
+        serviceScope.launch {
+            val result = kotlinx.coroutines.withContext(Dispatchers.IO) {
+                ExtraDimHelper.toggle(this@FloatingPanelService)
+            }
+            when (result) {
+                ExtraDimHelper.Result.ENABLED -> notifyUser(getString(R.string.edge_extra_dim_on))
+                ExtraDimHelper.Result.DISABLED -> notifyUser(getString(R.string.edge_extra_dim_off))
+                ExtraDimHelper.Result.OPENED_SETTINGS -> {
+                    closePanel(immediate = true)
+                    android.widget.Toast.makeText(this@FloatingPanelService, R.string.edge_extra_dim_settings_hint, android.widget.Toast.LENGTH_LONG).show()
+                }
+                ExtraDimHelper.Result.UNSUPPORTED -> notifyUser(getString(R.string.edge_extra_dim_unsupported))
+            }
+        }
+    }
+
+    /** Shows the in-panel indicator while the panel is open, otherwise a toast. */
+    private fun notifyUser(text: String) {
+        if (isPanelOpen && rootLayout?.parent != null) {
+            showIndicator(text)
+        } else {
+            android.widget.Toast.makeText(this, text, android.widget.Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private val sideRect = android.graphics.Rect()
     private val pickerRect = android.graphics.Rect()
+    private val quickListRect = android.graphics.Rect()
 
     private fun initRootLayout() {
         if (rootLayout != null) return
 
         rootLayout = object : android.widget.FrameLayout(this) {
+            override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+                super.onWindowFocusChanged(hasWindowFocus)
+                // Android 10+ only allows clipboard reads while one of our windows has focus
+                if (hasWindowFocus && panelPrefs.clipboardHistoryEnabled) {
+                    ClipboardHistoryManager.captureCurrentClip(this@FloatingPanelService)
+                }
+            }
+
             override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
                 if (event.action == android.view.KeyEvent.ACTION_UP && event.keyCode == android.view.KeyEvent.KEYCODE_BACK) {
                     if (isPickerOpen) {
@@ -728,6 +882,9 @@ class FloatingPanelService : Service() {
                             return true
                         }
                         closePicker()
+                        return true
+                    } else if (isQuickListOpen) {
+                        closeQuickList()
                         return true
                     } else {
                         closePanel()
@@ -756,6 +913,8 @@ class FloatingPanelService : Service() {
                 if (!closedKeyboard) {
                     if (isPickerOpen) {
                         closePicker()
+                    } else if (isQuickListOpen) {
+                        closeQuickList()
                     } else {
                         closePanel()
                     }
@@ -780,7 +939,14 @@ class FloatingPanelService : Service() {
                         } ?: false
                     } else false
 
-                    if (insideSide || insidePicker) {
+                    val insideQuickList = if (isQuickListOpen) {
+                        quickListView?.let { v ->
+                            v.getHitRect(quickListRect)
+                            quickListRect.contains(x, y)
+                        } ?: false
+                    } else false
+
+                    if (insideSide || insidePicker || insideQuickList) {
                         // Let the touch pass through to the panel/picker
                         return@setOnTouchListener false
                     }
@@ -853,6 +1019,7 @@ class FloatingPanelService : Service() {
         
         rootLayout?.addView(sidePanelView)
         rootLayout?.addView(pickerPanelView)
+        rootLayout?.addView(quickListView)
     }
 
     private fun openPanel() {
@@ -915,6 +1082,7 @@ class FloatingPanelService : Service() {
                 isPickerOpen = false
                 pickerPanelView?.visibility = View.GONE
             }
+            closeQuickList(immediate = true)
             sidePanelView?.visibility = View.GONE
             updateBlur(false)
             if (rootLayout?.parent != null) {
@@ -939,6 +1107,7 @@ class FloatingPanelService : Service() {
         }
 
         if (isPickerOpen) closePicker()
+        closeQuickList()
         sidePanelView?.let { panel ->
             val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
             val panelWidth = panel.width.toFloat()
@@ -978,6 +1147,7 @@ class FloatingPanelService : Service() {
 
     private fun openPicker(enableEditMode: Boolean = false) {
         if (isPickerOpen) return
+        closeQuickList(immediate = true)
         isPickerOpen = true
         sidePanelView?.setColumns(1)
         sidePanelView?.setEditButtonVisible(true)
@@ -1077,6 +1247,15 @@ class FloatingPanelService : Service() {
                         
                         // Always include power menu in the folder if the folder is active
                         tools.add(AppInfo("smartedge.shortcut.reboot", "Power Menu", type = AppInfo.Type.SHORTCUT))
+
+                        // Edge features
+                        if (panelPrefs.clipboardHistoryEnabled) {
+                            tools.add(AppInfo(TOOL_CLIPBOARD, getString(R.string.edge_tool_clipboard), type = AppInfo.Type.TOOL))
+                        }
+                        tools.add(AppInfo(TOOL_CONTACTS, getString(R.string.edge_tool_contacts), type = AppInfo.Type.TOOL))
+                        if (ExtraDimHelper.isSupported()) {
+                            tools.add(AppInfo(TOOL_EXTRA_DIM, getString(R.string.edge_tool_extra_dim), type = AppInfo.Type.TOOL))
+                        }
                         
                         tools
                     }
@@ -1090,6 +1269,30 @@ class FloatingPanelService : Service() {
                     val toolsBtn = AppInfo("smartedge.tool.tools", "Tools", type = AppInfo.Type.TOOL)
                     if (baseApps.none { it.identifier == toolsBtn.identifier }) {
                         baseApps.add(0, toolsBtn)
+                    }
+                }
+
+                // Edge feature buttons (placed after the Tools folder button). They can end up
+                // in the saved app order after drag & drop, so the switches decide visibility.
+                val edgeToolNames = mapOf(
+                    TOOL_CLIPBOARD to getString(R.string.edge_tool_clipboard),
+                    TOOL_CONTACTS to getString(R.string.edge_tool_contacts),
+                    TOOL_EXTRA_DIM to getString(R.string.edge_tool_extra_dim)
+                )
+                val enabledEdgeTools = mutableListOf<String>()
+                if (panelPrefs.clipboardHistoryEnabled) enabledEdgeTools.add(TOOL_CLIPBOARD)
+                if (panelPrefs.showContactsButton) enabledEdgeTools.add(TOOL_CONTACTS)
+                if (panelPrefs.showExtraDimButton && ExtraDimHelper.isSupported()) enabledEdgeTools.add(TOOL_EXTRA_DIM)
+
+                baseApps.removeAll { it.identifier in edgeToolNames && it.identifier !in enabledEdgeTools }
+                for (i in baseApps.indices) {
+                    val label = edgeToolNames[baseApps[i].identifier] ?: continue
+                    baseApps[i] = baseApps[i].copy(appName = label)
+                }
+                var insertAt = if (baseApps.firstOrNull()?.identifier == "smartedge.tool.tools") 1 else 0
+                enabledEdgeTools.forEach { toolId ->
+                    if (baseApps.none { it.identifier == toolId }) {
+                        baseApps.add(insertAt++, AppInfo(toolId, edgeToolNames.getValue(toolId), type = AppInfo.Type.TOOL))
                     }
                 }
                 

@@ -55,6 +55,9 @@ class PanelPreferences(context: Context) {
         private const val KEY_SHOW_SYS_INFO = "show_sys_info"
         private const val KEY_SHOW_SCREENSHOT_TOOL = "show_screenshot_tool"
         private const val KEY_SHOW_TOOLS_PANEL_BUTTON = "show_tools_panel_button"
+        private const val KEY_CLIPBOARD_HISTORY_ENABLED = "clipboard_history_enabled"
+        private const val KEY_SHOW_CONTACTS_BUTTON = "show_contacts_button"
+        private const val KEY_SHOW_EXTRA_DIM_BUTTON = "show_extra_dim_button"
         private const val KEY_SHOW_POWER_MENU = "show_power_menu"
         private const val KEY_SHOW_VOLUME_KEYS = "show_volume_keys"
         private const val KEY_SHOW_BRIGHTNESS_KEYS = "show_brightness_keys"
@@ -113,6 +116,7 @@ class PanelPreferences(context: Context) {
         const val ACTION_AUTO_ROTATION = 13
         const val ACTION_OPEN_FAVORITE_APP = 14
         const val ACTION_MOVE_HANDLE = 15
+        const val ACTION_EXTRA_DIM = 16
 
         const val ANIM_TYPE_SLIDE = "slide"
         const val ANIM_TYPE_POPUP = "popup"
@@ -268,7 +272,10 @@ class PanelPreferences(context: Context) {
             KEY_SHOW_NOTIFICATION_APPS to showNotificationApps,
             KEY_DRAG_TO_SPLIT to dragToSplit,
             KEY_REMEMBER_SCROLL to rememberScroll,
-            KEY_AUTO_SHOW_KEYBOARD to autoShowKeyboard
+            KEY_AUTO_SHOW_KEYBOARD to autoShowKeyboard,
+            KEY_CLIPBOARD_HISTORY_ENABLED to clipboardHistoryEnabled,
+            KEY_SHOW_CONTACTS_BUTTON to showContactsButton,
+            KEY_SHOW_EXTRA_DIM_BUTTON to showExtraDimButton
         )
         bools.forEach { (k, v) -> obj.put(k, v) }
 
@@ -327,6 +334,9 @@ class PanelPreferences(context: Context) {
                 if (obj.has(KEY_USE_CUSTOM_ACCENT)) putBoolean(KEY_USE_CUSTOM_ACCENT, obj.getBoolean(KEY_USE_CUSTOM_ACCENT))
                 if (obj.has(KEY_HIDE_BG)) putBoolean(KEY_HIDE_BG, obj.getBoolean(KEY_HIDE_BG))
                 if (obj.has(KEY_SHOW_TOOLS)) putBoolean(KEY_SHOW_TOOLS, obj.getBoolean(KEY_SHOW_TOOLS))
+                if (obj.has(KEY_CLIPBOARD_HISTORY_ENABLED)) putBoolean(KEY_CLIPBOARD_HISTORY_ENABLED, obj.getBoolean(KEY_CLIPBOARD_HISTORY_ENABLED))
+                if (obj.has(KEY_SHOW_CONTACTS_BUTTON)) putBoolean(KEY_SHOW_CONTACTS_BUTTON, obj.getBoolean(KEY_SHOW_CONTACTS_BUTTON))
+                if (obj.has(KEY_SHOW_EXTRA_DIM_BUTTON)) putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, obj.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON))
                 if (obj.has(KEY_GESTURES_ENABLED)) putBoolean(KEY_GESTURES_ENABLED, obj.getBoolean(KEY_GESTURES_ENABLED))
                 if (obj.has(KEY_SHOW_IN_LANDSCAPE)) putBoolean(KEY_SHOW_IN_LANDSCAPE, obj.getBoolean(KEY_SHOW_IN_LANDSCAPE))
                 if (obj.has(KEY_TAP_TO_OPEN)) putBoolean(KEY_TAP_TO_OPEN, obj.getBoolean(KEY_TAP_TO_OPEN))
@@ -495,6 +505,19 @@ class PanelPreferences(context: Context) {
     var showToolsPanelButton: Boolean
         get() = prefs.getBoolean(KEY_SHOW_TOOLS_PANEL_BUTTON, DEFAULT_SHOW_TOOLS_PANEL)
         set(value) = prefs.edit { putBoolean(KEY_SHOW_TOOLS_PANEL_BUTTON, value) }
+
+    /** Records copied text and shows the clipboard button in the sidebar. Off by default (privacy). */
+    var clipboardHistoryEnabled: Boolean
+        get() = prefs.getBoolean(KEY_CLIPBOARD_HISTORY_ENABLED, false)
+        set(value) = prefs.edit { putBoolean(KEY_CLIPBOARD_HISTORY_ENABLED, value) }
+
+    var showContactsButton: Boolean
+        get() = prefs.getBoolean(KEY_SHOW_CONTACTS_BUTTON, false)
+        set(value) = prefs.edit { putBoolean(KEY_SHOW_CONTACTS_BUTTON, value) }
+
+    var showExtraDimButton: Boolean
+        get() = prefs.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, false)
+        set(value) = prefs.edit { putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, value) }
 
     var showPowerMenu: Boolean
         get() = prefs.getBoolean(KEY_SHOW_POWER_MENU, false)

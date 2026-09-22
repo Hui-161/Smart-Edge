@@ -252,4 +252,55 @@
     <string name="section_desktop_shortcuts">Desktop Shortcuts</string>
     <string name="feature_add_shortcut_label">Add Toggle Shortcut</string>
     <string name="feature_add_shortcut_desc">Pin a shortcut to your home screen to quickly toggle the sidebar</string>
+
+    <!-- Edge Features: Clipboard, Contacts, Extra Dim -->
+    <string name="action_extra_dim">Toggle Extra Dim</string>
+    <string name="edge_tool_clipboard">Clipboard</string>
+    <string name="edge_tool_contacts">Contacts</string>
+    <string name="edge_tool_extra_dim">Extra Dim</string>
+    <string name="edge_clipboard_title">Clipboard History</string>
+    <string name="edge_clipboard_clear">Clear</string>
+    <string name="edge_clipboard_empty">Nothing copied yet. Copy some text and open the sidebar again.</string>
+    <string name="edge_clipboard_disabled">Clipboard history is turned off. Enable it in Settings → Dashboard Tools.</string>
+    <string name="edge_clipboard_copied">Copied to clipboard</string>
+    <string name="edge_clipboard_pin">Pin</string>
+    <string name="edge_clipboard_delete">Delete</string>
+    <string name="edge_contacts_title">Favorite Contacts</string>
+    <string name="edge_contacts_manage">Edit</string>
+    <string name="edge_contacts_empty">No favorite contacts yet. Tap “Edit” to add some.</string>
+    <string name="edge_contacts_call">Call</string>
+    <string name="edge_contacts_sms">Send SMS</string>
+    <string name="edge_contacts_no_app">No app found for this action</string>
+    <string name="edge_extra_dim_on">Extra Dim: On</string>
+    <string name="edge_extra_dim_off">Extra Dim: Off</string>
+    <string name="edge_extra_dim_unsupported">Extra Dim requires Android 12 or newer</string>
+    <string name="edge_extra_dim_settings_hint">Grant “Secure Settings” to toggle Extra Dim directly</string>
+
+    <string name="section_edge_features">Edge Features</string>
+    <string name="feature_clipboard_label">Clipboard History</string>
+    <string name="feature_clipboard_desc">Remembers copied text and shows it in the sidebar. Stored only on this device; texts marked as sensitive (e.g. passwords) are skipped.</string>
+    <string name="feature_clipboard_hint">Without Shizuku/Root, Android only lets Smart Edge read the clipboard while the sidebar is open: the last copied text is saved each time you open it.</string>
+    <string name="feature_clipboard_background">Allow Background Capture (Shizuku/Root)</string>
+    <string name="feature_clipboard_background_ok">Background clipboard access granted</string>
+    <string name="feature_clipboard_background_failed">Could not grant access. Shizuku or Root is required.</string>
+    <string name="feature_clipboard_clear_all">Delete Clipboard History</string>
+    <string name="feature_clipboard_cleared">Clipboard history deleted</string>
+    <string name="feature_contacts_label">Favorite Contacts</string>
+    <string name="feature_contacts_desc">Call or text your favorite contacts directly from the sidebar</string>
+    <string name="feature_contacts_add">Add Contact</string>
+    <string name="feature_contacts_import">Import Phone Favorites</string>
+    <string name="feature_contacts_imported">%1$d contact(s) imported</string>
+    <string name="feature_contacts_import_none">No new starred contacts with a phone number found</string>
+    <string name="feature_contacts_already_added">Contact already added or list full</string>
+    <string name="feature_contacts_permission_denied">Permission denied</string>
+    <string name="feature_contacts_remove">Remove</string>
+    <string name="feature_contacts_list_empty">No contacts added yet</string>
+    <string name="feature_direct_call_label">Call Directly</string>
+    <string name="feature_direct_call_desc">Start calls immediately instead of opening the dialer (requires phone permission)</string>
+    <string name="feature_extra_dim_label">Extra Dim Button</string>
+    <string name="feature_extra_dim_desc">Toggle the Extra Dim accessibility feature from the sidebar (Android 12+)</string>
+    <string name="feature_extra_dim_grant">Grant Secure Settings</string>
+    <string name="feature_extra_dim_status_ok">Direct toggle available</string>
+    <string name="feature_extra_dim_status_missing">Without “Secure Settings” (or Shizuku/Root) the button opens the Extra Dim settings page</string>
+    <string name="feature_extra_dim_status_unsupported">Not available: requires Android 12 or newer</string>
 </resources>

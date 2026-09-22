@@ -6,6 +6,13 @@
 
 ---
 
+### Unreleased
+- **feat(edge)**: Clipboard history in the sidebar (pin, delete, tap to copy). Stored only on-device, sensitive clips (passwords) are skipped; optional background capture via Shizuku/Root.
+- **feat(edge)**: Favorite contacts in the sidebar with one-tap call and SMS. Add contacts via the system picker or import starred phone favorites.
+- **feat(edge)**: "Extra Dim" toggle (Android 12+) as sidebar button, Tools folder item and handle gesture action.
+
+---
+
 ### v1.3.6 (Latest)
 - **feat(interaction)**: Reorganized Interaction settings dashboard into logical, consolidated groups (Main Trigger, Specialized Interaction, Panel Experience, Multitasking, Shortcuts, Advanced, System).
 - **feat(interaction)**: Restored missing Panel Experience features (Landscape, Notification Apps, Scroll Memory, Keyboard) and System & Behavior features (Auto-start, Debug Logs, Animation Feel, Picker Gap).

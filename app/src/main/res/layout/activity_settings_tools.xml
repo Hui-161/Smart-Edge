@@ -121,6 +121,70 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Edge Features: Clipboard, Contacts, Extra Dim -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/App_Card_Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    style="@style/App_CardContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/section_edge_features" android:textColor="?attr/colorOnSurface" android:textStyle="bold" />
+
+                    <!-- Clipboard -->
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/feature_clipboard_history" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/feature_clipboard_label" android:textColor="?attr/colorOnSurface" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/feature_clipboard_desc" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
+
+                    <LinearLayout
+                        android:id="@+id/layout_clipboard_options"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/feature_clipboard_hint" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
+                        <Button android:id="@+id/btn_clipboard_background" style="@style/Widget.Material3.Button.TonalButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/feature_clipboard_background" android:textSize="12sp" />
+                    </LinearLayout>
+                    <Button android:id="@+id/btn_clipboard_clear" style="@style/Widget.Material3.Button.OutlinedButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/feature_clipboard_clear_all" android:textSize="12sp" />
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="16dp" />
+
+                    <!-- Favorite contacts -->
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/feature_contacts_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/feature_contacts_label" android:textColor="?attr/colorOnSurface" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/feature_contacts_desc" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/feature_direct_call" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/feature_direct_call_label" android:textColor="?attr/colorOnSurface" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/feature_direct_call_desc" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+                        <Button android:id="@+id/btn_contacts_add" style="@style/Widget.Material3.Button.TonalButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="4dp" android:text="@string/feature_contacts_add" android:textSize="12sp" />
+                        <Button android:id="@+id/btn_contacts_import" style="@style/Widget.Material3.Button.TonalButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="4dp" android:text="@string/feature_contacts_import" android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layout_favorite_contacts"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="vertical" />
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="16dp" />
+
+                    <!-- Extra Dim -->
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/feature_extra_dim_button" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/feature_extra_dim_label" android:textColor="?attr/colorOnSurface" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/feature_extra_dim_desc" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
+                    <TextView android:id="@+id/tv_extra_dim_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:textColor="?attr/colorPrimary" android:textSize="11sp" />
+                    <Button android:id="@+id/btn_extra_dim_grant" style="@style/Widget.Material3.Button.TonalButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/feature_extra_dim_grant" android:textSize="12sp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -27,6 +27,7 @@ object ActionDispatcher {
             PanelPreferences.ACTION_CAMERA -> triggerServiceAction(context, FloatingPanelService.ACTION_LAUNCH_CAMERA)
             PanelPreferences.ACTION_AUTO_ROTATION -> triggerServiceAction(context, FloatingPanelService.ACTION_TOGGLE_ROTATION)
             PanelPreferences.ACTION_OPEN_FAVORITE_APP -> triggerServiceAction(context, FloatingPanelService.ACTION_OPEN_FAV_APP)
+            PanelPreferences.ACTION_EXTRA_DIM -> triggerServiceAction(context, FloatingPanelService.ACTION_TOGGLE_EXTRA_DIM)
 
             // System/Navigation Gestures
             PanelPreferences.ACTION_SCREENSHOT -> executeSystemAction(context, panelPrefs, PanelAccessibilityService.ACTION_TAKE_SCREENSHOT)

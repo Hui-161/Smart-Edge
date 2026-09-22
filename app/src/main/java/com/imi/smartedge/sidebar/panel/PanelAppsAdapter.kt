@@ -174,6 +174,9 @@ class PanelAppsAdapter(
                     app.packageName == "smartedge.tool.volume_down" -> R.drawable.ic_brightness_down
                     app.packageName == "smartedge.tool.brightness_up" -> R.drawable.ic_brightness_up
                     app.packageName == "smartedge.tool.brightness_down" -> R.drawable.ic_brightness_down
+                    app.packageName == FloatingPanelService.TOOL_CLIPBOARD -> R.drawable.ic_copy
+                    app.packageName == FloatingPanelService.TOOL_CONTACTS -> R.drawable.ic_edge_contacts
+                    app.packageName == FloatingPanelService.TOOL_EXTRA_DIM -> R.drawable.ic_edge_extra_dim
                     app.packageName == "smartedge.shortcut.one_hand" -> android.R.drawable.ic_menu_crop
                     app.packageName == "smartedge.shortcut.reboot" -> android.R.drawable.ic_lock_power_off
                     else -> android.R.drawable.sym_def_app_icon

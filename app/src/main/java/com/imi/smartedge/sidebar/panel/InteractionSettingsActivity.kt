@@ -612,7 +612,8 @@ class InteractionSettingsActivity : AppCompatActivity() {
             getString(R.string.action_camera),
             getString(R.string.action_rotation),
             getString(R.string.action_fav_app),
-            getString(R.string.action_move_handle)
+            getString(R.string.action_move_handle),
+            getString(R.string.action_extra_dim)
         )
         val values = intArrayOf(
             PanelPreferences.ACTION_NONE,
@@ -630,7 +631,8 @@ class InteractionSettingsActivity : AppCompatActivity() {
             PanelPreferences.ACTION_CAMERA,
             PanelPreferences.ACTION_AUTO_ROTATION,
             PanelPreferences.ACTION_OPEN_FAVORITE_APP,
-            PanelPreferences.ACTION_MOVE_HANDLE
+            PanelPreferences.ACTION_MOVE_HANDLE,
+            PanelPreferences.ACTION_EXTRA_DIM
         )
         val selectedIndex = values.indexOf(current).coerceAtLeast(0)
 
@@ -673,6 +675,7 @@ class InteractionSettingsActivity : AppCompatActivity() {
         PanelPreferences.ACTION_AUTO_ROTATION -> getString(R.string.action_rotation)
         PanelPreferences.ACTION_OPEN_FAVORITE_APP -> "Fav: ${panelPrefs.favoriteAppPackage.substringAfterLast(".").take(10)}"
         PanelPreferences.ACTION_MOVE_HANDLE -> getString(R.string.action_move_handle)
+        PanelPreferences.ACTION_EXTRA_DIM -> getString(R.string.action_extra_dim)
         else -> getString(R.string.action_none)
     }
 }
