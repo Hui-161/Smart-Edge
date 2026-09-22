@@ -277,4 +277,9 @@
     <string name="feature_extra_dim_status_ok">Alternado directo disponible</string>
     <string name="feature_extra_dim_status_missing">Sin “Ajustes seguros” (o Shizuku/Root) el botón abre la página de ajustes de atenuación extra</string>
     <string name="feature_extra_dim_status_unsupported">No disponible: requiere Android 12 o superior</string>
+
+    <!-- Manifest labels -->
+    <string name="label_support">Apoyo</string>
+    <string name="label_select_icon_pack">Seleccionar paquete de iconos</string>
+    <string name="label_notification_access">Acceso a notificaciones de Smart Edge</string>
 </resources>

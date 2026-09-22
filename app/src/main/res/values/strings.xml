@@ -303,4 +303,9 @@
     <string name="feature_extra_dim_status_ok">Direct toggle available</string>
     <string name="feature_extra_dim_status_missing">Without “Secure Settings” (or Shizuku/Root) the button opens the Extra Dim settings page</string>
     <string name="feature_extra_dim_status_unsupported">Not available: requires Android 12 or newer</string>
+
+    <!-- Manifest labels -->
+    <string name="label_support">Support</string>
+    <string name="label_select_icon_pack">Select Icon Pack</string>
+    <string name="label_notification_access">Smart Edge Notification Access</string>
 </resources>

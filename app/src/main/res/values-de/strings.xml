@@ -1,0 +1,311 @@
+<resources>
+    <string name="app_name">Smart Edge</string>
+    <string name="app_picker_title">Apps auswählen</string>
+    <string name="settings_title">Seitenleisten-Einstellungen</string>
+    <string name="shortcut_toggle_short">Seitenleiste</string>
+    <string name="shortcut_toggle_long">Seitenleiste ein/aus</string>
+    <string name="shortcut_screenshot">Bildschirmfoto aufnehmen</string>
+    <string name="shortcut_hub">Produktivitäts-Hub öffnen</string>
+    <string name="panel_running">Smart Edge ist aktiv</string>
+    <string name="panel_notification_channel">Smart-Edge-Dienst</string>
+    <string name="panel_notification_desc">Hält die Seitenleiste über allen Apps verfügbar</string>
+    <string name="start_panel">Panel starten</string>
+    <string name="stop_panel">Panel stoppen</string>
+    <string name="add_apps">Apps verwalten</string>
+    <string name="settings">Einstellungen</string>
+    <string name="grant_permission">Overlay-Berechtigung erteilen</string>
+    <string name="permission_rationale">Damit das Panel über anderen Apps angezeigt werden kann, erteile bitte die Berechtigung „Über anderen Apps einblenden“.</string>
+    <string name="remove_from_panel">Aus Panel entfernen</string>
+    <string name="add_to_panel">Zum Panel hinzugefügt</string>
+    <string name="search_apps">Apps suchen…</string>
+    <string name="panel_side_label">Panel-Seite</string>
+    <string name="panel_side_right">Rechts</string>
+    <string name="panel_side_left">Links</string>
+    <string name="auto_start_label">Beim Hochfahren starten</string>
+    <string name="done">Fertig</string>
+    <string name="open">Öffnen</string>
+    <string name="no_apps">Noch keine Apps hinzugefügt.\nTippe auf „Apps verwalten“, um welche hinzuzufügen.</string>
+    <string name="panel_tip">Rechten Bildschirmrand lange drücken, um das Panel zu öffnen</string>
+    <string name="accessibility_service_description">Erkennt System-Navigationsgesten, um das schwebende Panel automatisch zu schließen.</string>
+
+    <string name="section_appearance">Darstellung</string>
+    <string name="section_interaction">Bedienung</string>
+    <string name="section_handle">Griff &amp; Leiste</string>
+    <string name="section_icons_colors">Symbole &amp; Farben</string>
+    <string name="section_home_screen">Startbildschirm</string>
+    <string name="section_layout_tuning">Layout-Feinabstimmung</string>
+    <string name="section_general">Allgemein</string>
+    <string name="section_advanced_options">Erweiterte Optionen</string>
+
+    <string name="app_theme">App-Design</string>
+    <string name="theme_follow_system">Systemeinstellung</string>
+    <string name="ui_style_theme">Oberflächenstil</string>
+    <string name="theme_origin">OriginOS (Abgerundet)</string>
+    <string name="theme_hyperos">HyperOS (Glas)</string>
+    <string name="theme_realme">Realme UI</string>
+    <string name="theme_rich">Rich UI (Leuchten)</string>
+
+    <string name="blur_title">Glas-Unschärfe</string>
+    <string name="blur_desc">Kann auf einfachen Geräten ruckeln (nur Android 12+)</string>
+    <string name="blur_intensity">Unschärfe-Stärke</string>
+    <string name="invisible_bg">Unsichtbarer Hintergrund</string>
+    <string name="panel_columns">Panel-Spalten</string>
+    <string name="icon_shape">Symbolform</string>
+    <string name="icon_pack">Symbolpaket</string>
+    <string name="icon_pack_default">Systemstandard</string>
+    <string name="icon_scale">Symbolgröße</string>
+
+    <string name="custom_accent_title">Eigene Akzentfarbe verwenden</string>
+    <string name="accent_color">Akzentfarbe</string>
+    <string name="panel_bg_color">Panel-Hintergrund</string>
+    <string name="btn_reset_ui_colors">Farben zurücksetzen</string>
+
+    <string name="service_button_style">Stil der Dienst-Schaltfläche</string>
+    <string name="button_style_power">Modernes Power-Symbol</string>
+    <string name="button_style_logo">Klassisches Logo</string>
+
+    <string name="panel_opacity">Panel-Deckkraft</string>
+    <string name="corner_radius">Eckenradius</string>
+    <string name="sidebar_max_height">Max. Höhe der Seitenleiste</string>
+    <string name="picker_max_height">Max. Höhe des Bearbeitungspanels</string>
+
+    <string name="visible_pill">Sichtbarer Griff</string>
+    <string name="visible_pill_desc">Zeigt eine Markierung am Bildschirmrand an</string>
+    <string name="pill_color">Griff-Farbe</string>
+    <string name="pill_thickness">Griff-Stärke</string>
+    <string name="touch_area_width">Breite des Berührungsbereichs</string>
+    <string name="handle_height">Griff-Höhe</string>
+
+    <string name="edge_gestures">Wischgesten am Rand</string>
+    <string name="edge_sensitivity">Empfindlichkeit der Randgesten</string>
+    <string name="req_accessibility">Erfordert den Bedienungshilfen-Dienst</string>
+    <string name="tap_gestures">Tippgesten</string>
+    <string name="tap_gestures_desc">Aktionen für Tippen oder Halten des Griffs festlegen</string>
+    <string name="haptic_feedback">Haptisches Feedback</string>
+
+    <string name="edge_seek_title">Edge Seek (Wischen zum Regeln)</string>
+    <string name="edge_seek_desc">Bei geschlossenem Panel über den Griff wischen</string>
+    <string name="slide_brightness">Helligkeit per Wischen</string>
+    <string name="slide_volume">Lautstärke per Wischen</string>
+    <string name="seek_sensitivity">Wisch-Empfindlichkeit</string>
+
+    <string name="automation_title">Systemautomatisierung (Root/Shizuku)</string>
+    <string name="automation_desc">Systemaufrufe für Zurück, Startbildschirm und Übersicht verwenden</string>
+    <string name="fullscreen_protection">Vollbildschutz</string>
+    <string name="fullscreen_desc">Gesten in ausgewählten Apps verhindern</string>
+    <string name="game_mode">Spielmodus</string>
+    <string name="game_mode_desc">In ausgewählten Apps bewusstes Wischen erfordern</string>
+
+    <string name="main_hero_subtitle">Flexibles Kontrollzentrum</string>
+    <string name="main_service_title">Seitenleisten-Dienst</string>
+    <string name="main_service_stopped">Dienst ist gestoppt</string>
+    <string name="main_service_running">Dienst ist aktiv</string>
+    <string name="main_test_sidebar">Seitenleiste jetzt testen</string>
+
+    <string name="alert_battery_title">Stabilität verbessern</string>
+    <string name="alert_battery_desc">Nimm Smart Edge von der Akkuoptimierung aus, damit das System die App im Hintergrund nicht beendet.</string>
+    <string name="alert_battery_btn">Hintergrundnutzung erlauben</string>
+
+    <string name="alert_freeform_title">Multitasking-Modus</string>
+    <string name="alert_freeform_desc">Der Freiform-Fenstermodus ist in den Einstellungen aktiviert, aber in den Entwickleroptionen des Systems deaktiviert.</string>
+    <string name="alert_freeform_btn">In Einstellungen beheben</string>
+
+    <string name="alert_permission_title">Berechtigung erforderlich</string>
+    <string name="alert_permission_desc">Bitte erlaube „Über anderen Apps einblenden“, um die Seitenleiste zu nutzen.</string>
+    <string name="alert_permission_btn">Jetzt erteilen</string>
+
+    <string name="main_logs_title">Systemaktivitäts-Protokoll</string>
+    <string name="main_settings_btn">Erweiterte Einstellungen</string>
+    <string name="main_how_to_use">So funktioniert es</string>
+    <string name="main_tutorial_desc">Wische vom Bildschirmrand und halte kurz, um dein schwebendes Panel einzublenden. Wenn in den Einstellungen aktiviert, kannst du auch auf den Griff tippen.</string>
+    <string name="main_sideload_note">Falls die Berechtigung blockiert ist: Einstellungen → Apps → Eingeschränkte Einstellungen zulassen</string>
+
+    <string name="only_on_home">Nur auf dem Startbildschirm anzeigen</string>
+    <string name="only_on_home_desc">Griff und Gesten ausblenden, wenn nicht der Startbildschirm/Launcher geöffnet ist</string>
+    <string name="notch_gestures">Notch-Gesten</string>
+    <string name="enable_notch_gestures">Notch-Gesten aktivieren</string>
+    <string name="notch_gestures_desc">Tippgesten für den Bereich der Frontkamera-Aussparung hinzufügen</string>
+    <string name="notch_tap_gestures">Notch-Tippgesten</string>
+
+    <string name="action_flashlight">Taschenlampe</string>
+    <string name="action_camera">Kamera</string>
+    <string name="action_rotation">Automatisch drehen ein/aus</string>
+    <string name="action_fav_app">Lieblings-App öffnen</string>
+
+    <string name="indicator_flashlight_on">Taschenlampe AN</string>
+    <string name="indicator_flashlight_off">Taschenlampe AUS</string>
+    <string name="indicator_rotation_on">Automatisch drehen AN</string>
+    <string name="indicator_rotation_off">Automatisch drehen AUS</string>
+
+    <string name="status_service_active">Dienst ist aktiv</string>
+    <string name="status_automation_stopped">Automatisierung gestoppt</string>
+    <string name="apps_selected_singular">1 App ausgewählt</string>
+    <string name="apps_selected_plural">%d Apps ausgewählt</string>
+
+    <string name="misc_section_general">Allgemein</string>
+    <string name="misc_app_language">App-Sprache</string>
+    <string name="misc_section_backup">Sichern &amp; Wiederherstellen</string>
+    <string name="misc_export_title">Einstellungen exportieren</string>
+    <string name="misc_export_desc">Einrichtung im internen Speicher sichern</string>
+    <string name="misc_import_title">Einstellungen importieren</string>
+    <string name="misc_import_desc">Aus einer früheren JSON-Sicherung wiederherstellen</string>
+
+    <string name="dialog_reset_title">Alle Einstellungen zurücksetzen?</string>
+    <string name="dialog_reset_msg">Damit werden alle Einstellungen und die Apps deiner Seitenleiste auf die Standardwerte zurückgesetzt.</string>
+    <string name="btn_reset">Zurücksetzen</string>
+    <string name="toast_reset_success">Einstellungen zurückgesetzt</string>
+    <string name="toast_browser_error">Browser konnte nicht geöffnet werden</string>
+
+    <string name="manage_apps_desc">Festlegen, welche Apps in der Seitenleiste erscheinen</string>
+    <string name="view_repo_title">Repository ansehen</string>
+    <string name="view_repo_desc">Quellcode auf GitHub ansehen</string>
+    <string name="reset_defaults_desc">Alle Einstellungen auf Werkseinstellungen zurücksetzen</string>
+
+    <string name="search_settings_hint">Einstellungen durchsuchen…</string>
+    <string name="main_menu_appearance_desc">Dunkelmodus, Farben und Größe anpassen</string>
+    <string name="main_menu_interaction_desc">Gesten, Haptik, Seitenwahl</string>
+    <string name="main_menu_handle_desc">Größe und Position anpassen</string>
+    <string name="section_tools">Dashboard-Werkzeuge</string>
+    <string name="main_menu_tools_desc">Werkzeugbereich anpassen</string>
+    <string name="section_misc">Sonstiges</string>
+    <string name="main_menu_misc_desc">Sichern, Wiederherstellen und mehr</string>
+
+    <string name="tap_gestures_summary">Tippen: %1$s, 2×: %2$s, 3×: %3$s, Halten: %4$s</string>
+    <string name="apps_selected_none">0 Apps ausgewählt</string>
+
+    <string name="freeform_mode_standard">Standard (80%)</string>
+    <string name="freeform_mode_portrait">Hochformat (Schmal)</string>
+    <string name="freeform_mode_maximized">Maximiert</string>
+    <string name="freeform_mode_custom">Benutzerdefiniert (%1$d%% × %2$d%%)</string>
+
+    <string name="anim_feel_calm">Ruhig (Langsam)</string>
+    <string name="anim_feel_balanced">Ausgewogen (Standard)</string>
+    <string name="anim_feel_snappy">Zackig</string>
+    <string name="anim_feel_instant">Sofort</string>
+    <string name="anim_feel_disabled">Deaktiviert</string>
+
+    <string name="dialog_automation_title">Automatisierung nicht verfügbar</string>
+    <string name="dialog_automation_msg">Für diese Funktion ist Root oder Shizuku erforderlich. Bitte richte zuerst die „Systemautomatisierung“ ein.</string>
+    <string name="btn_setup">Einrichten</string>
+    <string name="loading_apps">Apps werden geladen…</string>
+    <string name="please_wait_apps">Bitte warten, die Apps werden geladen.</string>
+    <string name="hint_search_apps">Apps suchen…</string>
+    <string name="btn_save">Speichern</string>
+    <string name="dialog_window_size">Fenstergröße</string>
+    <string name="dialog_anim_feel">Animationsgefühl</string>
+
+    <string name="picker_title_hide">Apps auswählen, in denen die Seitenleiste ausgeblendet wird</string>
+    <string name="picker_title_game">Apps für den Spielmodus auswählen</string>
+    <string name="picker_title_favorite">Lieblings-App auswählen</string>
+
+    <string name="toast_fav_app_unset">Keine Lieblings-App festgelegt</string>
+    <string name="toast_app_not_found">App nicht gefunden</string>
+    <string name="toast_freeform_enabled">System-Freiformmodus aktiviert</string>
+    <string name="snackbar_freeform_disabled">Der System-Freiformmodus ist in den Entwickleroptionen deaktiviert</string>
+    <string name="btn_fix">BEHEBEN</string>
+
+    <string name="toast_shortcut_sent">Verknüpfung angefordert. Bitte prüfe deinen Startbildschirm.</string>
+    <string name="toast_launcher_no_shortcut">Der Launcher unterstützt keine angehefteten Verknüpfungen</string>
+    <string name="toast_shortcut_added">Verknüpfung zum Startbildschirm hinzugefügt</string>
+    <string name="label_toggle_sidebar">Seitenleiste ein/aus</string>
+
+    <string name="status_granted">Erteilt</string>
+    <string name="status_not_granted">Nicht erteilt</string>
+    <string name="label_native_gesture">Native Geste</string>
+
+    <string name="action_none">Deaktiviert</string>
+    <string name="action_launcher">Seitenleiste öffnen</string>
+    <string name="action_screenshot">Bildschirmfoto</string>
+    <string name="action_last_app">Letzte App</string>
+    <string name="action_back">Zurück</string>
+    <string name="action_home">Startbildschirm</string>
+    <string name="action_recents">Übersicht</string>
+    <string name="action_notifications">Benachrichtigungen</string>
+    <string name="action_quick_settings">Schnelleinstellungen</string>
+    <string name="action_lock_screen">Bildschirm sperren</string>
+    <string name="action_power_menu">Ein-/Aus-Menü</string>
+    <string name="action_move_handle">Griff verschieben (Ziehen)</string>
+
+    <!-- Interaction Settings: Panel Experience -->
+    <string name="section_panel_experience">Panel-Verhalten</string>
+    <string name="feature_landscape_label">Panel im Querformat anzeigen</string>
+    <string name="feature_landscape_desc">Seitenleiste auch öffnen lassen, wenn das Gerät im Querformat ist</string>
+    <string name="feature_notification_apps_label">Bereich „Apps mit Benachrichtigungen“</string>
+    <string name="feature_notification_apps_desc">Apps mit neuen Benachrichtigungen oben in einem eigenen Bereich anzeigen</string>
+    <string name="feature_remember_scroll_label">Scrollposition merken</string>
+    <string name="feature_remember_scroll_desc">Letzte Scrollposition beim erneuten Öffnen der Seitenleiste oder Auswahl wiederherstellen</string>
+    <string name="feature_auto_show_keyboard_label">Tastatur automatisch einblenden</string>
+    <string name="feature_auto_show_keyboard_desc">Beim Öffnen der App-Auswahl die Suchleiste fokussieren und die Tastatur einblenden</string>
+
+    <!-- Interaction Settings: System & Behavior -->
+    <string name="section_system_behavior">System &amp; Verhalten</string>
+    <string name="feature_auto_start_label">Beim Hochfahren starten</string>
+    <string name="feature_auto_start_desc">Den Seitenleisten-Dienst nach einem Neustart des Geräts automatisch starten</string>
+    <string name="feature_show_logs_label">Debug-Protokolle aktivieren</string>
+    <string name="feature_show_logs_desc">Interne Prozessprotokolle zur Fehlersuche im Panel anzeigen</string>
+
+    <string name="feature_anim_feel_label">Animationsgefühl</string>
+    <string name="feature_picker_gap_label">Abstand zur Auswahl</string>
+    <string name="feature_picker_gap_desc">Horizontaler Abstand zwischen Seitenleiste und App-Auswahl</string>
+
+    <!-- Interaction Settings: Desktop Shortcuts -->
+    <string name="section_desktop_shortcuts">Startbildschirm-Verknüpfungen</string>
+    <string name="feature_add_shortcut_label">Umschalt-Verknüpfung hinzufügen</string>
+    <string name="feature_add_shortcut_desc">Eine Verknüpfung auf dem Startbildschirm ablegen, um die Seitenleiste schnell ein- und auszuschalten</string>
+
+    <!-- Edge Features: Clipboard, Contacts, Extra Dim -->
+    <string name="action_extra_dim">Extra dimmen ein/aus</string>
+    <string name="edge_tool_clipboard">Zwischenablage</string>
+    <string name="edge_tool_contacts">Kontakte</string>
+    <string name="edge_tool_extra_dim">Extra dimmen</string>
+    <string name="edge_clipboard_title">Zwischenablage-Verlauf</string>
+    <string name="edge_clipboard_clear">Leeren</string>
+    <string name="edge_clipboard_empty">Noch nichts kopiert. Kopiere einen Text und öffne die Seitenleiste erneut.</string>
+    <string name="edge_clipboard_disabled">Der Zwischenablage-Verlauf ist ausgeschaltet. Aktiviere ihn unter Einstellungen → Dashboard-Werkzeuge.</string>
+    <string name="edge_clipboard_copied">In die Zwischenablage kopiert</string>
+    <string name="edge_clipboard_pin">Anheften</string>
+    <string name="edge_clipboard_delete">Löschen</string>
+    <string name="edge_contacts_title">Favoriten-Kontakte</string>
+    <string name="edge_contacts_manage">Bearbeiten</string>
+    <string name="edge_contacts_empty">Noch keine Favoriten-Kontakte. Tippe auf „Bearbeiten“, um welche hinzuzufügen.</string>
+    <string name="edge_contacts_call">Anrufen</string>
+    <string name="edge_contacts_sms">SMS senden</string>
+    <string name="edge_contacts_no_app">Keine App für diese Aktion gefunden</string>
+    <string name="edge_extra_dim_on">Extra dimmen: An</string>
+    <string name="edge_extra_dim_off">Extra dimmen: Aus</string>
+    <string name="edge_extra_dim_unsupported">Extra dimmen erfordert Android 12 oder neuer</string>
+    <string name="edge_extra_dim_settings_hint">Erteile „Sichere Einstellungen“, um Extra dimmen direkt umzuschalten</string>
+
+    <string name="section_edge_features">Edge-Funktionen</string>
+    <string name="feature_clipboard_label">Zwischenablage-Verlauf</string>
+    <string name="feature_clipboard_desc">Merkt sich kopierte Texte und zeigt sie in der Seitenleiste an. Wird nur auf diesem Gerät gespeichert; als vertraulich markierte Texte (z. B. Passwörter) werden übersprungen.</string>
+    <string name="feature_clipboard_hint">Ohne Shizuku/Root erlaubt Android das Lesen der Zwischenablage nur bei geöffneter Seitenleiste: Der zuletzt kopierte Text wird bei jedem Öffnen gespeichert.</string>
+    <string name="feature_clipboard_background">Erfassung im Hintergrund erlauben (Shizuku/Root)</string>
+    <string name="feature_clipboard_background_ok">Hintergrundzugriff auf die Zwischenablage erteilt</string>
+    <string name="feature_clipboard_background_failed">Zugriff konnte nicht erteilt werden. Shizuku oder Root ist erforderlich.</string>
+    <string name="feature_clipboard_clear_all">Zwischenablage-Verlauf löschen</string>
+    <string name="feature_clipboard_cleared">Zwischenablage-Verlauf gelöscht</string>
+    <string name="feature_contacts_label">Favoriten-Kontakte</string>
+    <string name="feature_contacts_desc">Deine Favoriten direkt aus der Seitenleiste anrufen oder per SMS anschreiben</string>
+    <string name="feature_contacts_add">Kontakt hinzufügen</string>
+    <string name="feature_contacts_import">Telefon-Favoriten importieren</string>
+    <string name="feature_contacts_imported">%1$d Kontakt(e) importiert</string>
+    <string name="feature_contacts_import_none">Keine neuen Favoriten mit Telefonnummer gefunden</string>
+    <string name="feature_contacts_already_added">Kontakt bereits vorhanden oder Liste voll</string>
+    <string name="feature_contacts_permission_denied">Berechtigung verweigert</string>
+    <string name="feature_contacts_remove">Entfernen</string>
+    <string name="feature_contacts_list_empty">Noch keine Kontakte hinzugefügt</string>
+    <string name="feature_direct_call_label">Direkt anrufen</string>
+    <string name="feature_direct_call_desc">Anrufe sofort starten statt die Telefon-App zu öffnen (erfordert Telefon-Berechtigung)</string>
+    <string name="feature_extra_dim_label">Schaltfläche „Extra dimmen“</string>
+    <string name="feature_extra_dim_desc">Die Bedienungshilfe „Extra dimmen“ aus der Seitenleiste umschalten (Android 12+)</string>
+    <string name="feature_extra_dim_grant">Sichere Einstellungen erteilen</string>
+    <string name="feature_extra_dim_status_ok">Direktes Umschalten verfügbar</string>
+    <string name="feature_extra_dim_status_missing">Ohne „Sichere Einstellungen“ (oder Shizuku/Root) öffnet die Schaltfläche die Einstellungsseite für Extra dimmen</string>
+    <string name="feature_extra_dim_status_unsupported">Nicht verfügbar: erfordert Android 12 oder neuer</string>
+
+    <!-- Manifest labels -->
+    <string name="label_support">Unterstützen</string>
+    <string name="label_select_icon_pack">Symbolpaket auswählen</string>
+    <string name="label_notification_access">Smart-Edge-Benachrichtigungszugriff</string>
+</resources>

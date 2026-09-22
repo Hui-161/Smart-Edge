@@ -1,0 +1,17 @@
+Smart Edge ist eine vielseitig anpassbare Android-Seitenleiste nach dem Vorbild von OriginOS. Mit einem Wisch vom Bildschirmrand erreichst du deine Lieblings-Apps, Werkzeuge und Verknüpfungen.
+
+Wichtige Funktionen:
+* Eigene Oberflächen-Designs: Wähle zwischen den Stilen OriginOS, HyperOS, Realme UI und Rich UI.
+* Produktivitäts-Hub: Eigener Bereich für aktive Benachrichtigungen mit sofortigem Start im Freiform-Fenster.
+* Ziehen zum Teilen: App-Symbole an den oberen oder unteren Bildschirmrand ziehen, um sie im geteilten Bildschirm zu öffnen.
+* Glas-Unschärfe: Hochwertige Echtzeit-Hintergrundunschärfe mit einstellbarer Stärke.
+* Material You: Volle Unterstützung für dynamische Akzentfarben und Material-3-Komponenten.
+* Intelligente App-Auswahl: Integrierte Suche und Verwaltung, um deine meistgenutzten Apps anzuheften.
+* Symbolpakete: Erweiterte Unterstützung für appfilter.xml und Symbolmasken für ein einheitliches Aussehen.
+* Werkzeuge: Integrierte Werkzeuge wie Bildschirmfoto, Lautstärke-/Helligkeitsregler und Ein-/Aus-Menü.
+* Edge-Funktionen: Zwischenablage-Verlauf, Favoriten-Kontakte zum Anrufen oder für SMS sowie „Extra dimmen“ direkt aus der Seitenleiste.
+* Systemautomatisierung: Erweiterte ADB-/Root-Integration, um Multitasking-Systemeinstellungen automatisch umzuschalten.
+* Hochwertige Animationen: Physikbasierte Federanimationen mit einstellbarem Verhalten.
+* Dynamische Layouts: Breite, maximale Höhe und Symbolgröße der Seitenleiste frei anpassbar.
+
+Smart Edge setzt auf Leistung und Sicherheit und nutzt modernes Kotlin und Material Design 3.

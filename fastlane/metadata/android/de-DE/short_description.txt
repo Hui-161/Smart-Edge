@@ -1,0 +1,1 @@
+Eine vielseitig anpassbare Android-Seitenleiste nach dem Vorbild von OriginOS.
