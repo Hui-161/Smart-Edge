@@ -129,8 +129,13 @@ class PanelTileService : TileService() {
 
     private fun startAction(intent: Intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // For Android 14+, use the official way to collapse and start activity
-            startActivityAndCollapse(intent)
+            // Android 14+: the Intent overload throws for apps targeting API 34, use a PendingIntent
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val pendingIntent = android.app.PendingIntent.getActivity(
+                this, 0, intent,
+                android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            startActivityAndCollapse(pendingIntent)
         } else {
             // Legacy collapse
             @Suppress("DEPRECATION")

@@ -90,16 +90,27 @@ class NotchHandleView @JvmOverloads constructor(
     }
 
     private var downTime = 0L
+    private var downRawY = 0f
+    private var swipedDown = false
+    private val swipeDownThreshold = 24 * resources.displayMetrics.density
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 downTime = System.currentTimeMillis()
+                downRawY = event.rawY
+                swipedDown = false
+                // A new finger-down continues a pending tap sequence (double/triple tap)
+                if (tapCount > 0) handler.removeCallbacks(tapRunnable)
                 handler.postDelayed(longPressRunnable, ViewConfiguration.getLongPressTimeout().toLong())
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 handler.removeCallbacks(longPressRunnable)
+                if (swipedDown) {
+                    swipedDown = false
+                    return true
+                }
                 if (event.action == MotionEvent.ACTION_UP) {
                     val duration = System.currentTimeMillis() - downTime
                     if (duration < ViewConfiguration.getLongPressTimeout()) {
@@ -118,6 +129,13 @@ class NotchHandleView @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
+                // The trigger covers the top of the status bar: keep pulling down the notification shade working
+                if (!swipedDown && event.rawY - downRawY > swipeDownThreshold) {
+                    swipedDown = true
+                    handler.removeCallbacks(longPressRunnable)
+                    ActionDispatcher.performAction(context, PanelPreferences.ACTION_NOTIFICATIONS, panelPrefs)
+                    return true
+                }
                 val dx = Math.abs(event.x - width / 2)
                 val dy = Math.abs(event.y - height / 2)
                 if (dx > width || dy > height) {

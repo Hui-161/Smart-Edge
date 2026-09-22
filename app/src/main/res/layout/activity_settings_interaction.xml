@@ -71,7 +71,26 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/panel_side_right" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSideBoth"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/panel_side_both" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <TextView
+                        android:id="@+id/tvSideBothHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-8dp"
+                        android:layout_marginBottom="12dp"
+                        android:text="@string/panel_side_both_desc"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp"
+                        android:visibility="gone" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/feature_gestures" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/edge_gestures" android:textColor="?attr/colorOnSurface" />
                     

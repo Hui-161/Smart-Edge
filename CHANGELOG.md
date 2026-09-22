@@ -7,6 +7,11 @@
 ---
 
 ### Unreleased
+- **feat(handle)**: Handles on the left, right or both edges; with both, sliding the right handle changes brightness and the left one volume. The sidebar opens on the edge you swipe from.
+- **fix(handle)**: Single tap opens the sidebar again by default; double/triple tap no longer fires the single-tap action when tapped slowly; single tap reacts immediately when no multi-tap action is set.
+- **fix(notch)**: Notch gestures work again: the trigger is an accessibility overlay above the status bar, sized to the camera cutout; swiping down on it still opens the notifications.
+- **fix(panel)**: Tapping the background while the app drawer is open closes the whole sidebar.
+- **fix(tile)**: Quick Settings tile no longer crashes on Android 14 when it opens the app.
 - **feat(edge)**: Edge menu pages (Apps → Contacts → Tools): swipe inwards on the open sidebar to switch, page dots at the bottom, last page is remembered. Pages and tools are configurable in Dashboard Tools settings.
 - **feat(edge)**: Saved texts (e.g. IBAN, phone number) at the top of the clipboard list, copied as sensitive clip.
 - **feat(build)**: Commit-based versionCode/versionName and a fixed dev signing key (CI secret) so test APKs install as updates.

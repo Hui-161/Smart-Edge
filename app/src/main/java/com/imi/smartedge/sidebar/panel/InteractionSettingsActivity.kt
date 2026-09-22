@@ -61,11 +61,12 @@ class InteractionSettingsActivity : AppCompatActivity() {
         updateSecureSettingsUI()
         
         // 1. MAIN TRIGGER & GESTURES
-        if (panelPrefs.panelSide == PanelPreferences.SIDE_LEFT) {
-            binding.togglePanelSide.check(R.id.btnSideLeft)
-        } else {
-            binding.togglePanelSide.check(R.id.btnSideRight)
+        when {
+            panelPrefs.handleBothSides -> binding.togglePanelSide.check(R.id.btnSideBoth)
+            panelPrefs.panelSide == PanelPreferences.SIDE_LEFT -> binding.togglePanelSide.check(R.id.btnSideLeft)
+            else -> binding.togglePanelSide.check(R.id.btnSideRight)
         }
+        binding.tvSideBothHint.visibility = if (panelPrefs.handleBothSides) View.VISIBLE else View.GONE
 
         binding.featureGestures.isChecked = panelPrefs.gesturesEnabled
         binding.featureOnlyOnHome.isChecked = panelPrefs.onlyOnHome
@@ -149,8 +150,13 @@ class InteractionSettingsActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.togglePanelSide.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
-                panelPrefs.panelSide = if (checkedId == R.id.btnSideLeft)
-                    PanelPreferences.SIDE_LEFT else PanelPreferences.SIDE_RIGHT
+                val both = checkedId == R.id.btnSideBoth
+                panelPrefs.handleBothSides = both
+                if (!both) {
+                    panelPrefs.panelSide = if (checkedId == R.id.btnSideLeft)
+                        PanelPreferences.SIDE_LEFT else PanelPreferences.SIDE_RIGHT
+                }
+                binding.tvSideBothHint.visibility = if (both) View.VISIBLE else View.GONE
                 applyOnly()
             }
         }

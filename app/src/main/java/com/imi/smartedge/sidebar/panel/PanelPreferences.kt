@@ -59,6 +59,7 @@ class PanelPreferences(context: Context) {
         private const val KEY_SHOW_CONTACTS_BUTTON = "show_contacts_button"
         private const val KEY_SHOW_EXTRA_DIM_BUTTON = "show_extra_dim_button"
         private const val KEY_CONTACTS_PAGE_ENABLED = "contacts_page_enabled"
+        private const val KEY_HANDLE_BOTH_SIDES = "handle_both_sides"
         private const val KEY_TOOLS_PAGE_ENABLED = "tools_page_enabled"
         private const val KEY_LAST_PANEL_PAGE = "last_panel_page"
         private const val KEY_TOOLS_PAGE_ITEMS = "tools_page_items"
@@ -287,6 +288,7 @@ class PanelPreferences(context: Context) {
             KEY_SHOW_CONTACTS_BUTTON to showContactsButton,
             KEY_SHOW_EXTRA_DIM_BUTTON to showExtraDimButton,
             KEY_CONTACTS_PAGE_ENABLED to contactsPageEnabled,
+            KEY_HANDLE_BOTH_SIDES to handleBothSides,
             KEY_TOOLS_PAGE_ENABLED to toolsPageEnabled
         )
         bools.forEach { (k, v) -> obj.put(k, v) }
@@ -349,6 +351,7 @@ class PanelPreferences(context: Context) {
                 if (obj.has(KEY_CLIPBOARD_HISTORY_ENABLED)) putBoolean(KEY_CLIPBOARD_HISTORY_ENABLED, obj.getBoolean(KEY_CLIPBOARD_HISTORY_ENABLED))
                 if (obj.has(KEY_SHOW_CONTACTS_BUTTON)) putBoolean(KEY_SHOW_CONTACTS_BUTTON, obj.getBoolean(KEY_SHOW_CONTACTS_BUTTON))
                 if (obj.has(KEY_SHOW_EXTRA_DIM_BUTTON)) putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, obj.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON))
+                if (obj.has(KEY_HANDLE_BOTH_SIDES)) putBoolean(KEY_HANDLE_BOTH_SIDES, obj.getBoolean(KEY_HANDLE_BOTH_SIDES))
                 if (obj.has(KEY_CONTACTS_PAGE_ENABLED)) putBoolean(KEY_CONTACTS_PAGE_ENABLED, obj.getBoolean(KEY_CONTACTS_PAGE_ENABLED))
                 if (obj.has(KEY_TOOLS_PAGE_ENABLED)) putBoolean(KEY_TOOLS_PAGE_ENABLED, obj.getBoolean(KEY_TOOLS_PAGE_ENABLED))
                 if (obj.has(KEY_TOOLS_PAGE_ITEMS)) putString(KEY_TOOLS_PAGE_ITEMS, obj.getString(KEY_TOOLS_PAGE_ITEMS))
@@ -534,6 +537,11 @@ class PanelPreferences(context: Context) {
         get() = prefs.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, false)
         set(value) = prefs.edit { putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, value) }
 
+    /** Show a handle on both screen edges (right = brightness slide, left = volume slide). */
+    var handleBothSides: Boolean
+        get() = prefs.getBoolean(KEY_HANDLE_BOTH_SIDES, false)
+        set(value) = prefs.edit { putBoolean(KEY_HANDLE_BOTH_SIDES, value) }
+
     var contactsPageEnabled: Boolean
         get() = prefs.getBoolean(KEY_CONTACTS_PAGE_ENABLED, true)
         set(value) = prefs.edit { putBoolean(KEY_CONTACTS_PAGE_ENABLED, value) }
@@ -610,15 +618,15 @@ class PanelPreferences(context: Context) {
         set(value) = prefs.edit { putBoolean(KEY_TRIPLE_TAP_TO_OPEN, value) }
 
     var tapAction: Int
-        get() = prefs.getInt(KEY_TAP_ACTION, ACTION_NONE)
+        get() = prefs.getInt(KEY_TAP_ACTION, if (tapToOpen) ACTION_OPEN_LAUNCHER else ACTION_NONE)
         set(value) = prefs.edit { putInt(KEY_TAP_ACTION, value) }
 
     var doubleTapAction: Int
-        get() = prefs.getInt(KEY_DOUBLE_TAP_ACTION, ACTION_NONE)
+        get() = prefs.getInt(KEY_DOUBLE_TAP_ACTION, if (doubleTapToOpen) ACTION_OPEN_LAUNCHER else ACTION_NONE)
         set(value) = prefs.edit { putInt(KEY_DOUBLE_TAP_ACTION, value) }
 
     var tripleTapAction: Int
-        get() = prefs.getInt(KEY_TRIPLE_TAP_ACTION, ACTION_NONE)
+        get() = prefs.getInt(KEY_TRIPLE_TAP_ACTION, if (tripleTapToOpen) ACTION_OPEN_LAUNCHER else ACTION_NONE)
         set(value) = prefs.edit { putInt(KEY_TRIPLE_TAP_ACTION, value) }
 
     var longPressAction: Int
@@ -758,7 +766,7 @@ class PanelPreferences(context: Context) {
         set(value) = prefs.edit { putBoolean(KEY_NOTCH_GESTURES_ENABLED, value) }
 
     var notchTapAction: Int
-        get() = prefs.getInt(KEY_NOTCH_TAP_ACTION, ACTION_NONE)
+        get() = prefs.getInt(KEY_NOTCH_TAP_ACTION, ACTION_OPEN_LAUNCHER)
         set(value) = prefs.edit { putInt(KEY_NOTCH_TAP_ACTION, value) }
 
     var notchDoubleTapAction: Int

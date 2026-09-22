@@ -334,4 +334,8 @@
     <string name="feature_snippets_edit">Edit Text</string>
     <string name="feature_snippets_label_hint">Label (e.g. IBAN)</string>
     <string name="feature_snippets_text_hint">Text to copy</string>
+
+    <!-- Handles on both edges -->
+    <string name="panel_side_both">Both</string>
+    <string name="panel_side_both_desc">A handle on each edge: slide on the right handle to change brightness, on the left handle to change volume. The sidebar opens on the side you swipe from.</string>
 </resources>

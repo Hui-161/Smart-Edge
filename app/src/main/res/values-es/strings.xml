@@ -308,4 +308,8 @@
     <string name="feature_snippets_edit">Editar texto</string>
     <string name="feature_snippets_label_hint">Etiqueta (p. ej. IBAN)</string>
     <string name="feature_snippets_text_hint">Texto para copiar</string>
+
+    <!-- Handles on both edges -->
+    <string name="panel_side_both">Ambos</string>
+    <string name="panel_side_both_desc">Un tirador en cada borde: desliza en el derecho para el brillo y en el izquierdo para el volumen. La barra se abre en el lado desde el que deslizas.</string>
 </resources>

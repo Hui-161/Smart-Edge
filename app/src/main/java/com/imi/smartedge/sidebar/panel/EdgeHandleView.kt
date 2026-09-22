@@ -26,6 +26,21 @@ class EdgeHandleView @JvmOverloads constructor(
     var onAdjustBrightness: ((delta: Int) -> Unit)? = null
     var onAdjustVolume: ((delta: Int) -> Unit)? = null
     var onSideChanged: ((newSide: String) -> Unit)? = null
+    /** Called after the handle was dragged to a new vertical position. */
+    var onPositionChanged: (() -> Unit)? = null
+
+    /** False when handles are shown on both edges: each handle then keeps its side. */
+    var allowSideFlip: Boolean = true
+
+    /** What sliding up/down on the handle controls (see SEEK_* constants). */
+    var seekTarget: Int = SEEK_AUTO
+
+    companion object {
+        /** Both enabled: top half = volume, bottom half = brightness (single handle). */
+        const val SEEK_AUTO = 0
+        const val SEEK_BRIGHTNESS = 1
+        const val SEEK_VOLUME = 2
+    }
     
     var isRightSide: Boolean = true
         set(value) {
@@ -80,6 +95,7 @@ class EdgeHandleView @JvmOverloads constructor(
 
     /** Long-press runnable: performs action */
     private val longPressRunnable = Runnable {
+        tapCount = 0 // A hold ends any pending tap sequence
         if (panelPrefs.longPressAction != PanelPreferences.ACTION_NONE) {
             performAction(panelPrefs.longPressAction)
             isTriggered = true
@@ -156,8 +172,18 @@ class EdgeHandleView @JvmOverloads constructor(
         onTrigger?.invoke()
     }
 
-    private fun handleTap() {        tapCount++
+    private fun handleTap() {
+        tapCount++
         handler.removeCallbacks(tapRunnable)
+
+        // Without double/triple tap actions there is nothing to wait for: react immediately
+        if (tapCount == 1 &&
+            panelPrefs.doubleTapAction == PanelPreferences.ACTION_NONE &&
+            panelPrefs.tripleTapAction == PanelPreferences.ACTION_NONE) {
+            tapCount = 0
+            performAction(panelPrefs.tapAction)
+            return
+        }
 
         // If user reached triple tap, trigger immediately if configured
         if (tapCount >= 3) {
@@ -333,6 +359,10 @@ class EdgeHandleView @JvmOverloads constructor(
                 isTriggered = false
                 isDragMode = false
 
+                // A new finger-down within the double-tap window continues the tap sequence:
+                // wait for this touch to end instead of firing the shorter action now.
+                if (tapCount > 0) handler.removeCallbacks(tapRunnable)
+
                 // Schedule long-press → perform action
                 handler.postDelayed(longPressRunnable, ViewConfiguration.getLongPressTimeout().toLong())
 
@@ -380,7 +410,9 @@ class EdgeHandleView @JvmOverloads constructor(
                     val leftThreshold = screenW * 0.35f
                     val rightThreshold = screenW * 0.65f
                     
-                    if (isRightSide && event.rawX < leftThreshold) {
+                    if (!allowSideFlip) {
+                        // Both edges have their own handle: only move vertically
+                    } else if (isRightSide && event.rawX < leftThreshold) {
                         flipSide(PanelPreferences.SIDE_LEFT)
                         // Reset drag start X when flipping to prevent immediate flip back
                         dragStartRawX = event.rawX 
@@ -392,7 +424,11 @@ class EdgeHandleView @JvmOverloads constructor(
                 }
 
                 // ── Slide Seek Gesture (Volume/Brightness) ────────────────────
-                val slideEnabled = panelPrefs.slideBrightnessEnabled || panelPrefs.slideVolumeEnabled
+                val slideEnabled = when (seekTarget) {
+                    SEEK_BRIGHTNESS -> panelPrefs.slideBrightnessEnabled
+                    SEEK_VOLUME -> panelPrefs.slideVolumeEnabled
+                    else -> panelPrefs.slideBrightnessEnabled || panelPrefs.slideVolumeEnabled
+                }
                 if (slideEnabled && !hasPassedThreshold && !isTriggered) {
                     val absDx = Math.abs(event.rawX - startX)
                     val absDyFromStart = Math.abs(currentY - startY)
@@ -403,6 +439,8 @@ class EdgeHandleView @JvmOverloads constructor(
                         val brightnessOn = panelPrefs.slideBrightnessEnabled
                         
                         isSlidingVolume = when {
+                            seekTarget == SEEK_VOLUME -> true
+                            seekTarget == SEEK_BRIGHTNESS -> false
                             volumeOn && brightnessOn -> isTopHalf 
                             volumeOn -> true
                             else -> false
@@ -512,11 +550,18 @@ class EdgeHandleView @JvmOverloads constructor(
                     isTriggered = true
                 }
 
+                var wasTap = false
                 if (!hasPassedThreshold && !isTriggered && !isSlidingSeek && event.action == MotionEvent.ACTION_UP) {
                     val duration = System.currentTimeMillis() - downTime
                     if (duration < ViewConfiguration.getLongPressTimeout()) {
+                        wasTap = true
                         handleTap()
                     }
+                }
+                if (!wasTap && tapCount > 0) {
+                    // Sequence interrupted by a swipe/hold: finish it with the taps counted so far
+                    handler.removeCallbacks(tapRunnable)
+                    handler.post(tapRunnable)
                 }
 
                 isSlidingSeek = false
@@ -557,10 +602,11 @@ class EdgeHandleView @JvmOverloads constructor(
         panelPrefs.handleVerticalOffset = offsetDp
 
         val newSide = if (isRightSide) PanelPreferences.SIDE_RIGHT else PanelPreferences.SIDE_LEFT
-        if (panelPrefs.panelSide != newSide) {
+        if (allowSideFlip && panelPrefs.panelSide != newSide) {
             panelPrefs.panelSide = newSide
             onSideChanged?.invoke(newSide)
         }
+        onPositionChanged?.invoke()
     }
 
     private fun vibrateHaptic(durationMs: Long = 25) {
@@ -583,7 +629,7 @@ class EdgeHandleView @JvmOverloads constructor(
 
     fun updateFromPrefs() {
         val prefs = PanelPreferences(context)
-        isRightSide = prefs.panelSide == PanelPreferences.SIDE_RIGHT
+        if (allowSideFlip) isRightSide = prefs.panelSide == PanelPreferences.SIDE_RIGHT
         showPill = prefs.showPill
         
         if (!isTempHighAlpha) {

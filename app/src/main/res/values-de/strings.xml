@@ -334,4 +334,8 @@
     <string name="feature_snippets_edit">Text bearbeiten</string>
     <string name="feature_snippets_label_hint">Bezeichnung (z. B. IBAN)</string>
     <string name="feature_snippets_text_hint">Text zum Kopieren</string>
+
+    <!-- Handles on both edges -->
+    <string name="panel_side_both">Beide</string>
+    <string name="panel_side_both_desc">Ein Griff an jedem Rand: Schieben am rechten Griff regelt die Helligkeit, am linken die Lautstärke. Die Seitenleiste öffnet sich auf der Seite, von der du wischst.</string>
 </resources>

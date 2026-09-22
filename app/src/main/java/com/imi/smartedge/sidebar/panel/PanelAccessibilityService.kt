@@ -60,6 +60,7 @@ class PanelAccessibilityService : AccessibilityService() {
         const val ACTION_NOTIFICATIONS = "com.imi.smartedge.sidebar.panel.ACTION_NOTIFICATIONS"
         const val ACTION_QUICK_SETTINGS = "com.imi.smartedge.sidebar.panel.ACTION_QUICK_SETTINGS"
         const val ACTION_LOCK_SCREEN = "com.imi.smartedge.sidebar.panel.ACTION_LOCK_SCREEN"
+        const val ACTION_REFRESH_NOTCH = "com.imi.smartedge.sidebar.panel.ACTION_REFRESH_NOTCH"
         
         const val EXTRA_PKG = "pkg"
         const val EXTRA_MODE = "mode"
@@ -72,6 +73,106 @@ class PanelAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         isRunning = true
+        updateNotchTrigger()
+    }
+
+    // ── Notch trigger ─────────────────────────────────────────────────────────
+    // Regular overlays (TYPE_APPLICATION_OVERLAY) sit below the status bar and never receive
+    // touches at the camera cutout. An accessibility overlay is placed above it.
+
+    private var notchView: NotchHandleView? = null
+
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateNotchTrigger()
+    }
+
+    private fun updateNotchTrigger() {
+        val wm = getSystemService(WINDOW_SERVICE) as android.view.WindowManager
+        val isLandscape = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+        val shouldShow = panelPrefs.serviceEnabled && panelPrefs.notchGesturesEnabled && !isLandscape
+        if (!shouldShow) {
+            removeNotchTrigger()
+            return
+        }
+
+        val area = notchArea(wm)
+        val params = android.view.WindowManager.LayoutParams(
+            area.width(),
+            area.height(),
+            android.view.WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+            android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            android.graphics.PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = android.view.Gravity.TOP or android.view.Gravity.START
+            x = area.left
+            y = area.top
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+            } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            }
+        }
+
+        try {
+            val existing = notchView
+            if (existing != null && existing.isAttachedToWindow) {
+                wm.updateViewLayout(existing, params)
+            } else {
+                val view = NotchHandleView(this)
+                notchView = view
+                wm.addView(view, params)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to show notch trigger", e)
+            notchView = null
+        }
+    }
+
+    private fun removeNotchTrigger() {
+        val view = notchView ?: return
+        notchView = null
+        try {
+            (getSystemService(WINDOW_SERVICE) as android.view.WindowManager).removeView(view)
+        } catch (e: Exception) {}
+    }
+
+    /** Screen area of the top camera cutout plus some padding, or a top-center fallback area. */
+    private fun notchArea(wm: android.view.WindowManager): android.graphics.Rect {
+        val density = resources.displayMetrics.density
+        val screenWidth = resources.displayMetrics.widthPixels
+        val pad = (12 * density).toInt()
+        val minHeight = (28 * density).toInt()
+
+        val cutoutRects: List<android.graphics.Rect> = try {
+            when {
+                android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R ->
+                    wm.currentWindowMetrics.windowInsets.displayCutout?.boundingRects
+                android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q ->
+                    @Suppress("DEPRECATION") wm.defaultDisplay.cutout?.boundingRects
+                else -> null
+            } ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        val top = cutoutRects.filter { it.top <= 0 || it.top < minHeight }.minByOrNull {
+            Math.abs(it.centerX() - screenWidth / 2)
+        }
+        if (top != null && top.width() > 0) {
+            return android.graphics.Rect(
+                (top.left - pad).coerceAtLeast(0),
+                0,
+                (top.right + pad).coerceAtMost(screenWidth),
+                maxOf(top.bottom + pad / 2, minHeight)
+            )
+        }
+        // No cutout reported: centered strip at the top of the status bar
+        val width = (110 * density).toInt()
+        return android.graphics.Rect((screenWidth - width) / 2, 0, (screenWidth + width) / 2, minHeight)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -108,6 +209,7 @@ class PanelAccessibilityService : AccessibilityService() {
                     performGlobalAction(GLOBAL_ACTION_RECENTS)
                 }, 200)
             }
+            ACTION_REFRESH_NOTCH -> updateNotchTrigger()
             ACTION_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             ACTION_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
             ACTION_RECENTS -> performGlobalAction(GLOBAL_ACTION_RECENTS)
@@ -214,6 +316,7 @@ class PanelAccessibilityService : AccessibilityService() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         isRunning = false
+        removeNotchTrigger()
         val stopIntent = Intent(this, FloatingPanelService::class.java).apply {
             action = FloatingPanelService.ACTION_STOP
         }
