@@ -133,7 +133,7 @@
                             android:id="@+id/tvColumnsValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1 Column"
+                            android:text="@string/ui_appearance_one_column"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -176,7 +176,7 @@
                             android:id="@+id/tvIconShapeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Squircle"
+                            android:text="@string/ui_settings_shape_squircle"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp" />
                     </LinearLayout>

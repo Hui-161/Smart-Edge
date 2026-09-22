@@ -16,7 +16,7 @@
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:navigationIconTint="?attr/colorOnSurface"
-            app:title="Support SidePanel"
+            app:title="@string/ui_support_title"
             app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -53,7 +53,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Support Development"
+                android:text="@string/ui_support_development"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -62,7 +62,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SidePanel is 100% free &amp; open-source. Your support helps keep the project alive!"
+                android:text="@string/ui_support_intro"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="14sp"
                 android:layout_marginTop="8dp"
@@ -72,7 +72,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="MOBILE BANKING (BD)"
+                android:text="@string/ui_support_mobile_banking"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -165,7 +165,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="BINANCE / CRYPTO"
+                android:text="@string/ui_support_binance_crypto"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -194,7 +194,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Binance ID"
+                            android:text="@string/ui_support_binance_id"
                             android:textSize="12sp"
                             android:textColor="?attr/colorOnSurfaceVariant" />
                         <TextView
@@ -346,7 +346,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap any item to copy it."
+                android:text="@string/ui_support_tap_to_copy"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12sp"
                 android:layout_marginBottom="24dp" />

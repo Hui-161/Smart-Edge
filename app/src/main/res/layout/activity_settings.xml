@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Interaction"
+            android:text="@string/section_interaction"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:textStyle="bold"
@@ -37,35 +37,35 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Screen Side" android:textColor="@color/text_primary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ui_settings_screen_side" android:textColor="@color/text_primary" />
                 <RadioGroup
                     android:id="@+id/rgPanelSide"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="8dp">
-                    <RadioButton android:id="@+id/rbRight" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Right Side" android:textColor="@color/text_secondary" android:buttonTint="@color/accent_blue" />
-                    <RadioButton android:id="@+id/rbLeft" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Left Side" android:textColor="@color/text_secondary" android:buttonTint="@color/accent_blue" />
+                    <RadioButton android:id="@+id/rbRight" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_right_side" android:textColor="@color/text_secondary" android:buttonTint="@color/accent_blue" />
+                    <RadioButton android:id="@+id/rbLeft" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_left_side" android:textColor="@color/text_secondary" android:buttonTint="@color/accent_blue" />
                 </RadioGroup>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" android:layout_marginVertical="16dp" />
 
-                <Switch android:id="@+id/switchGestures" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Edge Swipe Gestures" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
+                <Switch android:id="@+id/switchGestures" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/edge_gestures" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
                 
                 <Button
                     android:id="@+id/btnAccessibility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Enable Gesture Auto-Close (Accessibility)"
+                    android:text="@string/ui_settings_gesture_auto_close_a11y"
                     android:textAllCaps="false"
                     android:backgroundTint="#1AFFFFFF"
                     android:textColor="@color/accent_blue"
                     app:cornerRadius="12dp" />
 
-                <Switch android:id="@+id/switchTapOpen" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Tap Pill to Open" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
-                <Switch android:id="@+id/switchAutoStart" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Auto-start on Boot" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
-                <Switch android:id="@+id/switchHaptic" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Haptic Feedback" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
+                <Switch android:id="@+id/switchTapOpen" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="@string/ui_settings_tap_pill_to_open" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
+                <Switch android:id="@+id/switchAutoStart" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="@string/feature_auto_start_label" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
+                <Switch android:id="@+id/switchHaptic" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="@string/haptic_feedback" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -74,7 +74,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Appearance"
+            android:text="@string/section_appearance"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:textStyle="bold"
@@ -96,41 +96,41 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="UI Style Theme" android:textColor="@color/text_primary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ui_style_theme" android:textColor="@color/text_primary" />
                 <RadioGroup android:id="@+id/rgThemes" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
-                    <RadioButton android:id="@+id/rbThemeOrigin" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="OriginOS (Rounded)" android:textColor="@color/text_secondary" />
-                    <RadioButton android:id="@+id/rbThemeHyper" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="HyperOS (Glass)" android:textColor="@color/text_secondary" />
-                    <RadioButton android:id="@+id/rbThemeRealme" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Realme UI" android:textColor="@color/text_secondary" />
-                    <RadioButton android:id="@+id/rbThemeRich" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Rich UI (Glow)" android:textColor="@color/text_secondary" />
+                    <RadioButton android:id="@+id/rbThemeOrigin" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/theme_origin" android:textColor="@color/text_secondary" />
+                    <RadioButton android:id="@+id/rbThemeHyper" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/theme_hyperos" android:textColor="@color/text_secondary" />
+                    <RadioButton android:id="@+id/rbThemeRealme" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/theme_realme" android:textColor="@color/text_secondary" />
+                    <RadioButton android:id="@+id/rbThemeRich" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/theme_rich" android:textColor="@color/text_secondary" />
                 </RadioGroup>
 
-                <Switch android:id="@+id/switchBlur" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Glassmorphic Blur" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="May cause lag on budget devices (Android 12+ only)" android:textColor="@color/text_tertiary" android:textSize="11sp" android:layout_marginStart="4dp" />
+                <Switch android:id="@+id/switchBlur" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/blur_title" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/blur_desc" android:textColor="@color/text_tertiary" android:textSize="11sp" android:layout_marginStart="4dp" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" android:layout_marginVertical="16dp" />
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Icon Shape" android:textColor="@color/text_primary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_shape" android:textColor="@color/text_primary" />
                 <RadioGroup android:id="@+id/rgIconShape" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="8dp">
-                    <RadioButton android:id="@+id/rbShapeCircle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Circle" android:textColor="@color/text_secondary" />
-                    <RadioButton android:id="@+id/rbShapeSquircle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Squircle" android:textColor="@color/text_secondary" />
-                    <RadioButton android:id="@+id/rbShapeSquare" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Square" android:textColor="@color/text_secondary" />
+                    <RadioButton android:id="@+id/rbShapeCircle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_shape_circle" android:textColor="@color/text_secondary" />
+                    <RadioButton android:id="@+id/rbShapeSquircle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_shape_squircle" android:textColor="@color/text_secondary" />
+                    <RadioButton android:id="@+id/rbShapeSquare" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_shape_square" android:textColor="@color/text_secondary" />
                 </RadioGroup>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" android:layout_marginVertical="16dp" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Icon Pack" android:textColor="@color/text_primary" />
-                        <TextView android:id="@+id/tvCurrentIconPack" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="System Default" android:textColor="@color/text_tertiary" android:textSize="12sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_pack" android:textColor="@color/text_primary" />
+                        <TextView android:id="@+id/tvCurrentIconPack" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_pack_default" android:textColor="@color/text_tertiary" android:textSize="12sp" />
                     </LinearLayout>
-                    <Button android:id="@+id/btnSelectIconPack" android:layout_width="wrap_content" android:layout_height="36dp" android:text="Change" android:textSize="12sp" android:backgroundTint="#1AFFFFFF" android:textAllCaps="false" app:cornerRadius="8dp" />
+                    <Button android:id="@+id/btnSelectIconPack" android:layout_width="wrap_content" android:layout_height="36dp" android:text="@string/ui_settings_change" android:textSize="12sp" android:backgroundTint="#1AFFFFFF" android:textAllCaps="false" app:cornerRadius="8dp" />
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF" android:layout_marginVertical="16dp" />
 
                 <!-- Panel Opacity Slider -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Panel Opacity" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/panel_opacity" android:textColor="@color/text_secondary" android:textSize="12sp" />
                     <TextView android:id="@+id/tvOpacityValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="100%" android:textColor="@color/accent_blue" android:textSize="12sp" android:textStyle="bold" />
                 </LinearLayout>
                 <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
@@ -141,7 +141,7 @@
 
                 <!-- Corner Radius Slider -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="12dp" android:layout_marginBottom="4dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Corner Radius" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/corner_radius" android:textColor="@color/text_secondary" android:textSize="12sp" />
                     <TextView android:id="@+id/tvRadiusValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28dp" android:textColor="@color/accent_blue" android:textSize="12sp" android:textStyle="bold" />
                 </LinearLayout>
                 <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
@@ -157,7 +157,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Handle &amp; Pill"
+            android:text="@string/ui_settings_handle_pill"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:textStyle="bold"
@@ -179,11 +179,11 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <Switch android:id="@+id/switchShowPill" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Visible Pill Handle" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
+                <Switch android:id="@+id/switchShowPill" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/visible_pill" android:textColor="@color/text_primary" android:thumbTint="@color/accent_blue" />
 
                 <!-- Handle Height -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="16dp" android:layout_marginBottom="4dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Handle Height" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/handle_height" android:textColor="@color/text_secondary" android:textSize="12sp" />
                     <TextView android:id="@+id/tvHeightValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="80dp" android:textColor="@color/accent_blue" android:textSize="12sp" android:textStyle="bold" />
                 </LinearLayout>
                 <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
@@ -194,7 +194,7 @@
 
                 <!-- Trigger Width -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="12dp" android:layout_marginBottom="4dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Trigger Area Width" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_trigger_area_width" android:textColor="@color/text_secondary" android:textSize="12sp" />
                     <TextView android:id="@+id/tvWidthValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24dp" android:textColor="@color/accent_blue" android:textSize="12sp" android:textStyle="bold" />
                 </LinearLayout>
                 <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
@@ -205,7 +205,7 @@
 
                 <!-- Handle Offset -->
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="12dp" android:layout_marginBottom="4dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Vertical Position" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_vertical_position" android:textColor="@color/text_secondary" android:textSize="12sp" />
                     <TextView android:id="@+id/tvOffsetValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0dp" android:textColor="@color/accent_blue" android:textSize="12sp" android:textStyle="bold" />
                 </LinearLayout>
                 <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
@@ -233,15 +233,15 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView android:id="@+id/tvSupportStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Support &amp; Customization" android:textColor="#FFFFFF" android:textStyle="bold" />
+                <TextView android:id="@+id/tvSupportStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ui_settings_support_customization" android:textColor="#FFFFFF" android:textStyle="bold" />
                 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" android:layout_marginVertical="12dp" />
 
                 <!-- Master Toggle for Custom Accent -->
-                <Switch android:id="@+id/switchUseCustomAccent" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Use Custom Accent Color" android:textColor="#FFFFFF" android:thumbTint="#FFFFFF" android:layout_marginBottom="16dp" />
+                <Switch android:id="@+id/switchUseCustomAccent" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/custom_accent_title" android:textColor="#FFFFFF" android:thumbTint="#FFFFFF" android:layout_marginBottom="16dp" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Accent Color" android:textColor="#FFFFFF" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/accent_color" android:textColor="#FFFFFF" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPickAccent"
                         android:layout_width="44dp"
@@ -263,7 +263,7 @@
                 </LinearLayout>
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Panel Background" android:textColor="#FFFFFF" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/panel_bg_color" android:textColor="#FFFFFF" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPickBg"
                         android:layout_width="44dp"
@@ -286,8 +286,8 @@
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" android:layout_marginVertical="16dp" />
 
-                <Switch android:id="@+id/switchTools" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Tools Section" android:textColor="#FFFFFF" android:thumbTint="#FFFFFF" />
-                <Switch android:id="@+id/switchHideBg" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="Invisible Background" android:textColor="#FFFFFF" android:thumbTint="#FFFFFF" />
+                <Switch android:id="@+id/switchTools" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ui_settings_show_tools_section" android:textColor="#FFFFFF" android:thumbTint="#FFFFFF" />
+                <Switch android:id="@+id/switchHideBg" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="@string/invisible_bg" android:textColor="#FFFFFF" android:thumbTint="#FFFFFF" />
 
                 <Button
                     android:id="@+id/btnResetUIColors"
@@ -295,7 +295,7 @@
                     android:layout_height="36dp"
                     android:layout_marginTop="16dp"
                     android:backgroundTint="#33FFFFFF"
-                    android:text="Reset UI Colors"
+                    android:text="@string/btn_reset_ui_colors"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
@@ -328,7 +328,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Donate"
+                            android:text="@string/ui_settings_donate"
                             android:textColor="#FFFFFF"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -343,7 +343,7 @@
             android:id="@+id/btnResetDefaults"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Reset all to Defaults"
+            android:text="@string/ui_settings_reset_all_defaults"
             android:backgroundTint="#0DFFFFFF"
             android:textColor="#80FFFFFF"
             android:textAllCaps="false"

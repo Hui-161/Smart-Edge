@@ -14,7 +14,7 @@
         android:layout_height="32dp"
         android:background="@drawable/bg_close_btn"
         android:backgroundTint="#1AFFFFFF"
-        android:contentDescription="Show more"
+        android:contentDescription="@string/ui_item_show_more"
         android:padding="6dp"
         android:src="@drawable/ic_chevron_right"
         android:rotation="90"

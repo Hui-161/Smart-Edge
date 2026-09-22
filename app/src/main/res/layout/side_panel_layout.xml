@@ -95,7 +95,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PWR"
+                android:text="@string/ui_panel_label_power"
                 android:textColor="#80FFFFFF"
                 android:textSize="9sp"
                 android:layout_marginTop="2dp"
@@ -126,7 +126,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="VOL +"
+                android:text="@string/ui_panel_label_volume_up"
                 android:textColor="#80FFFFFF"
                 android:textSize="9sp"
                 android:layout_marginTop="2dp"
@@ -147,7 +147,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="VOL -"
+                android:text="@string/ui_panel_label_volume_down"
                 android:textColor="#80FFFFFF"
                 android:textSize="9sp"
                 android:layout_marginTop="2dp"
@@ -177,7 +177,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BRI +"
+                android:text="@string/ui_panel_label_brightness_up"
                 android:textColor="#80FFFFFF"
                 android:textSize="9sp"
                 android:layout_marginTop="2dp"
@@ -197,7 +197,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BRI -"
+                android:text="@string/ui_panel_label_brightness_down"
                 android:textColor="#80FFFFFF"
                 android:textSize="9sp"
                 android:layout_marginTop="2dp"
@@ -219,7 +219,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SC"
+            android:text="@string/ui_panel_label_screenshot"
             android:textColor="#80FFFFFF"
             android:textSize="9sp"
             android:layout_marginTop="2dp"
@@ -262,7 +262,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bg_close_btn"
                 android:backgroundTint="#1AFFFFFF"
-                android:contentDescription="Back"
+                android:contentDescription="@string/action_back"
                 android:padding="4dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_back"
@@ -282,7 +282,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bg_close_btn"
                 android:backgroundTint="#1AFFFFFF"
-                android:contentDescription="Toggle Picker"
+                android:contentDescription="@string/ui_panel_toggle_picker"
                 android:padding="4dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_chevron_right"

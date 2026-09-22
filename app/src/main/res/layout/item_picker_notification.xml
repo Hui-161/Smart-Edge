@@ -45,7 +45,7 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:text="App"
+        android:text="@string/ui_item_notification_app"
         android:textColor="#FFFFFF"
         android:textSize="10sp" />
 

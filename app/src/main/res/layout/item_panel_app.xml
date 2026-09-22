@@ -12,7 +12,7 @@
         android:id="@+id/ivAppIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:contentDescription="App icon"
+        android:contentDescription="@string/ui_item_app_icon"
         android:scaleType="centerCrop" />
 
     <!-- Tiny App Name -->

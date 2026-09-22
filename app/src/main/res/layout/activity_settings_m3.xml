@@ -25,7 +25,7 @@
             <!-- 2. INTERACTION SECTION -->
             <TextView
                 style="@style/App_SectionTitle"
-                android:text="Interaction"
+                android:text="@string/section_interaction"
                 android:drawableStart="@drawable/ic_section_interaction" />
 
             <com.google.android.material.card.MaterialCardView
@@ -38,20 +38,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Screen Side" android:textColor="?attr/colorOnSurface" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ui_settings_screen_side" android:textColor="?attr/colorOnSurface" android:textStyle="bold" />
                     <RadioGroup
                         android:id="@+id/rgPanelSide"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginTop="8dp">
-                        <RadioButton android:id="@+id/rbRight" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Right Side" android:textColor="?attr/colorOnSurfaceVariant" android:buttonTint="?attr/colorPrimary" />
-                        <RadioButton android:id="@+id/rbLeft" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Left Side" android:textColor="?attr/colorOnSurfaceVariant" android:buttonTint="?attr/colorPrimary" />
+                        <RadioButton android:id="@+id/rbRight" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_right_side" android:textColor="?attr/colorOnSurfaceVariant" android:buttonTint="?attr/colorPrimary" />
+                        <RadioButton android:id="@+id/rbLeft" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_left_side" android:textColor="?attr/colorOnSurfaceVariant" android:buttonTint="?attr/colorPrimary" />
                     </RadioGroup>
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="16dp" />
 
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchGestures" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Edge Swipe Gestures" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchGestures" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/edge_gestures" android:textColor="?attr/colorOnSurface" />
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="16dp" />
 
@@ -69,7 +69,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tap to Open"
+                            android:text="@string/ui_settings_tap_to_open"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp" />
 
@@ -78,20 +78,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Disabled"
+                            android:text="@string/anim_feel_disabled"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp" />
                     </LinearLayout>
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="16dp" />
 
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchAutoStart" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Auto-start on Boot" android:textColor="?attr/colorOnSurface" />
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchHaptic" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Haptic Feedback" android:textColor="?attr/colorOnSurface" />
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchShowLogs" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Show Activity Logs on Home" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchAutoStart" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/feature_auto_start_label" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchHaptic" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/haptic_feedback" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchShowLogs" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/ui_settings_show_activity_logs" android:textColor="?attr/colorOnSurface" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp">
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Picker Gap (Spacing - Default: 20dp)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_picker_gap_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                             <ImageView android:id="@+id/btnResetPickerGap" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_restore" android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackground" android:padding="2dp" app:tint="?attr/colorPrimary" />
                             <TextView android:id="@+id/tvPickerGapValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="20dp" android:textColor="?attr/colorPrimary" android:textSize="12sp" android:textStyle="bold" />
                         </LinearLayout>
@@ -113,7 +113,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Animation Feel"
+                            android:text="@string/dialog_anim_feel"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp" />
 
@@ -121,7 +121,7 @@
                             android:id="@+id/tvAnimFeelValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Balanced (Default)"
+                            android:text="@string/anim_feel_balanced"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -132,7 +132,7 @@
             <!-- 3. APPEARANCE SECTION -->
             <TextView
                 style="@style/App_SectionTitle"
-                android:text="Appearance"
+                android:text="@string/section_appearance"
                 android:drawableStart="@drawable/ic_section_appearance" />
 
             <com.google.android.material.card.MaterialCardView
@@ -159,7 +159,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="UI Style Theme"
+                            android:text="@string/ui_style_theme"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp" />
 
@@ -167,18 +167,18 @@
                             android:id="@+id/tvUIStyleValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="OriginOS (Rounded)"
+                            android:text="@string/theme_origin"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp" />
                     </LinearLayout>
 
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchBlur" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Glassmorphic Blur" android:textColor="?attr/colorOnSurface" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="May cause lag on budget devices (Android 12+ only)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchBlur" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/blur_title" android:textColor="?attr/colorOnSurface" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/blur_desc" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
 
                     <!-- Blur Amount Slider -->
                     <LinearLayout android:id="@+id/layoutBlurAmount" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp">
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Blur Intensity (Default: 15)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_blur_intensity_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                             <ImageView android:id="@+id/btnResetBlur" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_restore" android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackground" android:padding="2dp" app:tint="?attr/colorPrimary" />
                             <TextView android:id="@+id/tvBlurAmountValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="15" android:textColor="?attr/colorPrimary" android:textSize="12sp" android:textStyle="bold" />
                         </LinearLayout>
@@ -202,7 +202,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Icon Shape"
+                            android:text="@string/icon_shape"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp" />
 
@@ -210,7 +210,7 @@
                             android:id="@+id/tvIconShapeValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Squircle"
+                            android:text="@string/ui_settings_shape_squircle"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -219,17 +219,17 @@
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Icon Pack" android:textColor="?attr/colorOnSurface" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvCurrentIconPack" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="System Default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_pack" android:textColor="?attr/colorOnSurface" android:textStyle="bold" />
+                            <TextView android:id="@+id/tvCurrentIconPack" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/icon_pack_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                         </LinearLayout>
-                        <Button android:id="@+id/btnSelectIconPack" style="@style/App_Button_Tonal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Change" android:textSize="12sp" />
+                        <Button android:id="@+id/btnSelectIconPack" style="@style/App_Button_Tonal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ui_settings_change" android:textSize="12sp" />
                     </LinearLayout>
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="16dp" />
 
                     <!-- Sliders -->
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Panel Opacity (Default: 100%)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_panel_opacity_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                         <ImageView android:id="@+id/btnResetOpacity" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_restore" android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackground" android:padding="2dp" app:tint="?attr/colorPrimary" />
                         <TextView android:id="@+id/tvOpacityValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="100%" android:textColor="?attr/colorPrimary" android:textSize="12sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -237,7 +237,7 @@
                         android:id="@+id/sbOpacity" android:layout_width="match_parent" android:layout_height="wrap_content" android:valueFrom="10.0" android:valueTo="100.0" android:value="100.0" app:tickVisible="false" android:layout_marginBottom="12dp" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="8dp" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Corner Radius (Default: 48dp)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_corner_radius_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                         <ImageView android:id="@+id/btnResetRadius" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_restore" android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackground" android:padding="2dp" app:tint="?attr/colorPrimary" />
                         <TextView android:id="@+id/tvRadiusValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="28dp" android:textColor="?attr/colorPrimary" android:textSize="12sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -249,7 +249,7 @@
             <!-- 4. HANDLE SECTION -->
             <TextView
                 style="@style/App_SectionTitle"
-                android:text="Handle &amp; Pill"
+                android:text="@string/ui_settings_handle_pill"
                 android:drawableStart="@drawable/ic_section_handle" />
 
             <com.google.android.material.card.MaterialCardView
@@ -262,10 +262,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchShowPill" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Visible Pill Handle" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchShowPill" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/visible_pill" android:textColor="?attr/colorOnSurface" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="16dp" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Handle Height (Default: 80dp)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_handle_height_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                         <ImageView android:id="@+id/btnResetHeight" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_restore" android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackground" android:padding="2dp" app:tint="?attr/colorPrimary" />
                         <TextView android:id="@+id/tvHeightValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="80dp" android:textColor="?attr/colorPrimary" android:textSize="12sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -273,7 +273,7 @@
                         android:id="@+id/sbHandleHeight" android:layout_width="match_parent" android:layout_height="wrap_content" android:valueFrom="20.0" android:valueTo="300.0" android:value="80.0" app:tickVisible="false" android:layout_marginBottom="12dp" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="8dp" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Trigger Area Width (Default: 24dp)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_trigger_area_width_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                         <ImageView android:id="@+id/btnResetWidth" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_restore" android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackground" android:padding="2dp" app:tint="?attr/colorPrimary" />
                         <TextView android:id="@+id/tvWidthValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24dp" android:textColor="?attr/colorPrimary" android:textSize="12sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -281,7 +281,7 @@
                         android:id="@+id/sbHandleWidth" android:layout_width="match_parent" android:layout_height="wrap_content" android:valueFrom="24.0" android:valueTo="100.0" android:value="24.0" app:tickVisible="false" android:layout_marginBottom="12dp" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginTop="8dp" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Vertical Position (Default: 0dp)" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_settings_vertical_position_default" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="12sp" />
                         <ImageView android:id="@+id/btnResetOffset" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_restore" android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackground" android:padding="2dp" app:tint="?attr/colorPrimary" />
                         <TextView android:id="@+id/tvOffsetValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0dp" android:textColor="?attr/colorPrimary" android:textSize="12sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -294,7 +294,7 @@
             <!-- 5. SUPPORT & CUSTOMIZATION -->
             <TextView
                 style="@style/App_SectionTitle"
-                android:text="Support &amp; Customization"
+                android:text="@string/ui_settings_support_customization"
                 android:drawableStart="@drawable/ic_donation" />
 
             <com.google.android.material.card.MaterialCardView
@@ -308,14 +308,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView android:id="@+id/tvSupportStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Full Version Active" android:textColor="?attr/colorPrimary" android:textSize="14sp" android:textStyle="bold" android:textAllCaps="true" />
+                    <TextView android:id="@+id/tvSupportStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ui_settings_full_version_active" android:textColor="?attr/colorPrimary" android:textSize="14sp" android:textStyle="bold" android:textAllCaps="true" />
                     
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="12dp" />
 
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchUseCustomAccent" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Use Custom Accent Color" android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchUseCustomAccent" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/custom_accent_title" android:textColor="?attr/colorOnSurface" android:layout_marginBottom="12dp" />
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                        <TextView android:id="@+id/tvAccentColor" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Accent Color" android:textColor="?attr/colorOnSurfaceVariant" />
+                        <TextView android:id="@+id/tvAccentColor" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/accent_color" android:textColor="?attr/colorOnSurfaceVariant" />
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnPickAccent"
                             style="@style/App_Button_Tonal"
@@ -330,7 +330,7 @@
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical">
-                        <TextView android:id="@+id/tvPanelBgColor" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Panel Background" android:textColor="?attr/colorOnSurfaceVariant" />
+                        <TextView android:id="@+id/tvPanelBgColor" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/panel_bg_color" android:textColor="?attr/colorOnSurfaceVariant" />
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnPickBg"
                             style="@style/App_Button_Tonal"
@@ -346,9 +346,9 @@
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutlineVariant" android:layout_marginVertical="16dp" />
 
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchTools" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Tools Section" android:textColor="?attr/colorOnSurface" />
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchHideBg" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Invisible Background" android:textColor="?attr/colorOnSurface" />
-                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchColumns" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Double-Column Layout" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchTools" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ui_settings_show_tools_section" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchHideBg" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/invisible_bg" android:textColor="?attr/colorOnSurface" />
+                    <com.google.android.material.materialswitch.MaterialSwitch android:id="@+id/switchColumns" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/ui_settings_double_column_layout" android:textColor="?attr/colorOnSurface" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnResetUIColors"
@@ -356,7 +356,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginTop="16dp"
-                        android:text="Reset UI Colors"
+                        android:text="@string/btn_reset_ui_colors"
                         android:textSize="14sp"
                         android:textAllCaps="false"
                         app:cornerRadius="@dimen/app_button_radius" />
@@ -367,7 +367,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginTop="12dp"
-                        android:text="Donate"
+                        android:text="@string/ui_settings_donate"
                         android:textSize="14sp"
                         android:textAllCaps="false"
                         app:icon="@drawable/ic_donation"
@@ -387,7 +387,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="12dp"
-                android:text="Enable Gesture Auto-Close"
+                android:text="@string/ui_settings_gesture_auto_close"
                 android:textSize="14sp" />
 
             <!-- Reset Button -->
@@ -396,7 +396,7 @@
                 style="@style/App_Button_Text"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Reset all to Defaults"
+                android:text="@string/ui_settings_reset_all_defaults"
                 android:textSize="15sp"
                 android:textColor="?attr/colorError"
                 android:layout_marginBottom="40dp" />
