@@ -44,7 +44,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            // Only sign with the release key when keystore.properties exists (CI release builds)
+            signingConfigs.findByName("release")?.let { signingConfig = it }
         }
     }
 
