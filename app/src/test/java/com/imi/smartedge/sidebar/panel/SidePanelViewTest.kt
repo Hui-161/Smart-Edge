@@ -113,4 +113,64 @@ class SidePanelViewTest {
         panel.setPage(PanelPreferences.PAGE_APPS, pages)
         assertEquals(View.VISIBLE, pickerButton.visibility)
     }
+
+    @Test
+    fun thumbMode_rightPanelStartsBottomRight() {
+        prefs.panelSide = PanelPreferences.SIDE_RIGHT
+        prefs.thumbMode = true
+        val panel = createPanel()
+        val rv = panel.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvPanelApps)
+        val grid = rv.layoutManager as androidx.recyclerview.widget.GridLayoutManager
+        assertEquals("first item at the bottom", true, grid.reverseLayout)
+        assertEquals("first column next to the right edge", View.LAYOUT_DIRECTION_RTL, rv.layoutDirection)
+    }
+
+    @Test
+    fun thumbMode_off_keepsTopDownOrder() {
+        prefs.thumbMode = false
+        val panel = createPanel()
+        val rv = panel.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvPanelApps)
+        assertEquals(false, (rv.layoutManager as androidx.recyclerview.widget.GridLayoutManager).reverseLayout)
+        assertEquals(View.LAYOUT_DIRECTION_LTR, rv.layoutDirection)
+    }
+
+    @Test
+    fun separatorSpansAllColumns() {
+        prefs.panelColumns = 2
+        val panel = createPanel()
+        val apps = listOf(
+            AppInfo("com.example.notify", "N", isNotification = true),
+            AppInfo(AppInfo.SEPARATOR_ID, "", type = AppInfo.Type.TOOL),
+            AppInfo("com.example.pinned", "P")
+        )
+        panel.setApps(apps)
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(50))
+        val rv = panel.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvPanelApps)
+        val grid = rv.layoutManager as androidx.recyclerview.widget.GridLayoutManager
+        assertEquals(2, grid.spanSizeLookup.getSpanSize(1))
+        assertEquals(1, grid.spanSizeLookup.getSpanSize(0))
+    }
+
+    @Test
+    fun dashboardExtras_shownOnOtherPagesOnlyWhenEnabled() {
+        prefs.showTools = true
+        prefs.setDashboardExtraItems(listOf(FloatingPanelService.TOOL_CLIPBOARD, EdgeTools.FLASHLIGHT))
+        val panel = createPanel()
+        val pages = listOf(PanelPreferences.PAGE_APPS, PanelPreferences.PAGE_TOOLS)
+        val dashboard = panel.findViewById<View>(R.id.toolsContainer)
+        val extras = panel.findViewById<LinearLayout>(R.id.dashboardExtraContainer)
+
+        panel.setPage(PanelPreferences.PAGE_APPS, pages)
+        panel.applyTheme()
+        assertEquals(View.VISIBLE, dashboard.visibility)
+        assertEquals("button + label per item", 4, extras.childCount)
+
+        panel.setPage(PanelPreferences.PAGE_TOOLS, pages)
+        panel.applyTheme()
+        assertEquals(View.GONE, dashboard.visibility)
+
+        prefs.dashboardOnAllPages = true
+        panel.applyTheme()
+        assertEquals(View.VISIBLE, dashboard.visibility)
+    }
 }

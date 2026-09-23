@@ -81,6 +81,7 @@ class PanelAppsAdapter(
         private const val VIEW_TYPE_ADD = 1
         private const val VIEW_TYPE_FOLDER = 2
         private const val VIEW_TYPE_TOOL = 3
+        private const val VIEW_TYPE_SEPARATOR = 4
     }
 
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -88,12 +89,19 @@ class PanelAppsAdapter(
         val tvName: TextView = itemView.findViewById(R.id.tvAppName)
     }
 
+    /** Thin divider between notification apps and pinned apps. */
+    inner class SeparatorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    fun isSeparator(position: Int): Boolean =
+        position in mutableApps.indices && mutableApps[position].identifier == AppInfo.SEPARATOR_ID
+
     inner class AddViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivAdd: ImageView = itemView.findViewById(R.id.ivAddIcon)
     }
 
     override fun getItemViewType(position: Int): Int {
         if (position >= mutableApps.size) return VIEW_TYPE_ADD
+        if (mutableApps[position].identifier == AppInfo.SEPARATOR_ID) return VIEW_TYPE_SEPARATOR
         return when (mutableApps[position].type) {
             AppInfo.Type.FOLDER -> VIEW_TYPE_FOLDER
             AppInfo.Type.TOOL -> VIEW_TYPE_TOOL
@@ -106,6 +114,16 @@ class PanelAppsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if (viewType == VIEW_TYPE_SEPARATOR) {
+            val container = android.widget.FrameLayout(parent.context).apply {
+                layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.dpToPx(13))
+                addView(View(parent.context).apply {
+                    setBackgroundColor(android.graphics.Color.parseColor("#40FFFFFF"))
+                }, android.widget.FrameLayout.LayoutParams(context.dpToPx(28), context.dpToPx(1), android.view.Gravity.CENTER))
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }
+            return SeparatorViewHolder(container)
+        }
         return when (viewType) {
             VIEW_TYPE_APP, VIEW_TYPE_FOLDER, VIEW_TYPE_TOOL -> {
                 val layoutId = if (panelPrefs.uiTheme == PanelPreferences.THEME_RICH)

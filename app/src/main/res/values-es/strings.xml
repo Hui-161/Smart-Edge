@@ -312,4 +312,18 @@
     <!-- Handles on both edges -->
     <string name="panel_side_both">Ambos</string>
     <string name="panel_side_both_desc">Un tirador en cada borde: desliza en el derecho para el brillo y en el izquierdo para el volumen. La barra se abre en el lado desde el que deslizas.</string>
+
+    <!-- Split screen -->
+    <string name="edge_split_unsupported">Tu versión de Android no permite a las apps abrir la pantalla dividida directamente. Activa Shizuku o Root (automatización del sistema) o divide desde la vista de apps recientes.</string>
+    <string name="edge_split_failed">No se pudo crear la pantalla dividida. Abre primero otra app y luego arrastra la app arriba o abajo.</string>
+
+    <!-- Dashboard items, ordering, thumb mode -->
+    <string name="feature_dashboard_all_pages_label">Panel en todas las páginas</string>
+    <string name="feature_dashboard_all_pages_desc">Mostrar los botones del panel también en las páginas de contactos y herramientas</string>
+    <string name="feature_dashboard_extra_label">Más elementos del panel</string>
+    <string name="feature_dashboard_extra_choose">Elegir y ordenar elementos</string>
+    <string name="feature_thumb_mode_label">Orden cómodo para el pulgar</string>
+    <string name="feature_thumb_mode_desc">Los elementos empiezan abajo junto al borde (abajo a la derecha si la barra está a la derecha)</string>
+    <string name="feature_move_up">Subir</string>
+    <string name="feature_move_down">Bajar</string>
 </resources>

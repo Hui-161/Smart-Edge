@@ -61,6 +61,16 @@ object FavoriteContactsManager {
         return true
     }
 
+    /** Moves a contact one position up (-1) or down (+1). */
+    fun move(context: Context, index: Int, direction: Int) {
+        val list = getContacts(context).toMutableList()
+        val target = index + direction
+        if (index !in list.indices || target !in list.indices) return
+        val item = list.removeAt(index)
+        list.add(target, item)
+        saveContacts(context, list)
+    }
+
     fun removeContact(context: Context, contact: Contact) {
         saveContacts(context, getContacts(context).filterNot { it == contact })
     }

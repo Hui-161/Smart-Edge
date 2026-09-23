@@ -142,8 +142,14 @@ class SidePanelView @JvmOverloads constructor(
 
         currentCols = panelPrefs.panelColumns
         adapter.setColumns(currentCols)
-        binding.rvPanelApps.layoutManager = GridLayoutManager(context, currentCols)
+        binding.rvPanelApps.layoutManager = GridLayoutManager(context, currentCols).apply {
+            // The divider between notification apps and pinned apps spans the full width
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int = if (adapter.isSeparator(position)) spanCount else 1
+            }
+        }
         binding.rvPanelApps.adapter = adapter
+        applyThumbLayout()
 
         binding.rvPanelApps.setHasFixedSize(false)
         binding.rvPanelApps.isNestedScrollingEnabled = false
@@ -168,6 +174,17 @@ class SidePanelView @JvmOverloads constructor(
                 return adapter.isEditMode
             }
 
+            override fun getMovementFlags(
+                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder
+            ): Int {
+                // Divider and notification apps are not part of the pinned order
+                val position = viewHolder.bindingAdapterPosition
+                val app = adapter.getApps().getOrNull(position)
+                if (viewHolder is PanelAppsAdapter.SeparatorViewHolder || app?.isNotification == true) return 0
+                return super.getMovementFlags(recyclerView, viewHolder)
+            }
+
             override fun onMove(
                 recyclerView: androidx.recyclerview.widget.RecyclerView,
                 viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
@@ -177,6 +194,9 @@ class SidePanelView @JvmOverloads constructor(
                 val from = viewHolder.bindingAdapterPosition
                 var to = target.bindingAdapterPosition
                 
+                if (target is PanelAppsAdapter.SeparatorViewHolder ||
+                    adapter.getApps().getOrNull(target.bindingAdapterPosition)?.isNotification == true) return false
+
                 if (target is PanelAppsAdapter.AddViewHolder) {
                     // Snap to the last available app position
                     to = adapter.itemCount - 2
@@ -194,7 +214,8 @@ class SidePanelView @JvmOverloads constructor(
             override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
                 val apps = adapter.getApps()
-                val identifiers = apps.map { it.identifier }
+                val identifiers = apps.filter { !it.isNotification && it.identifier != AppInfo.SEPARATOR_ID }
+                    .map { it.identifier }
                 
                 panelPrefs.setPanelApps(identifiers)
                 updateSideLayout()
@@ -398,6 +419,7 @@ class SidePanelView @JvmOverloads constructor(
     }
 
     fun updateSideLayout() {
+        applyThumbLayout()
         val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
         binding.btnClose.rotation = if (isRight) 180f else 0f
 
@@ -426,8 +448,10 @@ class SidePanelView @JvmOverloads constructor(
         val isGameMode = false // panelPrefs.getGameApps().contains(panelPrefs.currentForegroundPackage)
         val showSysInfoEffective = panelPrefs.showSysInfo || isGameMode
         
-        if (panelPrefs.showTools && navigationStack.isEmpty() && currentPage == PanelPreferences.PAGE_APPS) {
-            nonAppHeightDp += 50f // Divider + Screenshot + Labels
+        if (panelPrefs.showTools && navigationStack.isEmpty() &&
+            (currentPage == PanelPreferences.PAGE_APPS || panelPrefs.dashboardOnAllPages)) {
+            nonAppHeightDp += 50f
+            nonAppHeightDp += 46f * panelPrefs.getDashboardExtraItems().size // Divider + Screenshot + Labels
             if (panelPrefs.showPowerMenu) nonAppHeightDp += 42f
             if (showSysInfoEffective) nonAppHeightDp += 24f
             if (panelPrefs.showVolumeKeys) nonAppHeightDp += 84f // Two buttons + labels
@@ -468,6 +492,32 @@ class SidePanelView @JvmOverloads constructor(
             }
             binding.panelContainer.layoutParams = containerLp
         }
+    }
+
+    /**
+     * Thumb mode: the first item sits at the bottom, next to the screen edge
+     * (bottom right for a right-side panel, bottom left for a left-side panel).
+     */
+    private fun applyThumbLayout() {
+        val grid = binding.rvPanelApps.layoutManager as? GridLayoutManager ?: return
+        val thumb = panelPrefs.thumbMode
+        val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
+        if (grid.reverseLayout != thumb) grid.reverseLayout = thumb
+        val direction = if (thumb && isRight) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
+        if (binding.rvPanelApps.layoutDirection != direction) binding.rvPanelApps.layoutDirection = direction
+    }
+
+    /** Current width of the sidebar card in pixels (used to place the picker next to it). */
+    fun panelWidthPx(): Int {
+        val measured = binding.panelCard.width
+        return if (measured > 0) measured else binding.panelCard.layoutParams.width.coerceAtLeast(0)
+    }
+
+    /** Width the sidebar card would have with the given number of columns. */
+    fun panelWidthPxFor(cols: Int): Int {
+        val scale = getFinalScaleFactor()
+        val widthDp = if (cols == 2) 52f + (88f * scale) else 32f + (40f * scale)
+        return context.dpToPx(widthDp.toInt())
     }
 
     fun scrollToTop() {
@@ -589,7 +639,7 @@ class SidePanelView @JvmOverloads constructor(
             updateSideLayout()
             
             // Restore scroll position if enabled (only for root level)
-            if (panelPrefs.rememberScroll && navigationStack.isEmpty() && currentPage == PanelPreferences.PAGE_APPS) {
+            if (panelPrefs.rememberScroll && !panelPrefs.thumbMode && navigationStack.isEmpty() && currentPage == PanelPreferences.PAGE_APPS) {
                 binding.rvPanelApps.post {
                     binding.rvPanelApps.scrollBy(0, panelPrefs.lastSidebarScroll)
                 }
@@ -620,7 +670,9 @@ class SidePanelView @JvmOverloads constructor(
 
     fun applyTheme() {
         val inFolder = navigationStack.isNotEmpty()
-        val showTools = panelPrefs.showTools && !inFolder && currentPage == PanelPreferences.PAGE_APPS
+        val showTools = panelPrefs.showTools && !inFolder &&
+                        (currentPage == PanelPreferences.PAGE_APPS || panelPrefs.dashboardOnAllPages)
+        val extraCount = renderDashboardExtras()
         binding.toolsContainer.visibility = if (showTools) View.VISIBLE else View.GONE
         
         val showPower = panelPrefs.showPowerMenu
@@ -696,7 +748,7 @@ class SidePanelView @JvmOverloads constructor(
         binding.layoutSysInfo.visibility = if (showSysInfoEffective) View.VISIBLE else View.GONE
         
         // Final visibility check for tools container: hide if all sub-elements are gone
-        val hasAnyVisibleTool = showPower || showVolume || showBrightness || showScreenshot || showSysInfoEffective
+        val hasAnyVisibleTool = showPower || showVolume || showBrightness || showScreenshot || showSysInfoEffective || extraCount > 0
         binding.toolsContainer.visibility = if (showTools && hasAnyVisibleTool) View.VISIBLE else View.GONE
 
         if (showSysInfoEffective) {
@@ -706,6 +758,51 @@ class SidePanelView @JvmOverloads constructor(
         } else {
             updateHandler.removeCallbacks(updateRunnable)
         }
+    }
+
+    private var renderedDashboardExtras: List<String>? = null
+
+    /** Builds the additional dashboard buttons chosen in settings; returns how many are shown. */
+    private fun renderDashboardExtras(): Int {
+        val container = binding.dashboardExtraContainer
+        val ids = panelPrefs.getDashboardExtraItems().filter { EdgeTools.find(it) != null }
+        if (ids == renderedDashboardExtras) return ids.size
+        renderedDashboardExtras = ids
+        container.removeAllViews()
+        container.visibility = if (ids.isEmpty()) View.GONE else View.VISIBLE
+        ids.forEach { id ->
+            val tool = EdgeTools.find(id) ?: return@forEach
+            container.addView(android.widget.ImageButton(context).apply {
+                setBackgroundResource(R.drawable.bg_close_btn)
+                backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1AFFFFFF"))
+                setImageResource(tool.iconRes)
+                imageTintList = ColorStateList.valueOf(Color.WHITE)
+                scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                setPadding(context.dpToPx(8), context.dpToPx(8), context.dpToPx(8), context.dpToPx(8))
+                contentDescription = context.getString(tool.labelRes)
+                setOnClickListener {
+                    if (panelPrefs.hapticEnabled) it.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK)
+                    SpringAnimator.scalePulse(it)
+                    onToolClick?.invoke(id)
+                }
+            }, android.widget.LinearLayout.LayoutParams(context.dpToPx(32), context.dpToPx(32)))
+            container.addView(android.widget.TextView(context).apply {
+                text = context.getString(tool.labelRes)
+                setTextColor(Color.parseColor("#80FFFFFF"))
+                textSize = 9f
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
+                gravity = android.view.Gravity.CENTER
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }, android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = context.dpToPx(2)
+                bottomMargin = context.dpToPx(6)
+            })
+        }
+        return ids.size
     }
 
     override fun onDetachedFromWindow() {

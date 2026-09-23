@@ -289,18 +289,19 @@ class AppRepository(context: Context) {
      */
     suspend fun getPanelApps(): List<AppInfo> = withContext(Dispatchers.IO) {
         val pinnedIdentifiers = panelPrefs.getPanelApps()
-        val allIdentifiers = pinnedIdentifiers.toMutableList()
+        val pinnedApps = getAppsForIdentifiers(pinnedIdentifiers)
+        if (!panelPrefs.showNotificationApps) return@withContext pinnedApps
 
-        if (panelPrefs.showNotificationApps) {
-            val notifyApps = NotificationTrackingService.getActiveNotificationPackages()
-            for (pkg in notifyApps.reversed()) {
-                if (!allIdentifiers.contains(pkg)) {
-                    allIdentifiers.add(0, pkg)
-                }
-            }
-        }
-        
-        getAppsForIdentifiers(allIdentifiers)
+        // Up to 4 launchable apps with active notifications, above a divider
+        val notificationIds = NotificationTrackingService.getActiveNotificationPackages()
+            .filter { it !in pinnedIdentifiers && it != appContext.packageName }
+            .filter { packageManager.getLaunchIntentForPackage(it) != null }
+            .take(PanelPreferences.MAX_NOTIFICATION_APPS)
+        val notificationApps = getAppsForIdentifiers(notificationIds).map { it.copy(isNotification = true) }
+        if (notificationApps.isEmpty()) return@withContext pinnedApps
+
+        val separator = AppInfo(AppInfo.SEPARATOR_ID, "", type = AppInfo.Type.TOOL)
+        notificationApps + separator + pinnedApps
     }
 
     suspend fun getTop5Apps(): List<String> = withContext(Dispatchers.IO) {

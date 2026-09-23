@@ -100,4 +100,22 @@ class EdgeDataManagersTest {
                    result == ExtraDimHelper.Result.ENABLED ||
                    result == ExtraDimHelper.Result.DISABLED)
     }
+
+    @Test
+    fun favoriteContacts_canBeReordered() {
+        FavoriteContactsManager.addContact(context, FavoriteContactsManager.Contact("A", "1"))
+        FavoriteContactsManager.addContact(context, FavoriteContactsManager.Contact("B", "2"))
+        FavoriteContactsManager.addContact(context, FavoriteContactsManager.Contact("C", "3"))
+        FavoriteContactsManager.move(context, 2, -1)
+        FavoriteContactsManager.move(context, 0, -1) // no-op at the top
+        assertEquals(listOf("A", "C", "B"), FavoriteContactsManager.getContacts(context).map { it.name })
+    }
+
+    @Test
+    fun dashboardExtraItems_keepOrder() {
+        val prefs = PanelPreferences(context)
+        assertTrue(prefs.getDashboardExtraItems().isEmpty())
+        prefs.setDashboardExtraItems(listOf(EdgeTools.FLASHLIGHT, FloatingPanelService.TOOL_CLIPBOARD))
+        assertEquals(listOf(EdgeTools.FLASHLIGHT, FloatingPanelService.TOOL_CLIPBOARD), prefs.getDashboardExtraItems())
+    }
 }

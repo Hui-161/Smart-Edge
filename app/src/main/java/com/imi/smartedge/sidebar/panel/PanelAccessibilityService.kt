@@ -278,6 +278,35 @@ class PanelAccessibilityService : AccessibilityService() {
 
         if (isVivo) {
             SplitScreenHelper.launchApp(this, pkg, mode)
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S &&
+                   AutomationManager.isAutomationPossible()) {
+            // Android 12+ with Shizuku/Root: use the system UI's split-screen shell command
+            Thread {
+                val done = SplitScreenHelper.splitWithShell(this, pkg, draggedToTop = mode == SplitScreenHelper.MODE_TOP)
+                if (!done) {
+                    handler.post {
+                        android.widget.Toast.makeText(this, R.string.edge_split_failed, android.widget.Toast.LENGTH_LONG).show()
+                    }
+                }
+            }.start()
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            // Android 12+: dock the current app via the system's split-screen action (only offered
+            // by devices that support it for accessibility services), then open the dragged app
+            // adjacent to it.
+            val supportsToggle = try {
+                systemActions.any { it.id == GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN }
+            } catch (e: Exception) {
+                false
+            }
+            val toggled = supportsToggle && performGlobalAction(GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
+            if (!toggled) {
+                handler.post {
+                    android.widget.Toast.makeText(this, R.string.edge_split_unsupported, android.widget.Toast.LENGTH_LONG).show()
+                }
+            }
+            handler.postDelayed({
+                SplitScreenHelper.launchApp(this, pkg, mode)
+            }, if (toggled) 900L else 0L)
         } else {
             // Standard AOSP path: toggle split, wait for animation, then launch second app
             val toggled = performGlobalAction(GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)

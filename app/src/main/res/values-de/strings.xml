@@ -338,4 +338,18 @@
     <!-- Handles on both edges -->
     <string name="panel_side_both">Beide</string>
     <string name="panel_side_both_desc">Ein Griff an jedem Rand: Schieben am rechten Griff regelt die Helligkeit, am linken die Lautstärke. Die Seitenleiste öffnet sich auf der Seite, von der du wischst.</string>
+
+    <!-- Split screen -->
+    <string name="edge_split_unsupported">Deine Android-Version erlaubt Apps keinen direkten Split-Screen. Aktiviere Shizuku oder Root (Systemautomatisierung) oder teile über die App-Übersicht.</string>
+    <string name="edge_split_failed">Split-Screen konnte nicht erstellt werden. Öffne zuerst eine andere App und ziehe dann die App nach oben oder unten.</string>
+
+    <!-- Dashboard items, ordering, thumb mode -->
+    <string name="feature_dashboard_all_pages_label">Dashboard auf allen Menüseiten</string>
+    <string name="feature_dashboard_all_pages_desc">Dashboard-Schaltflächen auch auf den Seiten Kontakte und Werkzeuge anzeigen</string>
+    <string name="feature_dashboard_extra_label">Weitere Dashboard-Elemente</string>
+    <string name="feature_dashboard_extra_choose">Elemente auswählen und anordnen</string>
+    <string name="feature_thumb_mode_label">Daumen-optimierte Anordnung</string>
+    <string name="feature_thumb_mode_desc">Einträge beginnen unten am Bildschirmrand (bei rechter Leiste unten rechts)</string>
+    <string name="feature_move_up">Nach oben</string>
+    <string name="feature_move_down">Nach unten</string>
 </resources>

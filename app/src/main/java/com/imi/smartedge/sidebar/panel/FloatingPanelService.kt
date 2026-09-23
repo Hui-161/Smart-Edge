@@ -856,7 +856,8 @@ class FloatingPanelService : Service() {
         lp.gravity = if (isRight) Gravity.CENTER_VERTICAL or Gravity.END
                      else Gravity.CENTER_VERTICAL or Gravity.START
         // Same horizontal alignment as the app picker
-        val gapPx = ((72 + 12 + panelPrefs.pickerGap) * displayMetrics.density).toInt()
+        val sidebarWidthPx = sidePanelView?.panelWidthPx()?.takeIf { it > 0 } ?: dpToPx(72)
+        val gapPx = sidebarWidthPx + ((12 + panelPrefs.pickerGap) * displayMetrics.density).toInt()
         if (isRight) lp.marginEnd = gapPx else lp.marginStart = gapPx
         list.layoutParams = lp
         val maxHeightDp = Math.max(300f, panelPrefs.pickerMaxHeight.toFloat())
@@ -1203,11 +1204,20 @@ class FloatingPanelService : Service() {
         }
     }
 
+    /** True if sidebar (with [columns]) + gap + 240dp picker + margins fit on the screen. */
+    private fun pickerFitsNextTo(columns: Int): Boolean {
+        val panelWidth = sidePanelView?.panelWidthPxFor(columns) ?: return false
+        val needed = panelWidth + dpToPx(12 + panelPrefs.pickerGap + 240 + 8)
+        return needed <= resources.displayMetrics.widthPixels
+    }
+
     private fun openPicker(enableEditMode: Boolean = false) {
         if (isPickerOpen) return
         closeQuickList(immediate = true)
         isPickerOpen = true
-        sidePanelView?.setColumns(1)
+        // Keep two columns next to the app drawer when the screen is wide enough
+        val pickerColumns = if (panelPrefs.panelColumns >= 2 && pickerFitsNextTo(2)) 2 else 1
+        sidePanelView?.setColumns(pickerColumns)
         sidePanelView?.setEditButtonVisible(true)
         sidePanelView?.scrollToBottom()
         sidePanelView?.animatePickerToggle(true)
@@ -1218,7 +1228,7 @@ class FloatingPanelService : Service() {
             picker.setOnClickListener { }
             val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
             val density = resources.displayMetrics.density
-            val sidePanelWidthDp = 72
+            val sidePanelWidthPx = sidePanelView?.panelWidthPxFor(pickerColumns) ?: dpToPx(72)
             val sidePanelMarginDp = 12
             
             // Dynamic Height calculation for Picker Panel based on Screen Height
@@ -1236,7 +1246,7 @@ class FloatingPanelService : Service() {
                          else Gravity.CENTER_VERTICAL or Gravity.START
             
             // Fixed alignment calculation: Sidepanel occupies (margin + width) space
-            val gapPx = ((sidePanelWidthDp + sidePanelMarginDp + panelPrefs.pickerGap) * displayMetrics.density).toInt()
+            val gapPx = sidePanelWidthPx + ((sidePanelMarginDp + panelPrefs.pickerGap) * displayMetrics.density).toInt()
             if (isRight) lp.marginEnd = gapPx else lp.marginStart = gapPx
             
             picker.layoutParams = lp
@@ -1330,7 +1340,9 @@ class FloatingPanelService : Service() {
                 if (panelPrefs.showToolsPanelButton) {
                     val toolsBtn = AppInfo("smartedge.tool.tools", getString(R.string.msg_tools), type = AppInfo.Type.TOOL)
                     if (baseApps.none { it.identifier == toolsBtn.identifier }) {
-                        baseApps.add(0, toolsBtn)
+                        // First pinned position: below the notification apps and their divider
+                        val firstPinned = baseApps.indexOfFirst { it.identifier == AppInfo.SEPARATOR_ID } + 1
+                        baseApps.add(firstPinned, toolsBtn)
                     }
                 }
 
@@ -1353,7 +1365,8 @@ class FloatingPanelService : Service() {
                     val label = edgeToolNames[baseApps[i].identifier] ?: continue
                     baseApps[i] = baseApps[i].copy(appName = label)
                 }
-                var insertAt = if (baseApps.firstOrNull()?.identifier == "smartedge.tool.tools") 1 else 0
+                val firstPinned = baseApps.indexOfFirst { it.identifier == AppInfo.SEPARATOR_ID } + 1
+                var insertAt = if (baseApps.getOrNull(firstPinned)?.identifier == "smartedge.tool.tools") firstPinned + 1 else firstPinned
                 enabledEdgeTools.forEach { toolId ->
                     if (baseApps.none { it.identifier == toolId }) {
                         baseApps.add(insertAt++, AppInfo(toolId, edgeToolNames.getValue(toolId), type = AppInfo.Type.TOOL))

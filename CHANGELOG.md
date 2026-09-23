@@ -7,6 +7,11 @@
 ---
 
 ### Unreleased
+- **fix(multitasking)**: Drag-to-split works on Android 12+ (incl. 17) with Shizuku/Root via the system split-screen command (top/bottom respected); otherwise via the system split action where offered, with a clear hint if the device does not allow it.
+- **feat(dashboard)**: Additional, orderable dashboard items from the tool catalog (e.g. clipboard, Extra Dim, flashlight) and an option to show the dashboard on all pages.
+- **feat(settings)**: Tools page and favorite contacts can be reordered.
+- **feat(panel)**: Thumb-friendly order (items start bottom right / bottom left), sidebar keeps two columns next to the app drawer when the screen is wide enough.
+- **feat(panel)**: At most 4 apps with active notifications, separated by a divider; they are no longer saved as pinned apps when reordering.
 - **fix(core)**: App language override no longer freezes orientation/screen size in the panel service (handle visibility after rotating).
 - **fix(handle)**: Switching left/right/both keeps the correct panel side; tap sequences interrupted by a slide or swipe are dropped; stable handle height when moved.
 - **fix(notch)**: Notch trigger hidden on the lock screen; tap counter resets after swipe/hold.

@@ -30,6 +30,17 @@ object SplitScreenHelper {
         
         if (isSplit) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // Android 12+: the split-screen windowing modes 3/4 no longer exist (the system shell
+                // owns split screen). Forcing them makes the app start fullscreen, so only
+                // "launch adjacent" is used: it opens the app in the other half of an active split.
+                try {
+                    context.startActivity(launchIntent)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Adjacent launch failed: ${e.message}")
+                }
+                return
+            }
         }
 
         val options = ActivityOptions.makeBasic()
@@ -75,6 +86,40 @@ object SplitScreenHelper {
                 Log.e(TAG, "Fallback launch also failed: ${e2.message}")
             }
         }
+    }
+
+    /**
+     * Android 12+ with Shizuku/Root: split the app the user was in with [packageName] using the
+     * system UI's WMShell shell command. [packageName] ends up at the top when [draggedToTop].
+     * Blocking (shell calls + short waits), so call it off the main thread. Returns false if the
+     * split could not be created.
+     */
+    fun splitWithShell(context: Context, packageName: String, draggedToTop: Boolean): Boolean {
+        val recents = AutomationManager.executeForOutput("dumpsys activity recents") ?: return false
+        // e.g. "* Recent #0: Task{3b1c2d9 #52 type=standard A=10154:com.android.chrome U=0 ..."
+        val taskRegex = Regex("""#(\d+) type=standard [AI]=(?:\d+:)?(\S+)""")
+        val previousTaskId = recents.lineSequence()
+            .filter { it.contains("Recent #") }
+            .mapNotNull { taskRegex.find(it) }
+            .map { it.groupValues[1] to it.groupValues[2] }
+            .firstOrNull { (_, pkg) -> pkg != context.packageName && pkg != packageName }
+            ?.first ?: return false
+
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName) ?: return false
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            context.startActivity(launchIntent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Launch for split failed: ${e.message}")
+            return false
+        }
+        Thread.sleep(800) // let the dragged app come to the front
+
+        // Side stage position of the previous app: 0 = top/left, 1 = bottom/right
+        val sidePosition = if (draggedToTop) 1 else 0
+        return AutomationManager.execute(
+            "dumpsys activity service SystemUIService WMShell splitscreen moveToSideStage $previousTaskId $sidePosition"
+        )
     }
 
     const val MODE_TOP = WINDOWING_MODE_SPLIT_SCREEN_PRIMARY

@@ -60,6 +60,12 @@ class PanelPreferences(context: Context) {
         private const val KEY_SHOW_EXTRA_DIM_BUTTON = "show_extra_dim_button"
         private const val KEY_CONTACTS_PAGE_ENABLED = "contacts_page_enabled"
         private const val KEY_HANDLE_BOTH_SIDES = "handle_both_sides"
+        private const val KEY_THUMB_MODE = "thumb_mode"
+        private const val KEY_DASHBOARD_ALL_PAGES = "dashboard_all_pages"
+        private const val KEY_DASHBOARD_EXTRA_ITEMS = "dashboard_extra_items"
+
+        /** At most this many apps with active notifications are shown above the pinned apps. */
+        const val MAX_NOTIFICATION_APPS = 4
         private const val KEY_TOOLS_PAGE_ENABLED = "tools_page_enabled"
         private const val KEY_LAST_PANEL_PAGE = "last_panel_page"
         private const val KEY_TOOLS_PAGE_ITEMS = "tools_page_items"
@@ -230,6 +236,7 @@ class PanelPreferences(context: Context) {
         )
         strings.forEach { (k, v) -> obj.put(k, v) }
         obj.put(KEY_TOOLS_PAGE_ITEMS, getToolsPageItems().joinToString(DELIMITER))
+        obj.put(KEY_DASHBOARD_EXTRA_ITEMS, getDashboardExtraItems().joinToString(DELIMITER))
 
         // Ints
         val ints = mapOf(
@@ -289,6 +296,8 @@ class PanelPreferences(context: Context) {
             KEY_SHOW_EXTRA_DIM_BUTTON to showExtraDimButton,
             KEY_CONTACTS_PAGE_ENABLED to contactsPageEnabled,
             KEY_HANDLE_BOTH_SIDES to handleBothSides,
+            KEY_THUMB_MODE to thumbMode,
+            KEY_DASHBOARD_ALL_PAGES to dashboardOnAllPages,
             KEY_TOOLS_PAGE_ENABLED to toolsPageEnabled
         )
         bools.forEach { (k, v) -> obj.put(k, v) }
@@ -352,6 +361,9 @@ class PanelPreferences(context: Context) {
                 if (obj.has(KEY_SHOW_CONTACTS_BUTTON)) putBoolean(KEY_SHOW_CONTACTS_BUTTON, obj.getBoolean(KEY_SHOW_CONTACTS_BUTTON))
                 if (obj.has(KEY_SHOW_EXTRA_DIM_BUTTON)) putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, obj.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON))
                 if (obj.has(KEY_HANDLE_BOTH_SIDES)) putBoolean(KEY_HANDLE_BOTH_SIDES, obj.getBoolean(KEY_HANDLE_BOTH_SIDES))
+                if (obj.has(KEY_THUMB_MODE)) putBoolean(KEY_THUMB_MODE, obj.getBoolean(KEY_THUMB_MODE))
+                if (obj.has(KEY_DASHBOARD_ALL_PAGES)) putBoolean(KEY_DASHBOARD_ALL_PAGES, obj.getBoolean(KEY_DASHBOARD_ALL_PAGES))
+                if (obj.has(KEY_DASHBOARD_EXTRA_ITEMS)) putString(KEY_DASHBOARD_EXTRA_ITEMS, obj.getString(KEY_DASHBOARD_EXTRA_ITEMS))
                 if (obj.has(KEY_CONTACTS_PAGE_ENABLED)) putBoolean(KEY_CONTACTS_PAGE_ENABLED, obj.getBoolean(KEY_CONTACTS_PAGE_ENABLED))
                 if (obj.has(KEY_TOOLS_PAGE_ENABLED)) putBoolean(KEY_TOOLS_PAGE_ENABLED, obj.getBoolean(KEY_TOOLS_PAGE_ENABLED))
                 if (obj.has(KEY_TOOLS_PAGE_ITEMS)) putString(KEY_TOOLS_PAGE_ITEMS, obj.getString(KEY_TOOLS_PAGE_ITEMS))
@@ -541,6 +553,24 @@ class PanelPreferences(context: Context) {
     var handleBothSides: Boolean
         get() = prefs.getBoolean(KEY_HANDLE_BOTH_SIDES, false)
         set(value) = prefs.edit { putBoolean(KEY_HANDLE_BOTH_SIDES, value) }
+
+    /** Thumb friendly: items start at the bottom, next to the screen edge. */
+    var thumbMode: Boolean
+        get() = prefs.getBoolean(KEY_THUMB_MODE, true)
+        set(value) = prefs.edit { putBoolean(KEY_THUMB_MODE, value) }
+
+    /** Show the dashboard (tools section at the bottom) on every page, not only on the apps page. */
+    var dashboardOnAllPages: Boolean
+        get() = prefs.getBoolean(KEY_DASHBOARD_ALL_PAGES, false)
+        set(value) = prefs.edit { putBoolean(KEY_DASHBOARD_ALL_PAGES, value) }
+
+    /** Additional dashboard buttons (EdgeTools ids) in their display order. */
+    fun getDashboardExtraItems(): List<String> =
+        prefs.getString(KEY_DASHBOARD_EXTRA_ITEMS, "")!!.split(DELIMITER).filter { it.isNotBlank() }
+
+    fun setDashboardExtraItems(ids: List<String>) {
+        prefs.edit { putString(KEY_DASHBOARD_EXTRA_ITEMS, ids.joinToString(DELIMITER)) }
+    }
 
     var contactsPageEnabled: Boolean
         get() = prefs.getBoolean(KEY_CONTACTS_PAGE_ENABLED, true)

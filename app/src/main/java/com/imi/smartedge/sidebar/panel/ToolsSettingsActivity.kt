@@ -114,7 +114,10 @@ class ToolsSettingsActivity : AppCompatActivity() {
         // Edge panel pages
         binding.featureContactsPage.isChecked = panelPrefs.contactsPageEnabled
         binding.featureToolsPage.isChecked = panelPrefs.toolsPageEnabled
+        binding.featureThumbMode.isChecked = panelPrefs.thumbMode
+        binding.featureDashboardAllPages.isChecked = panelPrefs.dashboardOnAllPages
         updateToolsPageSummary()
+        updateDashboardExtraSummary()
         renderSnippets()
     }
 
@@ -126,22 +129,79 @@ class ToolsSettingsActivity : AppCompatActivity() {
     }
 
     private fun showToolsPagePicker() {
-        val tools = EdgeTools.ALL
-        val selected = panelPrefs.getToolsPageItems().toMutableSet()
-        val labels = tools.map { getString(it.labelRes) }.toTypedArray()
-        val checked = tools.map { it.id in selected }.toBooleanArray()
+        showOrderedToolPicker(R.string.feature_tools_page_choose, panelPrefs.getToolsPageItems()) { ids ->
+            panelPrefs.setToolsPageItems(ids)
+            updateToolsPageSummary()
+            applyOnly()
+        }
+    }
+
+    private fun updateDashboardExtraSummary() {
+        val names = panelPrefs.getDashboardExtraItems().mapNotNull { EdgeTools.find(it) }.map { getString(it.labelRes) }
+        binding.tvDashboardExtraSummary.text = if (names.isEmpty()) getString(R.string.feature_tools_page_none)
+                                               else names.joinToString(", ")
+    }
+
+    /**
+     * Choose tools with check boxes and order them with the arrows. Selected tools keep their
+     * order at the top, the remaining catalog tools follow below.
+     */
+    private fun showOrderedToolPicker(titleRes: Int, selected: List<String>, onSave: (List<String>) -> Unit) {
+        val order = (selected.filter { EdgeTools.find(it) != null } +
+                     EdgeTools.ALL.map { it.id }.filter { it !in selected }).toMutableList()
+        val checked = selected.toMutableSet()
+        val density = resources.displayMetrics.density
+        val list = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding((16 * density).toInt(), (8 * density).toInt(), (8 * density).toInt(), 0)
+        }
+
+        fun render() {
+            list.removeAllViews()
+            order.forEachIndexed { index, id ->
+                val tool = EdgeTools.find(id) ?: return@forEachIndexed
+                val row = android.widget.LinearLayout(this).apply {
+                    orientation = android.widget.LinearLayout.HORIZONTAL
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                }
+                row.addView(android.widget.CheckBox(this).apply {
+                    text = getString(tool.labelRes)
+                    isChecked = id in checked
+                    setOnCheckedChangeListener { _, isOn -> if (isOn) checked.add(id) else checked.remove(id) }
+                }, android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+                row.addView(arrowButton(R.string.feature_move_up, 180f, index > 0) {
+                    order.add(index - 1, order.removeAt(index)); render()
+                })
+                row.addView(arrowButton(R.string.feature_move_down, 0f, index < order.size - 1) {
+                    order.add(index + 1, order.removeAt(index)); render()
+                })
+                list.addView(row)
+            }
+        }
+        render()
+
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.feature_tools_page_choose)
-            .setMultiChoiceItems(labels, checked) { _, which, isChecked ->
-                checked[which] = isChecked
-            }
-            .setPositiveButton(R.string.btn_save) { _, _ ->
-                panelPrefs.setToolsPageItems(tools.filterIndexed { i, _ -> checked[i] }.map { it.id })
-                updateToolsPageSummary()
-                applyOnly()
-            }
+            .setTitle(titleRes)
+            .setView(android.widget.ScrollView(this).apply { addView(list) })
+            .setPositiveButton(R.string.btn_save) { _, _ -> onSave(order.filter { it in checked }) }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    /** Small up/down arrow; [rotation] 180 = up, 0 = down (ic_chevron_right rotated by 90 more). */
+    private fun arrowButton(descriptionRes: Int, rotation: Float, enabled: Boolean, onClick: () -> Unit): android.widget.ImageButton {
+        val size = (40 * resources.displayMetrics.density).toInt()
+        return android.widget.ImageButton(this).apply {
+            setImageResource(R.drawable.ic_chevron_right)
+            imageTintList = android.content.res.ColorStateList.valueOf(binding.tvExtraDimStatus.currentTextColor)
+            this.rotation = rotation + 90f
+            background = null
+            contentDescription = getString(descriptionRes)
+            isEnabled = enabled
+            alpha = if (enabled) 1f else 0.25f
+            layoutParams = android.widget.LinearLayout.LayoutParams(size, size)
+            setOnClickListener { onClick() }
+        }
     }
 
     private fun renderSnippets() {
@@ -250,7 +310,7 @@ class ToolsSettingsActivity : AppCompatActivity() {
             })
             return
         }
-        contacts.forEach { contact ->
+        contacts.forEachIndexed { index, contact ->
             val row = android.widget.LinearLayout(this).apply {
                 orientation = android.widget.LinearLayout.HORIZONTAL
                 gravity = android.view.Gravity.CENTER_VERTICAL
@@ -259,6 +319,16 @@ class ToolsSettingsActivity : AppCompatActivity() {
                 text = "${contact.name}\n${contact.number}"
                 textSize = 13f
             }, android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+            row.addView(arrowButton(R.string.feature_move_up, 180f, index > 0) {
+                FavoriteContactsManager.move(this, index, -1)
+                renderFavoriteContacts()
+                applyOnly()
+            })
+            row.addView(arrowButton(R.string.feature_move_down, 0f, index < contacts.size - 1) {
+                FavoriteContactsManager.move(this, index, 1)
+                renderFavoriteContacts()
+                applyOnly()
+            })
             row.addView(TextView(this).apply {
                 setText(R.string.feature_contacts_remove)
                 textSize = 12f
@@ -396,6 +466,24 @@ class ToolsSettingsActivity : AppCompatActivity() {
         }
 
         binding.btnToolsPageItems.setOnClickListener { showToolsPagePicker() }
+
+        binding.featureThumbMode.setOnCheckedChangeListener { _, isChecked ->
+            panelPrefs.thumbMode = isChecked
+            applyOnly()
+        }
+
+        binding.featureDashboardAllPages.setOnCheckedChangeListener { _, isChecked ->
+            panelPrefs.dashboardOnAllPages = isChecked
+            applyOnly()
+        }
+
+        binding.btnDashboardExtra.setOnClickListener {
+            showOrderedToolPicker(R.string.feature_dashboard_extra_choose, panelPrefs.getDashboardExtraItems()) { ids ->
+                panelPrefs.setDashboardExtraItems(ids)
+                updateDashboardExtraSummary()
+                applyOnly()
+            }
+        }
 
         binding.btnSnippetAdd.setOnClickListener { showSnippetDialog(-1, null) }
 

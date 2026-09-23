@@ -12,8 +12,14 @@ data class AppInfo(
     val intentUri: String? = null,
     val activityName: String? = null,
     val subItems: List<String>? = null, // identifiers for items inside a folder
-    val appearanceKey: String? = null // Forces redraw when shape/theme changes
+    val appearanceKey: String? = null, // Forces redraw when shape/theme changes
+    val isNotification: Boolean = false // Shown because of an active notification, not pinned
 ) {
+    companion object {
+        /** Divider between notification apps and pinned apps. */
+        const val SEPARATOR_ID = "smartedge.separator"
+    }
+
     enum class Type {
         APP, ACTIVITY, SHORTCUT, FOLDER, TOOL
     }

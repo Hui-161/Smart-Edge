@@ -338,4 +338,18 @@
     <!-- Handles on both edges -->
     <string name="panel_side_both">Both</string>
     <string name="panel_side_both_desc">A handle on each edge: slide on the right handle to change brightness, on the left handle to change volume. The sidebar opens on the side you swipe from.</string>
+
+    <!-- Split screen -->
+    <string name="edge_split_unsupported">Your Android version does not let apps open split screen directly. Enable Shizuku or Root (System Automation), or split via the recent apps screen.</string>
+    <string name="edge_split_failed">Split screen could not be created. Open another app first, then drag the app to the top or bottom.</string>
+
+    <!-- Dashboard items, ordering, thumb mode -->
+    <string name="feature_dashboard_all_pages_label">Dashboard on All Pages</string>
+    <string name="feature_dashboard_all_pages_desc">Also show the dashboard buttons on the contacts and tools pages</string>
+    <string name="feature_dashboard_extra_label">More Dashboard Items</string>
+    <string name="feature_dashboard_extra_choose">Choose and Arrange Items</string>
+    <string name="feature_thumb_mode_label">Thumb-Friendly Order</string>
+    <string name="feature_thumb_mode_desc">Items start at the bottom next to the screen edge (bottom right for a right sidebar)</string>
+    <string name="feature_move_up">Move up</string>
+    <string name="feature_move_down">Move down</string>
 </resources>

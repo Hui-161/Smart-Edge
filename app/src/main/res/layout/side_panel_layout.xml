@@ -72,6 +72,15 @@
             android:background="#33FFFFFF"
             android:layout_marginBottom="8dp" />
 
+        <!-- Additional dashboard buttons chosen in settings (filled by SidePanelView) -->
+        <LinearLayout
+            android:id="@+id/dashboardExtraContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:visibility="gone" />
+
         <!-- Power Menu Section (Shizuku) -->
         <LinearLayout
             android:id="@+id/layoutPowerTools"
