@@ -7,6 +7,12 @@
 ---
 
 ### Unreleased
+- **feat(profiles)**: App profiles – different sidebar apps by time of day and/or while an Android mode (Do not disturb, Bedtime, …) is active, managed in Dashboard Tools settings.
+- **feat(panel)**: Edit mode: remove badge on every sidebar entry, drag an entry onto the app drawer to remove it, collapsible "Tools" section in the app drawer to add/remove tools (tools folder, Extra Dim, clipboard, flashlight …) in the app list.
+- **feat(panel)**: Tool buttons are regular, movable/removable app-list entries (one-time migration of the former switches).
+- **feat(dashboard)**: Compact dashboard – smaller icons side by side, extra items in a grid.
+- **feat(panel)**: Notification apps always above the pinned apps; the sidebar opens at the pinned apps.
+- **fix(panel)**: Keyboard closes together with the app drawer.
 - **fix(multitasking)**: Drag-to-split works on Android 12+ (incl. 17) with Shizuku/Root via the system split-screen command (top/bottom respected); otherwise via the system split action where offered, with a clear hint if the device does not allow it.
 - **feat(dashboard)**: Additional, orderable dashboard items from the tool catalog (e.g. clipboard, Extra Dim, flashlight) and an option to show the dashboard on all pages.
 - **feat(settings)**: Tools page and favorite contacts can be reordered.

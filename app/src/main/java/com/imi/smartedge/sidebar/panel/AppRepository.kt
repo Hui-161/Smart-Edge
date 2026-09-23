@@ -218,7 +218,7 @@ class AppRepository(context: Context) {
         FloatingPanelService.TOOL_CLIPBOARD -> appContext.getString(R.string.edge_tool_clipboard)
         FloatingPanelService.TOOL_CONTACTS -> appContext.getString(R.string.edge_tool_contacts)
         FloatingPanelService.TOOL_EXTRA_DIM -> appContext.getString(R.string.edge_tool_extra_dim)
-        else -> null
+        else -> EdgeTools.find(id)?.let { appContext.getString(it.labelRes) }
     }
 
     /**
@@ -301,7 +301,10 @@ class AppRepository(context: Context) {
         if (notificationApps.isEmpty()) return@withContext pinnedApps
 
         val separator = AppInfo(AppInfo.SEPARATOR_ID, "", type = AppInfo.Type.TOOL)
-        notificationApps + separator + pinnedApps
+        // Always shown above the pinned apps. In thumb mode the list starts at the bottom, so they
+        // go to the end: the sidebar opens at the pinned apps and they appear when scrolling up.
+        if (panelPrefs.thumbMode) pinnedApps + separator + notificationApps
+        else notificationApps + separator + pinnedApps
     }
 
     suspend fun getTop5Apps(): List<String> = withContext(Dispatchers.IO) {

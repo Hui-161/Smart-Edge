@@ -211,8 +211,43 @@ class SidePanelView @JvmOverloads constructor(
 
             override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {}
 
+            /** Horizontal drag distance of the current drag, to detect "drag out to the app drawer". */
+            private var dragDx = 0f
+
+            override fun onChildDraw(
+                c: android.graphics.Canvas,
+                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+            ) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                if (actionState == androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG && isCurrentlyActive) {
+                    dragDx = dX
+                    // Fade the item while it is dragged far enough out to be removed
+                    viewHolder.itemView.alpha = if (isDraggedOut(recyclerView)) 0.4f else 1f
+                }
+            }
+
+            private fun isDraggedOut(recyclerView: androidx.recyclerview.widget.RecyclerView): Boolean {
+                val isRight = panelPrefs.panelSide == PanelPreferences.SIDE_RIGHT
+                val inward = if (isRight) -dragDx else dragDx // towards the app drawer
+                return inward > recyclerView.width * 0.9f
+            }
+
             override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.alpha = 1f
+                val draggedOut = isDraggedOut(recyclerView)
+                dragDx = 0f
+                if (draggedOut) {
+                    // Dropped onto the app drawer: remove from the sidebar
+                    val app = adapter.getApps().getOrNull(viewHolder.bindingAdapterPosition)
+                    if (app != null && !app.isNotification) {
+                        panelPrefs.removeApp(app.identifier)
+                        onAppsChanged?.invoke()
+                        return
+                    }
+                }
                 val apps = adapter.getApps()
                 val identifiers = apps.filter { !it.isNotification && it.identifier != AppInfo.SEPARATOR_ID }
                     .map { it.identifier }
@@ -450,12 +485,15 @@ class SidePanelView @JvmOverloads constructor(
         
         if (panelPrefs.showTools && navigationStack.isEmpty() &&
             (currentPage == PanelPreferences.PAGE_APPS || panelPrefs.dashboardOnAllPages)) {
-            nonAppHeightDp += 50f
-            nonAppHeightDp += 46f * panelPrefs.getDashboardExtraItems().size // Divider + Screenshot + Labels
-            if (panelPrefs.showPowerMenu) nonAppHeightDp += 42f
+            // Compact dashboard: 32dp rows, pairs side by side
+            nonAppHeightDp += 12f + 32f
+            val perRow = if (currentCols >= 2) 4 else 2
+            val extraRows = (panelPrefs.getDashboardExtraItems().size + perRow - 1) / perRow
+            nonAppHeightDp += 32f * extraRows
+            if (panelPrefs.showPowerMenu) nonAppHeightDp += 32f
             if (showSysInfoEffective) nonAppHeightDp += 24f
-            if (panelPrefs.showVolumeKeys) nonAppHeightDp += 84f // Two buttons + labels
-            if (panelPrefs.showBrightnessKeys) nonAppHeightDp += 84f
+            if (panelPrefs.showVolumeKeys) nonAppHeightDp += 32f
+            if (panelPrefs.showBrightnessKeys) nonAppHeightDp += 32f
         }
         
         // Maximum allowed height for RV to keep panel within screen (with 24dp safety margin)
@@ -645,7 +683,15 @@ class SidePanelView @JvmOverloads constructor(
                 }
             } else {
                 binding.rvPanelApps.post {
-                    binding.rvPanelApps.scrollToPosition(0)
+                    // Open at the pinned apps: notification apps stay above and are reached by
+                    // scrolling up (in thumb mode position 0 is already the bottom pinned app)
+                    val firstPinned = apps.indexOfFirst { !it.isNotification && it.identifier != AppInfo.SEPARATOR_ID }
+                    val grid = binding.rvPanelApps.layoutManager as? GridLayoutManager
+                    if (!panelPrefs.thumbMode && firstPinned > 0 && grid != null) {
+                        grid.scrollToPositionWithOffset(firstPinned, 0)
+                    } else {
+                        binding.rvPanelApps.scrollToPosition(0)
+                    }
                 }
             }
             
@@ -686,9 +732,7 @@ class SidePanelView @JvmOverloads constructor(
         
         val showScreenshot = panelPrefs.showScreenshotTool
         binding.btnScreenshot.visibility = if (showScreenshot) View.VISIBLE else View.GONE
-        // Hide screenshot label if button is hidden
-        val screenshotLabel = binding.toolsContainer.getChildAt(binding.toolsContainer.indexOfChild(binding.btnScreenshot) + 1)
-        screenshotLabel?.visibility = if (showScreenshot) View.VISIBLE else View.GONE
+        // Dashboard shows icons only (labels stay hidden, the buttons carry content descriptions)
 
         if (panelPrefs.hideBackground) {
             binding.panelCard.background = null
@@ -760,47 +804,46 @@ class SidePanelView @JvmOverloads constructor(
         }
     }
 
-    private var renderedDashboardExtras: List<String>? = null
+    private var renderedDashboardExtras: String? = null
 
-    /** Builds the additional dashboard buttons chosen in settings; returns how many are shown. */
+    /**
+     * Builds the additional dashboard buttons chosen in settings as a compact grid
+     * (2 per row, 4 with two columns); returns how many are shown.
+     */
     private fun renderDashboardExtras(): Int {
         val container = binding.dashboardExtraContainer
         val ids = panelPrefs.getDashboardExtraItems().filter { EdgeTools.find(it) != null }
-        if (ids == renderedDashboardExtras) return ids.size
-        renderedDashboardExtras = ids
+        val perRow = if (currentCols >= 2) 4 else 2
+        val key = ids.joinToString(",") + "|" + perRow
+        if (key == renderedDashboardExtras) return ids.size
+        renderedDashboardExtras = key
         container.removeAllViews()
         container.visibility = if (ids.isEmpty()) View.GONE else View.VISIBLE
-        ids.forEach { id ->
-            val tool = EdgeTools.find(id) ?: return@forEach
-            container.addView(android.widget.ImageButton(context).apply {
-                setBackgroundResource(R.drawable.bg_close_btn)
-                backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1AFFFFFF"))
-                setImageResource(tool.iconRes)
-                imageTintList = ColorStateList.valueOf(Color.WHITE)
-                scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
-                setPadding(context.dpToPx(8), context.dpToPx(8), context.dpToPx(8), context.dpToPx(8))
-                contentDescription = context.getString(tool.labelRes)
-                setOnClickListener {
-                    if (panelPrefs.hapticEnabled) it.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK)
-                    SpringAnimator.scalePulse(it)
-                    onToolClick?.invoke(id)
-                }
-            }, android.widget.LinearLayout.LayoutParams(context.dpToPx(32), context.dpToPx(32)))
-            container.addView(android.widget.TextView(context).apply {
-                text = context.getString(tool.labelRes)
-                setTextColor(Color.parseColor("#80FFFFFF"))
-                textSize = 9f
-                maxLines = 1
-                ellipsize = android.text.TextUtils.TruncateAt.END
+        ids.chunked(perRow).forEach { rowIds ->
+            val row = android.widget.LinearLayout(context).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
                 gravity = android.view.Gravity.CENTER
-                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            }, android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin = context.dpToPx(2)
-                bottomMargin = context.dpToPx(6)
-            })
+            }
+            rowIds.forEach { id ->
+                val tool = EdgeTools.find(id) ?: return@forEach
+                row.addView(android.widget.ImageButton(context).apply {
+                    setBackgroundResource(R.drawable.bg_close_btn)
+                    backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1AFFFFFF"))
+                    setImageResource(tool.iconRes)
+                    imageTintList = ColorStateList.valueOf(Color.WHITE)
+                    scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                    setPadding(context.dpToPx(6), context.dpToPx(6), context.dpToPx(6), context.dpToPx(6))
+                    contentDescription = context.getString(tool.labelRes)
+                    setOnClickListener {
+                        if (panelPrefs.hapticEnabled) it.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK)
+                        SpringAnimator.scalePulse(it)
+                        onToolClick?.invoke(id)
+                    }
+                }, android.widget.LinearLayout.LayoutParams(context.dpToPx(28), context.dpToPx(28)).apply {
+                    setMargins(context.dpToPx(2), context.dpToPx(2), context.dpToPx(2), context.dpToPx(2))
+                })
+            }
+            container.addView(row)
         }
         return ids.size
     }

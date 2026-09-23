@@ -87,6 +87,7 @@ class PanelAppsAdapter(
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivIcon: ImageView = itemView.findViewById(R.id.ivAppIcon)
         val tvName: TextView = itemView.findViewById(R.id.tvAppName)
+        val ivRemove: ImageView? = itemView.findViewById(R.id.ivRemoveBadge)
     }
 
     /** Thin divider between notification apps and pinned apps. */
@@ -236,6 +237,14 @@ class PanelAppsAdapter(
             }
                 
             holder.tvName.text = app.appName
+
+            // Edit mode (app drawer open): remove badge for pinned entries, apps and tools alike
+            val removable = isEditMode && !app.isNotification && !app.packageName.startsWith(EdgeTools.CONTACT_PREFIX)
+            holder.ivRemove?.visibility = if (removable) View.VISIBLE else View.GONE
+            holder.ivRemove?.setOnClickListener {
+                if (panelPrefs.hapticEnabled) it.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK)
+                onRemove(app)
+            }
 
             if (app.identifier == highlightIdentifier) {
                 SpringAnimator.scalePulse(holder.itemView)

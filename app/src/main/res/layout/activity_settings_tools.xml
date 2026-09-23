@@ -128,6 +128,32 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- App profiles: different apps by time of day / active mode -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/App_Card_Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <LinearLayout
+                    style="@style/App_CardContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/section_app_profiles" android:textColor="?attr/colorOnSurface" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/feature_profiles_desc" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="11sp" />
+                    <TextView android:id="@+id/tv_active_profile" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="?attr/colorPrimary" android:textSize="12sp" />
+                    <LinearLayout
+                        android:id="@+id/layout_profiles"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="vertical" />
+                    <Button android:id="@+id/btn_profile_add" style="@style/Widget.Material3.Button.TonalButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/feature_profile_add" android:textSize="12sp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Edge panel pages: apps / contacts / tools -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/App_Card_Section"

@@ -166,6 +166,8 @@ class FloatingPanelService : Service() {
             Log.e(TAG, "Failed to register torch callback", e)
         }
 
+        panelPrefs.migrateToolButtonsToAppList()
+
         // One-time migration for new defaults
         if (!panelPrefs.toolsFolderMigrated) {
             panelPrefs.showTools = true
@@ -1270,6 +1272,8 @@ class FloatingPanelService : Service() {
     private fun closePicker() {
         if (!isPickerOpen) return
         isPickerOpen = false
+        pickerPanelView?.hideKeyboard()
+        rootLayout?.requestFocus()
         sidePanelView?.animatePickerToggle(false)
         Handler(Looper.getMainLooper()).postDelayed({
             if (!isPickerOpen) {
@@ -1336,43 +1340,8 @@ class FloatingPanelService : Service() {
             } else {
                 val baseApps = repository.getPanelApps().toMutableList()
                 
-                // Add "Tools" folder button at the top if enabled
-                if (panelPrefs.showToolsPanelButton) {
-                    val toolsBtn = AppInfo("smartedge.tool.tools", getString(R.string.msg_tools), type = AppInfo.Type.TOOL)
-                    if (baseApps.none { it.identifier == toolsBtn.identifier }) {
-                        // First pinned position: below the notification apps and their divider
-                        val firstPinned = baseApps.indexOfFirst { it.identifier == AppInfo.SEPARATOR_ID } + 1
-                        baseApps.add(firstPinned, toolsBtn)
-                    }
-                }
-
-                // Edge feature buttons (placed after the Tools folder button). They can end up
-                // in the saved app order after drag & drop, so the switches decide visibility.
-                val edgeToolNames = mapOf(
-                    TOOL_CLIPBOARD to getString(R.string.edge_tool_clipboard),
-                    TOOL_CONTACTS to getString(R.string.edge_tool_contacts),
-                    TOOL_EXTRA_DIM to getString(R.string.edge_tool_extra_dim)
-                )
-                val enabledEdgeTools = mutableListOf<String>()
-                if (panelPrefs.clipboardHistoryEnabled || ClipboardSnippetsManager.getSnippets(this@FloatingPanelService).isNotEmpty()) {
-                    enabledEdgeTools.add(TOOL_CLIPBOARD)
-                }
-                if (panelPrefs.showContactsButton) enabledEdgeTools.add(TOOL_CONTACTS)
-                if (panelPrefs.showExtraDimButton && ExtraDimHelper.isSupported()) enabledEdgeTools.add(TOOL_EXTRA_DIM)
-
-                baseApps.removeAll { it.identifier in edgeToolNames && it.identifier !in enabledEdgeTools }
-                for (i in baseApps.indices) {
-                    val label = edgeToolNames[baseApps[i].identifier] ?: continue
-                    baseApps[i] = baseApps[i].copy(appName = label)
-                }
-                val firstPinned = baseApps.indexOfFirst { it.identifier == AppInfo.SEPARATOR_ID } + 1
-                var insertAt = if (baseApps.getOrNull(firstPinned)?.identifier == "smartedge.tool.tools") firstPinned + 1 else firstPinned
-                enabledEdgeTools.forEach { toolId ->
-                    if (baseApps.none { it.identifier == toolId }) {
-                        baseApps.add(insertAt++, AppInfo(toolId, edgeToolNames.getValue(toolId), type = AppInfo.Type.TOOL))
-                    }
-                }
-                
+                // Tools folder and edge buttons are regular entries of the app list now
+                // (see PanelPreferences.migrateToolButtonsToAppList)
                 baseApps
             }
             

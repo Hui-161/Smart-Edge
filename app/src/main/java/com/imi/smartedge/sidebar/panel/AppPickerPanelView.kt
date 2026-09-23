@@ -187,6 +187,16 @@ class AppPickerPanelView @JvmOverloads constructor(
             ivChevron.rotation = if (isHidden) 90f else 0f
         }
 
+        // Collapsible tools section (edit mode): add/remove tools in the sidebar app list
+        val scrollTools = view.findViewById<View>(R.id.scrollPickerTools)
+        val ivToolsChevron = view.findViewById<ImageView>(R.id.ivPickerToolsChevron)
+        view.findViewById<View>(R.id.btnTogglePickerTools).setOnClickListener {
+            val isHidden = scrollTools.visibility == View.GONE
+            scrollTools.visibility = if (isHidden) View.VISIBLE else View.GONE
+            ivToolsChevron.rotation = if (isHidden) 90f else 0f
+            if (isHidden) renderPickerTools()
+        }
+
         // Hide keyboard when scrolling the app list
         rvPickerGrid.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: androidx.recyclerview.widget.RecyclerView, newState: Int) {
@@ -355,6 +365,8 @@ class AppPickerPanelView @JvmOverloads constructor(
         } catch (e: Exception) { Color.parseColor("#4A9EFF") }
 
         btnEdit.setTextColor(if (isEditMode) accentColor else Color.parseColor("#4A9EFF"))
+        findViewById<View>(R.id.layoutPickerTools).visibility = if (isEditMode) View.VISIBLE else View.GONE
+        if (isEditMode) renderPickerTools()
         adapter.notifyItemRangeChanged(0, adapter.itemCount, "EDIT_MODE_CHANGE")
     }
 
@@ -498,6 +510,60 @@ class AppPickerPanelView @JvmOverloads constructor(
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             imm.showSoftInput(etSearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
         }
+    }
+
+    /** Tool chips of the collapsible tools section; highlighted when the tool is in the sidebar. */
+    fun renderPickerTools() {
+        val container = findViewById<LinearLayout>(R.id.pickerToolsContainer) ?: return
+        container.removeAllViews()
+        val accent = try {
+            if (panelPrefs.useCustomAccent) Color.parseColor(panelPrefs.accentColor) else Color.parseColor("#4A9EFF")
+        } catch (e: Exception) { Color.parseColor("#4A9EFF") }
+        val entries = listOf(Triple(PanelPreferences.TOOLS_FOLDER_ID, R.string.msg_tools, R.drawable.ic_section_tools)) +
+            EdgeTools.ALL.map { Triple(it.id, it.labelRes, it.iconRes) }
+        entries.forEach { (id, labelRes, iconRes) ->
+            val label = context.getString(labelRes)
+            val pinned = panelPrefs.isInPanel(id)
+            val chip = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                setPadding(context.dpToPx(4), 0, context.dpToPx(4), 0)
+                isClickable = true
+                isFocusable = true
+                contentDescription = label
+                setOnClickListener {
+                    if (panelPrefs.hapticEnabled) it.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+                    onToggleApp?.invoke(AppInfo(id, label, type = AppInfo.Type.TOOL), !panelPrefs.isInPanel(id))
+                    post { renderPickerTools() }
+                }
+            }
+            chip.addView(ImageView(context).apply {
+                setImageResource(iconRes)
+                imageTintList = android.content.res.ColorStateList.valueOf(if (pinned) Color.WHITE else Color.parseColor("#B3FFFFFF"))
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(if (pinned) accent else Color.parseColor("#26FFFFFF"))
+                }
+                setPadding(context.dpToPx(7), context.dpToPx(7), context.dpToPx(7), context.dpToPx(7))
+            }, LinearLayout.LayoutParams(context.dpToPx(34), context.dpToPx(34)))
+            chip.addView(TextView(context).apply {
+                text = label
+                textSize = 9f
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
+                gravity = android.view.Gravity.CENTER
+                setTextColor(Color.parseColor("#B3FFFFFF"))
+            }, LinearLayout.LayoutParams(context.dpToPx(52), LinearLayout.LayoutParams.WRAP_CONTENT))
+            container.addView(chip)
+        }
+    }
+
+    /** Hides the keyboard and removes focus from the search field (when the drawer closes). */
+    fun hideKeyboard() {
+        etSearch.clearFocus()
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
     fun invalidateAppList() {

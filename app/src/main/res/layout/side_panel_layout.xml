@@ -86,22 +86,25 @@
             android:id="@+id/layoutPowerTools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:gravity="center_horizontal"
             android:visibility="gone">
             
             <ImageButton
                 android:id="@+id/btnReboot"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:contentDescription="@string/ui_panel_label_power"
+                android:layout_margin="2dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="@drawable/bg_close_btn"
                 android:backgroundTint="#1AFFFFFF"
-                android:padding="8dp"
+                android:padding="6dp"
                 android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_lock_power_off"
                 android:tint="#D9FFFFFF" />
             
             <TextView
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_panel_label_power"
@@ -116,23 +119,26 @@
             android:id="@+id/layoutVolumeTools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:gravity="center_horizontal"
             android:visibility="gone">
 
             <ImageButton
                 android:id="@+id/btnVolumeUp"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:contentDescription="@string/ui_panel_label_volume_up"
+                android:layout_margin="2dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="@drawable/bg_close_btn"
                 android:backgroundTint="#1AFFFFFF"
-                android:padding="8dp"
+                android:padding="6dp"
                 android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_media_play"
                 android:rotation="-90"
                 android:tint="#D9FFFFFF" />
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_panel_label_volume_up"
@@ -143,17 +149,20 @@
 
             <ImageButton
                 android:id="@+id/btnVolumeDown"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:contentDescription="@string/ui_panel_label_volume_down"
+                android:layout_margin="2dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="@drawable/bg_close_btn"
                 android:backgroundTint="#1AFFFFFF"
-                android:padding="8dp"
+                android:padding="6dp"
                 android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_media_play"
                 android:rotation="90"
                 android:tint="#D9FFFFFF" />
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_panel_label_volume_down"
@@ -168,22 +177,25 @@
             android:id="@+id/layoutBrightnessTools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:gravity="center_horizontal"
             android:visibility="gone">
 
             <ImageButton
                 android:id="@+id/btnBrightnessUp"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:contentDescription="@string/ui_panel_label_brightness_up"
+                android:layout_margin="2dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="@drawable/bg_close_btn"
                 android:backgroundTint="#1AFFFFFF"
-                android:padding="8dp"
+                android:padding="6dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_brightness_up"
                 android:tint="#D9FFFFFF" />
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_panel_label_brightness_up"
@@ -194,16 +206,19 @@
 
             <ImageButton
                 android:id="@+id/btnBrightnessDown"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:contentDescription="@string/ui_panel_label_brightness_down"
+                android:layout_margin="2dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="@drawable/bg_close_btn"
                 android:backgroundTint="#1AFFFFFF"
-                android:padding="8dp"
+                android:padding="6dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_brightness_down"
                 android:tint="#D9FFFFFF" />
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ui_panel_label_brightness_down"
@@ -216,16 +231,19 @@
         <!-- Screenshot Button -->
         <ImageButton
             android:id="@+id/btnScreenshot"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+                android:contentDescription="@string/ui_panel_label_screenshot"
+                android:layout_margin="2dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:background="@drawable/bg_close_btn"
             android:backgroundTint="#1AFFFFFF"
-            android:padding="8dp"
+            android:padding="6dp"
             android:scaleType="fitCenter"
             android:src="@android:drawable/ic_menu_camera"
             android:tint="#D9FFFFFF" />
 
         <TextView
+                android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ui_panel_label_screenshot"

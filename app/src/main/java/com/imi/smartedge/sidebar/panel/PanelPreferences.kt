@@ -11,6 +11,7 @@ import androidx.core.content.edit
  */
 class PanelPreferences(context: Context) {
 
+    private val appContext: Context = context.applicationContext ?: context
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
@@ -61,6 +62,8 @@ class PanelPreferences(context: Context) {
         private const val KEY_CONTACTS_PAGE_ENABLED = "contacts_page_enabled"
         private const val KEY_HANDLE_BOTH_SIDES = "handle_both_sides"
         private const val KEY_THUMB_MODE = "thumb_mode"
+        private const val KEY_TOOL_BUTTONS_MIGRATED = "tool_buttons_migrated"
+        const val TOOLS_FOLDER_ID = "smartedge.tool.tools"
         private const val KEY_DASHBOARD_ALL_PAGES = "dashboard_all_pages"
         private const val KEY_DASHBOARD_EXTRA_ITEMS = "dashboard_extra_items"
 
@@ -221,7 +224,7 @@ class PanelPreferences(context: Context) {
 
         // Strings
         val strings = mapOf(
-            KEY_PANEL_APPS to getPanelApps().joinToString(DELIMITER),
+            KEY_PANEL_APPS to getStandardPanelApps().joinToString(DELIMITER),
             KEY_GAME_APPS to getGameApps().joinToString(DELIMITER),
             KEY_PANEL_SIDE to panelSide,
             KEY_ACCENT_COLOR to accentColor,
@@ -532,9 +535,10 @@ class PanelPreferences(context: Context) {
         get() = prefs.getBoolean(KEY_SHOW_SCREENSHOT_TOOL, true)
         set(value) = prefs.edit { putBoolean(KEY_SHOW_SCREENSHOT_TOOL, value) }
 
+    /** The tools folder button is a normal entry of the app list (removable and movable). */
     var showToolsPanelButton: Boolean
-        get() = prefs.getBoolean(KEY_SHOW_TOOLS_PANEL_BUTTON, DEFAULT_SHOW_TOOLS_PANEL)
-        set(value) = prefs.edit { putBoolean(KEY_SHOW_TOOLS_PANEL_BUTTON, value) }
+        get() = isInPanel(TOOLS_FOLDER_ID)
+        set(value) = if (value) addApp(TOOLS_FOLDER_ID) else removeApp(TOOLS_FOLDER_ID)
 
     /** Records copied text and shows the clipboard button in the sidebar. Off by default (privacy). */
     var clipboardHistoryEnabled: Boolean
@@ -542,12 +546,28 @@ class PanelPreferences(context: Context) {
         set(value) = prefs.edit { putBoolean(KEY_CLIPBOARD_HISTORY_ENABLED, value) }
 
     var showContactsButton: Boolean
-        get() = prefs.getBoolean(KEY_SHOW_CONTACTS_BUTTON, false)
-        set(value) = prefs.edit { putBoolean(KEY_SHOW_CONTACTS_BUTTON, value) }
+        get() = isInPanel(FloatingPanelService.TOOL_CONTACTS)
+        set(value) = if (value) addApp(FloatingPanelService.TOOL_CONTACTS) else removeApp(FloatingPanelService.TOOL_CONTACTS)
 
     var showExtraDimButton: Boolean
-        get() = prefs.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, false)
-        set(value) = prefs.edit { putBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, value) }
+        get() = isInPanel(FloatingPanelService.TOOL_EXTRA_DIM)
+        set(value) = if (value) addApp(FloatingPanelService.TOOL_EXTRA_DIM) else removeApp(FloatingPanelService.TOOL_EXTRA_DIM)
+
+    /**
+     * One-time: the tools folder and edge buttons used to be injected automatically based on
+     * switches. They are now regular app-list entries, so the user can remove or move them.
+     */
+    fun migrateToolButtonsToAppList() {
+        if (prefs.getBoolean(KEY_TOOL_BUTTONS_MIGRATED, false)) return
+        val list = getPanelApps().toMutableList()
+        fun ensure(id: String, wanted: Boolean) { if (wanted && id !in list) list.add(0, id) }
+        ensure(FloatingPanelService.TOOL_EXTRA_DIM, prefs.getBoolean(KEY_SHOW_EXTRA_DIM_BUTTON, false))
+        ensure(FloatingPanelService.TOOL_CONTACTS, prefs.getBoolean(KEY_SHOW_CONTACTS_BUTTON, false))
+        ensure(FloatingPanelService.TOOL_CLIPBOARD, clipboardHistoryEnabled)
+        ensure(TOOLS_FOLDER_ID, prefs.getBoolean(KEY_SHOW_TOOLS_PANEL_BUTTON, DEFAULT_SHOW_TOOLS_PANEL))
+        setPanelApps(list)
+        prefs.edit { putBoolean(KEY_TOOL_BUTTONS_MIGRATED, true) }
+    }
 
     /** Show a handle on both screen edges (right = brightness slide, left = volume slide). */
     var handleBothSides: Boolean
@@ -853,17 +873,28 @@ class PanelPreferences(context: Context) {
     val appearanceKey: String
         get() = "shape:$iconShape|pack:$selectedIconPack|theme:$uiTheme"
 
-    fun getPanelApps(): List<String> {
-        val raw = prefs.getString(KEY_PANEL_APPS, "") ?: ""
+    /** Storage key of the app list in use: the active app profile's list or the standard list. */
+    private fun panelAppsKey(): String =
+        AppProfilesManager.activeProfile(appContext)?.panelAppsKey ?: KEY_PANEL_APPS
+
+    fun getPanelApps(): List<String> = getPanelAppsForKey(panelAppsKey())
+
+    fun setPanelApps(identifiers: List<String>) = setPanelAppsForKey(panelAppsKey(), identifiers)
+
+    /** Standard list (no profile), e.g. as template for a new profile. */
+    fun getStandardPanelApps(): List<String> = getPanelAppsForKey(KEY_PANEL_APPS)
+
+    fun getPanelAppsForKey(key: String): List<String> {
+        val raw = prefs.getString(key, "") ?: ""
         return if (raw.isBlank()) emptyList()
         else raw.split(DELIMITER)
             .filter { it.isNotBlank() }
             .distinct()
     }
 
-    fun setPanelApps(identifiers: List<String>) {
+    fun setPanelAppsForKey(key: String, identifiers: List<String>) {
         val unique = identifiers.filter { it.isNotBlank() }.distinct()
-        prefs.edit { putString(KEY_PANEL_APPS, unique.joinToString(DELIMITER)) }
+        prefs.edit { putString(key, unique.joinToString(DELIMITER)) }
     }
 
     fun addApp(identifier: String) {

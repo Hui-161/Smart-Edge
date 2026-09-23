@@ -140,6 +140,60 @@
             android:textAllCaps="true" />
     </LinearLayout>
 
+    <!-- Tools section (edit mode only, collapsed by default): add/remove tools in the app list -->
+    <LinearLayout
+        android:id="@+id/layoutPickerTools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/btnTogglePickerTools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/edge_picker_tools"
+                android:textColor="#80FFFFFF"
+                android:textSize="11sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.05" />
+
+            <ImageView
+                android:id="@+id/ivPickerToolsChevron"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_chevron_right"
+                android:rotation="0"
+                app:tint="#80FFFFFF" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/scrollPickerTools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/pickerToolsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+    </LinearLayout>
+
     <!-- Notifications Section (Horizontal) -->
     <LinearLayout
         android:id="@+id/layoutPickerNotifications"

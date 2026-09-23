@@ -118,6 +118,7 @@ class ToolsSettingsActivity : AppCompatActivity() {
         binding.featureDashboardAllPages.isChecked = panelPrefs.dashboardOnAllPages
         updateToolsPageSummary()
         updateDashboardExtraSummary()
+        renderProfiles()
         renderSnippets()
     }
 
@@ -201,6 +202,143 @@ class ToolsSettingsActivity : AppCompatActivity() {
             alpha = if (enabled) 1f else 0.25f
             layoutParams = android.widget.LinearLayout.LayoutParams(size, size)
             setOnClickListener { onClick() }
+        }
+    }
+
+    // ---- App profiles ----
+
+    private fun profileSummary(p: AppProfilesManager.Profile): String {
+        val parts = mutableListOf<String>()
+        if (p.useTime) parts.add("${AppProfilesManager.formatTime(p.startMinutes)}–${AppProfilesManager.formatTime(p.endMinutes)}")
+        if (p.whenModeActive) parts.add(getString(R.string.feature_profile_mode_short))
+        val apps = panelPrefs.getPanelAppsForKey(p.panelAppsKey).size
+        parts.add(getString(R.string.feature_profile_app_count, apps))
+        return parts.joinToString(" · ")
+    }
+
+    private fun renderProfiles() {
+        val active = AppProfilesManager.activeProfile(this)
+        binding.tvActiveProfile.text = getString(R.string.feature_profile_active, active?.name ?: getString(R.string.feature_profile_standard))
+        val container = binding.layoutProfiles
+        container.removeAllViews()
+        AppProfilesManager.getProfiles(this).forEach { profile ->
+            val row = android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                setPadding(0, 12, 0, 12)
+            }
+            row.addView(TextView(this).apply {
+                text = "${profile.name}\n${profileSummary(profile)}"
+                textSize = 13f
+            })
+            val actions = android.widget.LinearLayout(this).apply { orientation = android.widget.LinearLayout.HORIZONTAL }
+            fun action(labelRes: Int, onClick: () -> Unit) = TextView(this).apply {
+                setText(labelRes)
+                textSize = 12f
+                setTextColor(binding.tvExtraDimStatus.currentTextColor)
+                setPadding(0, 12, 40, 12)
+                isClickable = true
+                isFocusable = true
+                setOnClickListener { onClick() }
+            }
+            actions.addView(action(R.string.feature_profile_edit_apps) { showProfileAppsPicker(profile) })
+            actions.addView(action(R.string.edge_contacts_manage) { showProfileDialog(profile) })
+            actions.addView(action(R.string.feature_contacts_remove) {
+                AppProfilesManager.remove(this, profile.id)
+                renderProfiles()
+                applyOnly()
+            })
+            row.addView(actions)
+            container.addView(row)
+        }
+    }
+
+    /** Add (profile == null) or edit a profile: name, optional time window, optional mode condition. */
+    private fun showProfileDialog(profile: AppProfilesManager.Profile?) {
+        val density = resources.displayMetrics.density
+        var start = profile?.startMinutes ?: 18 * 60
+        var end = profile?.endMinutes ?: 7 * 60
+        val nameInput = android.widget.EditText(this).apply {
+            setHint(R.string.feature_profile_name_hint)
+            setSingleLine()
+            setText(profile?.name.orEmpty())
+        }
+        val timeCheck = android.widget.CheckBox(this).apply {
+            setText(R.string.feature_profile_use_time)
+            isChecked = profile?.useTime ?: true
+        }
+        val timeButton = com.google.android.material.button.MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle)
+        fun updateTimeText() {
+            timeButton.text = "${AppProfilesManager.formatTime(start)} – ${AppProfilesManager.formatTime(end)}"
+        }
+        updateTimeText()
+        timeButton.setOnClickListener {
+            android.app.TimePickerDialog(this, { _, h, m ->
+                start = h * 60 + m
+                android.app.TimePickerDialog(this, { _, h2, m2 ->
+                    end = h2 * 60 + m2
+                    updateTimeText()
+                }, end / 60, end % 60, true).apply { setTitle(R.string.feature_profile_end) }.show()
+            }, start / 60, start % 60, true).apply { setTitle(R.string.feature_profile_start) }.show()
+        }
+        val modeCheck = android.widget.CheckBox(this).apply {
+            setText(R.string.feature_profile_when_mode)
+            isChecked = profile?.whenModeActive ?: false
+        }
+        val form = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding((20 * density).toInt(), (8 * density).toInt(), (20 * density).toInt(), 0)
+            addView(nameInput)
+            addView(timeCheck)
+            addView(timeButton)
+            addView(modeCheck)
+        }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(if (profile == null) R.string.feature_profile_add else R.string.feature_profile_edit)
+            .setView(form)
+            .setPositiveButton(R.string.btn_save) { _, _ ->
+                val name = nameInput.text.toString().trim().ifEmpty { getString(R.string.feature_profile_default_name) }
+                val updated = AppProfilesManager.Profile(
+                    profile?.id ?: AppProfilesManager.newId(), name,
+                    timeCheck.isChecked, start, end, modeCheck.isChecked
+                )
+                if (!updated.useTime && !updated.whenModeActive) {
+                    Toast.makeText(this, R.string.feature_profile_needs_condition, Toast.LENGTH_LONG).show()
+                }
+                if (profile == null) AppProfilesManager.add(this, updated, panelPrefs.getStandardPanelApps())
+                else AppProfilesManager.update(this, updated)
+                renderProfiles()
+                applyOnly()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    /** Choose the apps of a profile; tools and shortcuts already in its list are kept. */
+    private fun showProfileAppsPicker(profile: AppProfilesManager.Profile) {
+        lifecycleScope.launch {
+            val allApps = withContext(Dispatchers.IO) { AppRepository(this@ToolsSettingsActivity).getAllApps() }
+                .sortedBy { it.appName.lowercase() }
+            val current = panelPrefs.getPanelAppsForKey(profile.panelAppsKey)
+            val appIds = allApps.map { it.packageName }.toSet()
+            val selected = current.filter { it in appIds }.toMutableSet()
+            val labels = allApps.map { it.appName }.toTypedArray()
+            val checked = allApps.map { it.packageName in selected }.toBooleanArray()
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this@ToolsSettingsActivity)
+                .setTitle(getString(R.string.feature_profile_apps_title, profile.name))
+                .setMultiChoiceItems(labels, checked) { _, which, isChecked ->
+                    val pkg = allApps[which].packageName
+                    if (isChecked) selected.add(pkg) else selected.remove(pkg)
+                }
+                .setPositiveButton(R.string.btn_save) { _, _ ->
+                    // Keep existing order and non-app entries, append newly selected apps
+                    val kept = current.filter { it !in appIds || it in selected }
+                    val added = allApps.map { it.packageName }.filter { it in selected && it !in current }
+                    panelPrefs.setPanelAppsForKey(profile.panelAppsKey, kept + added)
+                    renderProfiles()
+                    applyOnly()
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
         }
     }
 
@@ -401,6 +539,7 @@ class ToolsSettingsActivity : AppCompatActivity() {
         // ---- Edge features ----
         binding.featureClipboardHistory.setOnCheckedChangeListener { _, isChecked ->
             panelPrefs.clipboardHistoryEnabled = isChecked
+            if (isChecked) panelPrefs.addApp(FloatingPanelService.TOOL_CLIPBOARD)
             binding.layoutClipboardOptions.visibility = if (isChecked) View.VISIBLE else View.GONE
             applyOnly()
         }
@@ -486,6 +625,8 @@ class ToolsSettingsActivity : AppCompatActivity() {
         }
 
         binding.btnSnippetAdd.setOnClickListener { showSnippetDialog(-1, null) }
+
+        binding.btnProfileAdd.setOnClickListener { showProfileDialog(null) }
 
         binding.btnExtraDimGrant.setOnClickListener {
             SecureSettingsDialog.show(this) { updateExtraDimStatus() }

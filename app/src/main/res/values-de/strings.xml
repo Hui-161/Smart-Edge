@@ -352,4 +352,24 @@
     <string name="feature_thumb_mode_desc">Einträge beginnen unten am Bildschirmrand (bei rechter Leiste unten rechts)</string>
     <string name="feature_move_up">Nach oben</string>
     <string name="feature_move_down">Nach unten</string>
+    <string name="edge_picker_tools">Werkzeuge</string>
+
+    <!-- App profiles -->
+    <string name="section_app_profiles">App-Profile</string>
+    <string name="feature_profiles_desc">Je nach Tageszeit und/oder aktivem Android-Modus (Nicht stören, Schlafenszeit, Fahren …) andere Apps anzeigen. Das erste passende Profil gilt, sonst die Standard-Liste. Bearbeitest du Apps in der Seitenleiste, änderst du die gerade aktive Liste.</string>
+    <string name="feature_profile_active">Jetzt aktiv: %1$s</string>
+    <string name="feature_profile_standard">Standard-Liste</string>
+    <string name="feature_profile_add">Profil hinzufügen</string>
+    <string name="feature_profile_edit">Profil bearbeiten</string>
+    <string name="feature_profile_edit_apps">Apps</string>
+    <string name="feature_profile_name_hint">Name (z. B. Abend)</string>
+    <string name="feature_profile_default_name">Profil</string>
+    <string name="feature_profile_use_time">Nur zu dieser Uhrzeit</string>
+    <string name="feature_profile_start">Beginn</string>
+    <string name="feature_profile_end">Ende</string>
+    <string name="feature_profile_when_mode">Nur wenn ein Modus / Nicht stören aktiv ist</string>
+    <string name="feature_profile_mode_short">bei Modus</string>
+    <string name="feature_profile_app_count">%1$d Einträge</string>
+    <string name="feature_profile_apps_title">Apps für „%1$s“</string>
+    <string name="feature_profile_needs_condition">Ohne Uhrzeit- oder Modus-Bedingung ist dieses Profil nie aktiv</string>
 </resources>

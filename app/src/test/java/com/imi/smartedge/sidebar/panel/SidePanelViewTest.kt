@@ -163,7 +163,8 @@ class SidePanelViewTest {
         panel.setPage(PanelPreferences.PAGE_APPS, pages)
         panel.applyTheme()
         assertEquals(View.VISIBLE, dashboard.visibility)
-        assertEquals("button + label per item", 4, extras.childCount)
+        assertEquals("two items side by side in one row", 1, extras.childCount)
+        assertEquals(2, (extras.getChildAt(0) as LinearLayout).childCount)
 
         panel.setPage(PanelPreferences.PAGE_TOOLS, pages)
         panel.applyTheme()

@@ -22,7 +22,9 @@ class EdgeDataManagersTest {
     @Before
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
-        listOf("clipboard_history_prefs", "clipboard_snippets_prefs", "favorite_contacts_prefs", "side_panel_prefs").forEach {
+        AppProfilesManager.clockMinutes = null
+        AppProfilesManager.modeActiveOverride = null
+        listOf("clipboard_history_prefs", "clipboard_snippets_prefs", "favorite_contacts_prefs", "side_panel_prefs", "app_profiles_prefs").forEach {
             context.getSharedPreferences(it, Context.MODE_PRIVATE).edit().clear().commit()
         }
     }
@@ -117,5 +119,60 @@ class EdgeDataManagersTest {
         assertTrue(prefs.getDashboardExtraItems().isEmpty())
         prefs.setDashboardExtraItems(listOf(EdgeTools.FLASHLIGHT, FloatingPanelService.TOOL_CLIPBOARD))
         assertEquals(listOf(EdgeTools.FLASHLIGHT, FloatingPanelService.TOOL_CLIPBOARD), prefs.getDashboardExtraItems())
+    }
+
+    @Test
+    fun profiles_timeWindowAcrossMidnight() {
+        assertTrue(AppProfilesManager.inWindow(23 * 60, 22 * 60, 6 * 60))
+        assertTrue(AppProfilesManager.inWindow(5 * 60, 22 * 60, 6 * 60))
+        assertFalse(AppProfilesManager.inWindow(12 * 60, 22 * 60, 6 * 60))
+        assertTrue(AppProfilesManager.inWindow(9 * 60, 8 * 60, 17 * 60))
+        assertFalse(AppProfilesManager.inWindow(17 * 60, 8 * 60, 17 * 60))
+    }
+
+    @Test
+    fun profiles_switchAppListByTimeAndMode() {
+        val prefs = PanelPreferences(context)
+        prefs.setPanelApps(listOf("com.standard"))
+        val evening = AppProfilesManager.Profile("e", "Evening", true, 18 * 60, 23 * 60, false)
+        val focus = AppProfilesManager.Profile("f", "Focus", false, 0, 0, true)
+        AppProfilesManager.add(context, evening, listOf("com.evening"))
+        AppProfilesManager.add(context, focus, listOf("com.focus"))
+
+        AppProfilesManager.modeActiveOverride = { false }
+        AppProfilesManager.clockMinutes = { 12 * 60 }
+        assertEquals(listOf("com.standard"), prefs.getPanelApps())
+
+        AppProfilesManager.clockMinutes = { 19 * 60 }
+        assertEquals(listOf("com.evening"), prefs.getPanelApps())
+        prefs.addApp("com.new")   // editing changes the active profile only
+        assertEquals(listOf("com.standard"), prefs.getStandardPanelApps())
+
+        AppProfilesManager.clockMinutes = { 12 * 60 }
+        AppProfilesManager.modeActiveOverride = { true }
+        assertEquals(listOf("com.focus"), prefs.getPanelApps())
+    }
+
+    @Test
+    fun toolButtons_areRegularAppListEntries() {
+        val prefs = PanelPreferences(context)
+        prefs.setPanelApps(listOf("com.app"))
+        prefs.showContactsButton = true
+        assertTrue(prefs.getPanelApps().contains(FloatingPanelService.TOOL_CONTACTS))
+        prefs.removeApp(FloatingPanelService.TOOL_CONTACTS)   // removed in the sidebar
+        assertFalse("switch follows the app list", prefs.showContactsButton)
+    }
+
+    @Test
+    fun toolButtonsMigration_addsFormerlyEnabledButtonsOnce() {
+        val raw = context.getSharedPreferences("side_panel_prefs", Context.MODE_PRIVATE)
+        raw.edit().putString("panel_apps", "com.app").putBoolean("show_extra_dim_button", true)
+            .putBoolean("show_tools_panel_button", false).commit()
+        val prefs = PanelPreferences(context)
+        prefs.migrateToolButtonsToAppList()
+        assertEquals(listOf(FloatingPanelService.TOOL_EXTRA_DIM, "com.app"), prefs.getPanelApps())
+        prefs.removeApp(FloatingPanelService.TOOL_EXTRA_DIM)
+        prefs.migrateToolButtonsToAppList() // must not add it again
+        assertEquals(listOf("com.app"), prefs.getPanelApps())
     }
 }

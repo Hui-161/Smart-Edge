@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="4dp">
@@ -12,12 +13,28 @@
         android:orientation="vertical"
         android:padding="4dp">
 
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/ivAppIcon"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:scaleType="centerInside"
             android:elevation="4dp" />
+        <ImageView
+            android:id="@+id/ivRemoveBadge"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="top|end"
+            android:background="@drawable/bg_remove_badge"
+            android:contentDescription="@string/remove_from_panel"
+            android:elevation="6dp"
+            android:padding="3dp"
+            android:src="@drawable/ic_minus"
+            android:visibility="gone"
+            app:tint="#FFFFFFFF" />
+    </FrameLayout>
 
         <TextView
             android:id="@+id/tvAppName"

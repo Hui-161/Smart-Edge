@@ -352,4 +352,24 @@
     <string name="feature_thumb_mode_desc">Items start at the bottom next to the screen edge (bottom right for a right sidebar)</string>
     <string name="feature_move_up">Move up</string>
     <string name="feature_move_down">Move down</string>
+    <string name="edge_picker_tools">Tools</string>
+
+    <!-- App profiles -->
+    <string name="section_app_profiles">App Profiles</string>
+    <string name="feature_profiles_desc">Show different apps depending on the time of day and/or while an Android mode (Do not disturb, Bedtime, Driving …) is active. The first matching profile wins; otherwise the standard list is used. Editing apps in the sidebar changes the list that is active at that moment.</string>
+    <string name="feature_profile_active">Active now: %1$s</string>
+    <string name="feature_profile_standard">Standard list</string>
+    <string name="feature_profile_add">Add Profile</string>
+    <string name="feature_profile_edit">Edit Profile</string>
+    <string name="feature_profile_edit_apps">Apps</string>
+    <string name="feature_profile_name_hint">Name (e.g. Evening)</string>
+    <string name="feature_profile_default_name">Profile</string>
+    <string name="feature_profile_use_time">Only at this time</string>
+    <string name="feature_profile_start">Start</string>
+    <string name="feature_profile_end">End</string>
+    <string name="feature_profile_when_mode">Only while a mode / Do not disturb is active</string>
+    <string name="feature_profile_mode_short">with mode</string>
+    <string name="feature_profile_app_count">%1$d entries</string>
+    <string name="feature_profile_apps_title">Apps for „%1$s“</string>
+    <string name="feature_profile_needs_condition">Without a time or mode condition this profile is never active</string>
 </resources>
