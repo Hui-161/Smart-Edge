@@ -8,8 +8,17 @@ plugins {
 
 // Every commit gets a higher versionCode, so new builds install as updates over older ones
 val gitCommitCount: Int = try {
+    // A shallow clone counts only part of the history and would produce a lower version than
+    // earlier builds (Android then refuses the update as a downgrade).
+    val shallow = providers.exec { commandLine("git", "rev-parse", "--is-shallow-repository") }
+        .standardOutput.asText.get().trim()
+    if (shallow == "true") {
+        throw GradleException("Shallow git clone: run 'git fetch --unshallow' so the version number matches CI builds")
+    }
     providers.exec { commandLine("git", "rev-list", "--count", "HEAD") }
         .standardOutput.asText.get().trim().toInt()
+} catch (e: GradleException) {
+    throw e
 } catch (e: Exception) {
     0
 }
