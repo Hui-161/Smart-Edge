@@ -15,12 +15,24 @@ Breaking 2 forces uninstall (all settings lost); breaking 3 shows a "downgrade" 
 
 ## 1. Version number from the commit count
 
-`app/build.gradle.kts` derives `versionCode = 1000 + git rev-list --count HEAD`
-(`versionName = "x.y.z.<count>"`). Every commit therefore yields a higher version.
+Check how `versionCode` is set in `app/build.gradle.kts`. A hand-maintained number is easy to
+forget; the robust pattern (offer it if the project has none) derives it from git:
+
+```kotlin
+val gitCommitCount: Int = try {
+    val shallow = providers.exec { commandLine("git", "rev-parse", "--is-shallow-repository") }
+        .standardOutput.asText.get().trim()
+    if (shallow == "true") throw GradleException("Shallow git clone: run 'git fetch --unshallow'")
+    providers.exec { commandLine("git", "rev-list", "--count", "HEAD") }
+        .standardOutput.asText.get().trim().toInt()
+} catch (e: GradleException) { throw e } catch (e: Exception) { 0 }
+// defaultConfig: versionCode = 1000 + gitCommitCount; versionName = "1.0.$gitCommitCount"
+```
+
+Keep the offset above the app's last released versionCode.
 
 **Trap:** a shallow clone (cloud sessions, `actions/checkout` default) counts only a few
-commits → a *lower* version than the user's installed build. The build refuses shallow clones;
-fix it with:
+commits → a *lower* version than the user's installed build ("downgrade" dialog). Fix:
 
 ```bash
 git fetch --unshallow   # in CI: actions/checkout with fetch-depth: 0
@@ -29,11 +41,22 @@ git fetch --unshallow   # in CI: actions/checkout with fetch-depth: 0
 ## 2. Fixed dev signing key
 
 Debug keys are generated per machine, so cloud and CI builds would each be signed differently.
-The project uses one dev key instead:
+Use one dev key instead:
 
 - Stored as GitHub secret `DEV_KEYSTORE_BASE64` (base64 of a PKCS12/JKS keystore).
 - CI decodes it to `app/signing/dev.keystore` (gitignored, **never commit**).
-- The `dev` signingConfig is used for `debug` when that file exists.
+- The `dev` signingConfig is used for `debug` when that file exists:
+
+```kotlin
+val devKeystore = file("signing/dev.keystore")
+if (devKeystore.exists()) signingConfigs { create("dev") {
+    storeFile = devKeystore; storePassword = "android"
+    keyAlias = "androiddebugkey"; keyPassword = "android"
+} }
+buildTypes { debug { signingConfigs.findByName("dev")?.let { signingConfig = it } } }
+```
+
+Add `app/signing/` and `*.keystore` to `.gitignore`.
 
 Create a key once (only when the user wants one; they add the secret themselves under
 Repository → Settings → Secrets and variables → Actions):
@@ -52,7 +75,7 @@ say so clearly before they install.
 ## 3. Build, verify, deliver
 
 ```bash
-bash .claude/skills/android-apk-update-build/scripts/build-and-verify.sh
+bash <skill-dir>/scripts/build-and-verify.sh   # <skill-dir> = folder of this SKILL.md; run from the repo
 ```
 
 The script builds `assembleDebug`, prints `versionCode`/`versionName` (aapt) and the signing

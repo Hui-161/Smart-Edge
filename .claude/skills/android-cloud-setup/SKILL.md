@@ -9,7 +9,7 @@ The container starts without an Android SDK. Run the bundled script; it is idemp
 (skips everything already installed):
 
 ```bash
-bash .claude/skills/android-cloud-setup/scripts/setup-android-sdk.sh
+bash <skill-dir>/scripts/setup-android-sdk.sh   # <skill-dir> = folder of this SKILL.md
 ```
 
 It installs `cmdline-tools`, `platforms;android-<compileSdk>`, `build-tools;<compileSdk>.0.0`,
@@ -30,6 +30,7 @@ argument if it is not 34: `setup-android-sdk.sh 35`.
 - `git rev-parse --is-shallow-repository` → if `true`, run `git fetch --unshallow`
   (version numbers derived from the commit count would otherwise be too low, see
   `android-apk-update-build`).
+- Optional: make this automatic for a repo with a SessionStart hook (skill `session-start-hook`).
 - No KVM/GPU in the container: no emulator. Verify with Robolectric unit tests
   (`android-robolectric-tests`) and let the user test on the device.
 - The first Gradle run downloads ~1–2 GB into `~/.gradle`; keep an eye on the disk allowance

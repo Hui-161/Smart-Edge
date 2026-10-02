@@ -19,7 +19,7 @@ dependencies {
 }
 ```
 
-Run: `./gradlew testDebugUnitTest` (single class: `--tests '*SidePanelViewTest'`).
+Run: `./gradlew testDebugUnitTest` (single class: `--tests '*MyViewTest'`).
 Reports: `app/build/reports/tests/testDebugUnitTest/index.html`.
 
 ## Test class template

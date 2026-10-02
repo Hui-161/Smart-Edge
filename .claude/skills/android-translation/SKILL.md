@@ -36,7 +36,7 @@ description: Add or complete a language (e.g. German) in an Android app — move
 
 Override only the locale when wrapping the context (`createConfigurationContext` with a copy of
 the current configuration where just `setLocale` changes). Copying a full stale `Configuration`
-froze orientation and other values in this project.
+froze orientation and other values in a real project.
 
 ## Style for German
 
