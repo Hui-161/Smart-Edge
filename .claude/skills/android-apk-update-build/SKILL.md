@@ -76,6 +76,8 @@ say so clearly before they install.
 
 ```bash
 bash <skill-dir>/scripts/build-and-verify.sh   # <skill-dir> = folder of this SKILL.md; run from the repo
+# project pins a daemon JDK that cannot be downloaded here (see android-cloud-setup):
+GRADLE=<android-cloud-setup-dir>/scripts/gradle-local.sh bash <skill-dir>/scripts/build-and-verify.sh
 ```
 
 The script builds `assembleDebug`, prints `versionCode`/`versionName` (aapt) and the signing
@@ -88,3 +90,36 @@ certificate SHA-256 (apksigner), and copies the APK to the scratchpad as
 
 Then send the file with `SendUserFile` and state: version, "installs as update", what changed.
 If a CI build exists for the same commit, its artifact is equivalent (same key, same count).
+
+## 4. Signed releases next to debug builds
+
+When the user publishes releases (own key, e.g. a fork of someone else's app):
+
+- **Release key** only from CI secrets or a local, gitignored `keystore.properties`; never in the
+  repo. In Kotlin DSL `java.util.Properties()` does not resolve (`java` is the Java extension):
+  `import java.util.Properties` at the top.
+
+  ```kotlin
+  fun signingValue(name: String) = System.getenv(name)?.takeIf { it.isNotBlank() } ?: keystoreProperties?.getProperty(name)
+  val releaseStoreFile = signingValue("RELEASE_STORE_FILE")?.let { rootProject.file(it) }?.takeIf { it.exists() }
+  // signingConfigs { if (releaseStoreFile != null) create("release") { ... RELEASE_STORE_PASSWORD / RELEASE_KEY_ALIAS / RELEASE_KEY_PASSWORD } }
+  ```
+
+- **Debug builds get `applicationIdSuffix = ".debug"`** (plus `versionNameSuffix = "-debug"`) and
+  the dev key: they install next to the release app and can never replace or block it. Custom
+  `<permission>` definitions with fixed names would make the second install fail
+  (`INSTALL_FAILED_DUPLICATE_PERMISSION`): remove them for debug in
+  `app/src/debug/AndroidManifest.xml` with `tools:node="remove"`. Check the merged manifest
+  (`app/build/intermediates/merged_manifests/<variant>/.../AndroidManifest.xml`).
+- **Version:** `versionCode` = commit count, `versionName` carries it too (e.g.
+  `<upstream>-fork.<count>`), so release tags (`v<versionName>`) are unambiguous and an updater
+  can compare the build number instead of parsing version names.
+- **Fork of an app with the same `applicationId`:** the user must uninstall the original once
+  (different certificate) — export settings first. Say so before the first install.
+- **In-app updater:** download only from the project's own release URLs (https), then install only
+  if `getPackageArchiveInfo(apk, GET_SIGNING_CERTIFICATES)` has the app's package name and exactly
+  the `signingInfo.apkContentsSigners` of the installed app. Never install from a URL that a
+  server response names without such a check.
+- Build the signed release in CI (skill `android-github-ci`, release workflow), not in a cloud
+  session: the release key must not be copied into the container. For a local test of the
+  signing config use a throwaway key in the scratchpad and delete it afterwards.

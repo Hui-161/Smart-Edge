@@ -1,6 +1,6 @@
 ---
 name: android-github-ci
-description: Set up, monitor and debug a GitHub Actions workflow that builds an Android APK on every push, signs it with a fixed key from a repository secret, uploads it as a downloadable artifact and runs unit tests. Use when the user asks "wie lade ich die APK herunter", wants automatic builds, when a CI run fails or hangs, or when checking CI status through the GitHub MCP tools (no gh CLI in cloud sessions).
+description: Set up, monitor and debug GitHub Actions workflows that build an Android APK on every push (fixed key from a repository secret, downloadable artifact, unit tests) and publish signed releases with checksum and certificate fingerprint. Use when the user asks "wie lade ich die APK herunter", wants automatic builds, when a CI run fails or hangs, or when checking CI status through the GitHub MCP tools (no gh CLI in cloud sessions).
 ---
 
 # Android CI on GitHub Actions
@@ -41,6 +41,41 @@ Design rules that paid off:
 - **`timeout-minutes`** on test steps; the default job timeout is 6 hours.
 - Secrets never in logs: decode to a gitignored path; print only whether the secret exists.
 - Fork PRs do not receive secrets — the warning branch keeps those builds working.
+- `actions/setup-java` `distribution` must match a pinned daemon JDK
+  (`gradle/gradle-daemon-jvm.properties`, e.g. `corretto`), otherwise Gradle downloads it again.
+- `gradle/actions/setup-gradle` also validates `gradle-wrapper.jar` against official checksums.
+
+## Release workflow (`.github/workflows/release.yml`)
+
+Manual (`workflow_dispatch`, `if: github.ref == 'refs/heads/main'`), job-level
+`permissions: contents: write`, everything else `contents: read`:
+
+1. Checkout with `fetch-depth: 0`; `setup-gradle` with `cache-read-only: true` (a release never
+   reuses cache entries written by other branches).
+2. Decode `RELEASE_KEYSTORE_BASE64` to `$RUNNER_TEMP/release.keystore`, export
+   `RELEASE_STORE_FILE`; fail with `::error::` if the secret is missing (otherwise the APK is
+   unsigned). Passwords only as step `env` from secrets.
+3. `./gradlew assembleRelease`, then verify: `apksigner verify --print-certs` (certificate
+   SHA-256) and `aapt2 dump badging` (versionName/Code) from the newest
+   `$ANDROID_HOME/build-tools/*`; rename to `<app>-<versionName>.apk`, write `.sha256`.
+4. Publish with the preinstalled `gh` CLI instead of third-party release actions:
+   `gh release create "v$VERSION" app.apk app.apk.sha256 --target "$GITHUB_SHA" --notes-file notes.md`
+   (`GH_TOKEN: ${{ github.token }}`), notes with certificate fingerprint, APK hash and
+   `git log` since the previous release tag. Refuse if the tag exists.
+
+Test the shell of the verify step locally against a locally built release APK (throwaway key,
+`GITHUB_OUTPUT=<file>`) before the user runs it for the first time.
+
+## Forks
+
+- **Actions are disabled on forks** until the owner enables them (repository → Actions). Via the
+  GitHub MCP tools this shows as `list_workflows` → `total_count: 0` even though workflow files
+  exist; tell the user, do not try to "fix" the workflows.
+- Remove or disable upstream workflows that target the upstream owner's infrastructure
+  (notifications with hard-coded chat IDs, `pull_request_target`, bots that push from comments)
+  and replace `CODEOWNERS`.
+- Secrets are per repository: the user creates them (Settings → Secrets and variables → Actions);
+  never ask them to paste key material into the chat.
 
 ## Telling the user how to download
 

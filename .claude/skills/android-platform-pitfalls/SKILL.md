@@ -21,6 +21,7 @@ Never let a privileged call crash a service.
 | **Keyboard in overlays** | Closing a view with a focused `EditText` leaves the IME open | `imm.hideSoftInputFromWindow(editText.windowToken, 0)`, then move focus to the root view, before removing the view |
 | **Root checks** | `su` may prompt or block forever (and exists on CI runners) | Run with timeout (`waitFor(2, SECONDS)`), close stdin, destroy on timeout |
 | **Backups** | Auto Backup copies SharedPreferences to the cloud | Exclude private data (clipboard, contacts, saved texts) in `backup_rules.xml` **and** `data_extraction_rules.xml` (Android 12+) |
+| **Runtime broadcast receivers** | Android 14+ (targetSdk 34+) requires an export flag; `RECEIVER_EXPORTED` for the app's own actions lets any app trigger them | `ContextCompat.registerReceiver(..., RECEIVER_NOT_EXPORTED)` (also below API 33); system broadcasts and the app's own PendingIntents still arrive. See `android-security-review` |
 | **Hardware features** | `CALL_PHONE`/camera permissions make Play/F-Droid treat telephony/camera as required | Declare `<uses-feature android:required="false">` for telephony and camera |
 
 ## Touch handling in edge handles

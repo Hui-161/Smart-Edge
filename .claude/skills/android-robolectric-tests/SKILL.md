@@ -1,6 +1,6 @@
 ---
 name: android-robolectric-tests
-description: Write and run JVM unit tests for Android views, services helpers and SharedPreferences logic with Robolectric when no emulator or device is available (cloud containers, CI). Use when adding tests for touch gestures, RecyclerView layouts, preference storage or clipboard logic, or when Robolectric tests fail, hang or download nothing. German triggers: "Tests schreiben", "kannst du das testen".
+description: Write and run JVM unit tests for Android views, services helpers and SharedPreferences logic with Robolectric when no emulator or device is available (cloud containers, CI). Use when adding tests for touch gestures, RecyclerView layouts, preference storage or clipboard logic, or when Robolectric tests fail, hang or download nothing. German triggers are "Tests schreiben", "kannst du das testen".
 ---
 
 # Robolectric tests without a device
