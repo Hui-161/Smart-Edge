@@ -41,6 +41,9 @@ class FooTest {
 
 - **Plain `Application`:** the app's own `Application` class may do things Robolectric cannot
   (e.g. HiddenApiBypass, Shizuku, root checks). `@Config(application = android.app.Application::class)` avoids that.
+- **SDK 35+ on JDK 17+** fails every test with `Failed to interact with raw FileDescriptor
+  internals; perhaps JRE has changed?` (`jdk.internal.access` not exported). Fix in
+  `android { testOptions { unitTests.all { it.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED") } } }`.
 - **Pin `sdk`** to the targetSdk; Robolectric downloads one android-all jar per SDK level
   (via Maven Central → use the mirror from `android-cloud-setup` on 429).
 - **Frozen clock:** `SystemClock`/timestamps do not advance. Logic that dedups by time needs
@@ -54,5 +57,9 @@ class FooTest {
 - **Never let tests hang:** code that spawns processes (`su`, `sh`) can block forever on CI runners
   (GitHub's runner *has* `su`). Give every `Process.waitFor` a timeout and close stdin. Reproduce by
   putting a fake hanging `su` first on `PATH`.
+- **Prove the test catches the bug:** break the guarded line on purpose (e.g. a policy function
+  returning `false`), run the tests, expect failures, restore. A test that stays green is useless.
+- **Static "run once" flags** (migrations) leak between tests in one JVM: make them `internal` and
+  reset them in `@Before`.
 - Robolectric cannot verify real system behavior (overlays over other apps, accessibility,
   split screen, hidden APIs). State that limitation and ask the user to test on the device.
