@@ -27,8 +27,10 @@ class EdgeHandleViewTest {
     private lateinit var prefs: PanelPreferences
     private lateinit var handle: EdgeHandleView
     private var triggers = 0
-    private val volumeChanges = mutableListOf<Int>()
-    private val brightnessChanges = mutableListOf<Int>()
+    private val volumeChanges = mutableListOf<Float>()
+    private val brightnessChanges = mutableListOf<Float>()
+    private var seekStarts = 0
+    private var seekEnds = 0
 
     @Before
     fun setUp() {
@@ -38,8 +40,9 @@ class EdgeHandleViewTest {
         prefs.hapticEnabled = false
         handle = EdgeHandleView(context).apply {
             onTrigger = { triggers++ }
-            onAdjustVolume = { volumeChanges.add(it) }
-            onAdjustBrightness = { brightnessChanges.add(it) }
+            onSeek = { volume, delta -> if (volume) volumeChanges.add(delta) else brightnessChanges.add(delta) }
+            onSeekStart = { seekStarts++ }
+            onSeekEnd = { seekEnds++ }
         }
         handle.layout(0, 0, 60, 300)
         idle(10)
@@ -148,6 +151,19 @@ class EdgeHandleViewTest {
         assertTrue("left handle should change the volume", volumeChanges.isNotEmpty())
         assertTrue(brightnessChanges.isEmpty())
         assertEquals("a slide is not a tap", 0, triggers)
+    }
+
+    @Test
+    fun slide_reportsEveryMoveContinuously() {
+        handle.seekTarget = EdgeHandleView.SEEK_BRIGHTNESS
+        slideUp()
+        assertEquals(1, seekStarts)
+        assertEquals(1, seekEnds)
+        assertEquals("no step buckets: one update per touch move", 20, brightnessChanges.size)
+        assertTrue("sliding up raises the value", brightnessChanges.all { it > 0f })
+        val density = context.resources.displayMetrics.density
+        val expected = 200f / (EdgeHandleView.SEEK_RANGE_DP * density)
+        assertEquals(expected, brightnessChanges.sum(), 0.001f)
     }
 
     @Test

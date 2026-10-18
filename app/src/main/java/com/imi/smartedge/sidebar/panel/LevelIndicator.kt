@@ -1,6 +1,5 @@
 package com.imi.smartedge.sidebar.panel
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -15,7 +14,6 @@ import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.DecelerateInterpolator
 import androidx.core.content.ContextCompat
 
 /**
@@ -41,7 +39,15 @@ class LevelIndicator(private val context: Context) {
      * @param edgeOffsetPx distance from that edge (e.g. the handle width)
      * @param centerYOffsetPx vertical offset from the screen center (same as the handle's y)
      */
-    fun show(kind: Kind, percent: Int, rightSide: Boolean, edgeOffsetPx: Int, centerYOffsetPx: Int) {
+    /**
+     * @param fill fill of the track (0..1); defaults to [percent]. A slide passes its continuous
+     *             finger position so the bar moves smoothly between volume steps.
+     * @param autoHide false while the finger is still on the handle
+     */
+    fun show(
+        kind: Kind, percent: Int, rightSide: Boolean, edgeOffsetPx: Int, centerYOffsetPx: Int,
+        fill: Float = percent / 100f, autoHide: Boolean = true
+    ) {
         val density = context.resources.displayMetrics.density
         val v = view ?: LevelView(context).also { created ->
             val params = WindowManager.LayoutParams(
@@ -60,8 +66,6 @@ class LevelIndicator(private val context: Context) {
                 android.util.Log.e("LevelIndicator", "Cannot show level overlay", e)
                 return
             }
-            created.alpha = 0f
-            created.animate().alpha(1f).setDuration(120).start()
             view = created
         }
 
@@ -80,9 +84,10 @@ class LevelIndicator(private val context: Context) {
 
         v.animate().cancel()
         v.alpha = 1f
-        v.setLevel(kind, percent.coerceIn(0, 100))
+        v.setLevel(kind, percent.coerceIn(0, 100), fill.coerceIn(0f, 1f))
         handler.removeCallbacks(hideRunnable)
-        handler.postDelayed(hideRunnable, HIDE_DELAY_MS)
+        // While sliding it stays; the long delay only guards against a lost touch end
+        handler.postDelayed(hideRunnable, if (autoHide) HIDE_DELAY_MS else SAFETY_HIDE_MS)
     }
 
     fun hide() {
@@ -103,7 +108,8 @@ class LevelIndicator(private val context: Context) {
     }
 
     companion object {
-        const val HIDE_DELAY_MS = 1200L
+        const val HIDE_DELAY_MS = 1000L
+        const val SAFETY_HIDE_MS = 5000L
     }
 
     /** The slider itself: rounded track, fill from the bottom, icon and percentage. */
@@ -125,43 +131,40 @@ class LevelIndicator(private val context: Context) {
         }
         private val rect = RectF()
         private var icon: Drawable? = null
-        private var animator: ValueAnimator? = null
+        private var iconRes = 0
+        private val iconTintFilled = onAccentColor(context)
 
         var kind: Kind = Kind.BRIGHTNESS
             private set
         var percent: Int = 0
             private set
-        /** Animated fill (0..1) */
-        private var shownFraction = 0f
+        /** Fill of the track (0..1), drawn exactly where the finger is — no animation lag */
+        var fill = 0f
+            private set
+        private var percentText = ""
 
-        fun setLevel(kind: Kind, percent: Int) {
-            val kindChanged = kind != this.kind || icon == null
-            this.kind = kind
-            this.percent = percent
-            val iconRes = when {
+        fun setLevel(kind: Kind, percent: Int, fill: Float = percent / 100f) {
+            val res = when {
                 kind == Kind.BRIGHTNESS -> R.drawable.ic_level_brightness
                 percent == 0 -> R.drawable.ic_level_volume_off
                 else -> R.drawable.ic_level_volume
             }
-            icon = ContextCompat.getDrawable(context, iconRes)?.mutate()
-            contentDescription = context.getString(
-                if (kind == Kind.BRIGHTNESS) R.string.msg_brightness_percent else R.string.msg_volume_percent,
-                percent
-            )
-
-            val target = percent / 100f
-            animator?.cancel()
-            if (kindChanged || !isAttachedToWindow) {
-                shownFraction = target
-                invalidate()
-            } else {
-                animator = ValueAnimator.ofFloat(shownFraction, target).apply {
-                    duration = 120
-                    interpolator = DecelerateInterpolator()
-                    addUpdateListener { shownFraction = it.animatedValue as Float; invalidate() }
-                    start()
-                }
+            if (res != iconRes) {
+                iconRes = res
+                icon = ContextCompat.getDrawable(context, res)?.mutate()
             }
+            if (kind != this.kind || percent != this.percent || percentText.isEmpty() || contentDescription == null) {
+                percentText = "$percent %"
+                contentDescription = context.getString(
+                    if (kind == Kind.BRIGHTNESS) R.string.msg_brightness_percent else R.string.msg_volume_percent,
+                    percent
+                )
+            }
+            val changed = kind != this.kind || percent != this.percent || fill != this.fill
+            this.kind = kind
+            this.percent = percent
+            this.fill = fill
+            if (changed) invalidate()
         }
 
         override fun onDraw(canvas: Canvas) {
@@ -172,7 +175,7 @@ class LevelIndicator(private val context: Context) {
             val trackTop = textArea
 
             // Percentage above the track
-            canvas.drawText("$percent %", w / 2f, textArea - 10 * density, textPaint)
+            canvas.drawText(percentText, w / 2f, textArea - 10 * density, textPaint)
 
             // Track
             rect.set(0f, trackTop, w, h)
@@ -180,8 +183,8 @@ class LevelIndicator(private val context: Context) {
 
             // Fill from the bottom; like Android it starts as a circle around the icon
             val trackHeight = h - trackTop
-            if (shownFraction > 0f) {
-                val fillHeight = (w + (trackHeight - w) * shownFraction).coerceAtMost(trackHeight)
+            if (fill > 0f) {
+                val fillHeight = (w + (trackHeight - w) * fill).coerceAtMost(trackHeight)
                 rect.set(0f, h - fillHeight, w, h)
                 canvas.drawRoundRect(rect, radius, radius, fillPaint)
             }
@@ -192,7 +195,7 @@ class LevelIndicator(private val context: Context) {
                 val cx = (w / 2f).toInt()
                 val cy = (h - w / 2f).toInt()
                 d.setBounds(cx - size / 2, cy - size / 2, cx + size / 2, cy + size / 2)
-                d.setTint(if (shownFraction > 0f) onAccentColor(context) else Color.WHITE)
+                d.setTint(if (fill > 0f) iconTintFilled else Color.WHITE)
                 d.draw(canvas)
             }
         }

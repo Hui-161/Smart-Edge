@@ -23,8 +23,11 @@ class EdgeHandleView @JvmOverloads constructor(
 ) : View(context, attrs) {
 
     var onTrigger: (() -> Unit)? = null
-    var onAdjustBrightness: ((delta: Int) -> Unit)? = null
-    var onAdjustVolume: ((delta: Int) -> Unit)? = null
+    /** Slide on the handle started (volume = true) or brightness. */
+    var onSeekStart: ((volume: Boolean) -> Unit)? = null
+    /** Continuous slide: [delta] is the share of the full range (upwards positive), sent on every move. */
+    var onSeek: ((volume: Boolean, delta: Float) -> Unit)? = null
+    var onSeekEnd: ((volume: Boolean) -> Unit)? = null
     var onSideChanged: ((newSide: String) -> Unit)? = null
     /** Called after the handle was dragged to a new vertical position. */
     var onPositionChanged: (() -> Unit)? = null
@@ -40,6 +43,8 @@ class EdgeHandleView @JvmOverloads constructor(
         const val SEEK_AUTO = 0
         const val SEEK_BRIGHTNESS = 1
         const val SEEK_VOLUME = 2
+        /** Finger travel for the full 0–100 % range at 100 % slide sensitivity. */
+        const val SEEK_RANGE_DP = 360f
     }
     
     var isRightSide: Boolean = true
@@ -71,9 +76,9 @@ class EdgeHandleView @JvmOverloads constructor(
     private var startX = 0f
     private var startY = 0f
     private var lastSlideY = 0f
-    private var accumulatedDy = 0f
     private var isSlidingSeek = false
     private var isSlidingVolume = false
+    private var seekRangePx = 1f
     private var isTopHalf = false
     private var hasPassedThreshold = false
     private var isTriggered = false
@@ -349,7 +354,6 @@ class EdgeHandleView @JvmOverloads constructor(
                 lastMoveRawX = event.rawX
                 lastMoveRawY = event.rawY
                 lastSlideY = event.rawY
-                accumulatedDy = 0f
                 isSlidingSeek = false
                 isSlidingVolume = false
                 isTopHalf = event.y < height / 2
@@ -447,32 +451,18 @@ class EdgeHandleView @JvmOverloads constructor(
                         }
                         
                         isSlidingSeek = true
-                        accumulatedDy = 0f 
+                        // Full range (0 → 100 %) in pixels; higher sensitivity = shorter way
+                        val sensitivity = panelPrefs.slideSensitivity.coerceIn(1, 200)
+                        seekRangePx = SEEK_RANGE_DP * density * 100f / sensitivity
                         handler.removeCallbacks(longPressRunnable)
                         handler.removeCallbacks(holdRunnable)
                         vibrateHaptic(10)
+                        onSeekStart?.invoke(isSlidingVolume)
                     }
 
                     if (isSlidingSeek) {
-                        accumulatedDy += dySinceLast
-                        val sensitivity = panelPrefs.slideSensitivity.coerceIn(1, 200)
-                        val multiplier = 100f / sensitivity
-                        
-                        if (isSlidingVolume) {
-                            val pixelsPerUnit = (25f * density * multiplier).coerceAtLeast(1f)
-                            if (Math.abs(accumulatedDy) >= pixelsPerUnit) {
-                                val units = (accumulatedDy / pixelsPerUnit).toInt()
-                                onAdjustVolume?.invoke(-units)
-                                accumulatedDy -= units * pixelsPerUnit
-                            }
-                        } else {
-                            val pixelsPerUnit = (3f * density * multiplier).coerceAtLeast(1f)
-                            if (Math.abs(accumulatedDy) >= pixelsPerUnit) {
-                                val units = (accumulatedDy / pixelsPerUnit).toInt()
-                                onAdjustBrightness?.invoke(-units)
-                                accumulatedDy -= units * pixelsPerUnit
-                            }
-                        }
+                        // Every move goes straight through (no step buckets), so the value follows the finger
+                        if (dySinceLast != 0f) onSeek?.invoke(isSlidingVolume, -dySinceLast / seekRangePx)
                         return true
                     }
                 }
@@ -531,6 +521,7 @@ class EdgeHandleView @JvmOverloads constructor(
             }
 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                if (isSlidingSeek) onSeekEnd?.invoke(isSlidingVolume)
                 handler.removeCallbacks(holdRunnable)
                 handler.removeCallbacks(longPressRunnable)
 
