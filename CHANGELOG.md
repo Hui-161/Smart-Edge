@@ -7,6 +7,7 @@
 ---
 
 ### Unreleased
+- **feat(handle)**: Sliding on a handle shows the brightness or volume value in an Android-style level slider next to the handle (visible while the sidebar is closed; system accent color, muted icon at 0 %).
 - **feat(profiles)**: App profiles – different sidebar apps by time of day and/or while an Android mode (Do not disturb, Bedtime, …) is active, managed in Dashboard Tools settings.
 - **feat(panel)**: Edit mode: remove badge on every sidebar entry, drag an entry onto the app drawer to remove it, collapsible "Tools" section in the app drawer to add/remove tools (tools folder, Extra Dim, clipboard, flashlight …) in the app list.
 - **feat(panel)**: Tool buttons are regular, movable/removable app-list entries (one-time migration of the former switches).

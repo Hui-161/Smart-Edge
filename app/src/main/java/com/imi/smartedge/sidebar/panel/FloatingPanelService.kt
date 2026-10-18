@@ -461,6 +461,7 @@ class FloatingPanelService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         isRunning = false
+        levelIndicator?.release()
         try {
             cameraManager?.unregisterTorchCallback(torchCallback)
         } catch (e: Exception) {}
@@ -653,10 +654,10 @@ class FloatingPanelService : Service() {
                 }
             }
             onAdjustBrightness = { delta ->
-                adjustBrightness(delta)
+                adjustBrightness(delta, this)
             }
             onAdjustVolume = { delta ->
-                adjustVolume(delta)
+                adjustVolume(delta, this)
             }
             onPositionChanged = {
                 // Keep the other edge's handle at the same height
@@ -1421,6 +1422,7 @@ class FloatingPanelService : Service() {
         (dp * resources.displayMetrics.density).toInt()
 
     private var indicatorText: android.widget.TextView? = null
+    private var levelIndicator: LevelIndicator? = null
     private var indicatorFadeRunnable: Runnable? = null
 
     private var tvTopZone: android.widget.TextView? = null
@@ -1531,7 +1533,8 @@ class FloatingPanelService : Service() {
         }
     }
 
-    fun adjustVolume(delta: Int) {
+    /** @param anchor handle the user slides on: the value is shown next to it */
+    fun adjustVolume(delta: Int, anchor: EdgeHandleView? = null) {
         if (delta == 0) return
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
         val direction = if (delta > 0) android.media.AudioManager.ADJUST_RAISE else android.media.AudioManager.ADJUST_LOWER
@@ -1544,10 +1547,10 @@ class FloatingPanelService : Service() {
         val current = audioManager.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)
         val max = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
         val percent = if (max > 0) (current * 100) / max else 0
-        showIndicator(getString(R.string.msg_volume_percent, percent))
+        showLevel(LevelIndicator.Kind.VOLUME, percent, anchor, getString(R.string.msg_volume_percent, percent))
     }
 
-    fun adjustBrightness(delta: Int) {
+    fun adjustBrightness(delta: Int, anchor: EdgeHandleView? = null) {
         if (delta == 0) return
         try {
             if (!android.provider.Settings.System.canWrite(this)) {
@@ -1588,10 +1591,21 @@ class FloatingPanelService : Service() {
             } catch (e: Exception) {}
 
             val percent = (brightness * 100) / 255
-            showIndicator(getString(R.string.msg_brightness_percent, percent))
+            showLevel(LevelIndicator.Kind.BRIGHTNESS, percent, anchor, getString(R.string.msg_brightness_percent, percent))
         } catch (e: Exception) {
             android.util.Log.e("FloatingPanelService", "Failed to adjust brightness", e)
         }
+    }
+
+    /** Slider next to the handle while sliding; inside the open sidebar the text pill is enough. */
+    private fun showLevel(kind: LevelIndicator.Kind, percent: Int, anchor: EdgeHandleView?, fallbackText: String) {
+        val params = anchor?.layoutParams as? WindowManager.LayoutParams
+        if (anchor == null || params == null) {
+            showIndicator(fallbackText)
+            return
+        }
+        val indicator = levelIndicator ?: LevelIndicator(this).also { levelIndicator = it }
+        indicator.show(kind, percent, anchor.isRightSide, params.width, params.y)
     }
 
     private fun showIndicator(text: String) {
