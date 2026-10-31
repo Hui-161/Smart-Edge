@@ -40,11 +40,13 @@ class SeekLevelControllerTest {
     private val audio get() = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     @Test
-    fun brightnessCurve_matchesAndroidSlider() {
+    fun brightnessCurve_isGentleAtTheTop() {
         assertEquals(0f, BrightnessCurve.sliderToLinear(0f), 0.0001f)
         assertEquals(1f, BrightnessCurve.sliderToLinear(1f), 0.001f)
-        // The middle of the system slider is far below half the linear brightness
-        assertTrue(BrightnessCurve.sliderToLinear(0.5f) < 0.15f)
+        // 10 % down from full keeps most of the light (Android's HLG curve dropped to ~58 %)
+        assertEquals(0.81f, BrightnessCurve.sliderToLinear(0.9f), 0.001f)
+        // and the low end stays fine-grained
+        assertTrue(BrightnessCurve.sliderToLinear(0.2f) < 0.05f)
         for (i in 0..20) {
             val slider = i / 20f
             assertEquals(slider, BrightnessCurve.linearToSlider(BrightnessCurve.sliderToLinear(slider)), 0.001f)
@@ -70,6 +72,16 @@ class SeekLevelControllerTest {
         controller.move(5f)
         assertEquals("clamped at 100 %", 1f, controller.fraction, 0f)
         assertEquals(255, Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS))
+        controller.end()
+    }
+
+    @Test
+    fun brightness_startsAtTheCurrentValue() {
+        Settings.System.putInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 64)
+        Settings.System.putFloat(context.contentResolver, "screen_brightness_float", 0.25f)
+        assertTrue(controller.start(isVolume = false, handle))
+        assertEquals("precise float value preferred", 0.5f, controller.fraction, 0.001f)
+        assertEquals(50, controller.shownPercent)
         controller.end()
     }
 

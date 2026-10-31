@@ -6,8 +6,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.provider.Settings
 import android.util.Log
-import kotlin.math.exp
-import kotlin.math.ln
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -54,8 +52,7 @@ class SeekLevelController(
             fraction = lastVolumeIndex / maxVolume.toFloat()
         } else {
             if (!canWriteSettings()) return false
-            val current = Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, 128)
-            fraction = BrightnessCurve.linearToSlider(current / 255f)
+            fraction = BrightnessCurve.linearToSlider(currentLinearBrightness())
             post {
                 try {
                     Settings.System.putInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
@@ -68,6 +65,18 @@ class SeekLevelController(
         active = true
         render(keepVisible = true)
         return true
+    }
+
+    /** Current brightness (0..1): the precise float value where readable, else the 0–255 value. */
+    private fun currentLinearBrightness(): Float {
+        val resolver = context.contentResolver
+        try {
+            val f = Settings.System.getFloat(resolver, "screen_brightness_float", -1f)
+            if (f in 0f..1f) return f
+        } catch (_: Exception) {
+            // Not readable for apps on some versions
+        }
+        return Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS, 128) / 255f
     }
 
     fun move(delta: Float) {
@@ -175,26 +184,18 @@ class SeekLevelController(
 }
 
 /**
- * Android's brightness slider is not linear: it uses the HLG gamma curve
- * (frameworks/base BrightnessUtils), so equal finger travel feels equally bright.
+ * Maps the slider (what the indicator shows) to linear brightness so equal finger travel feels like
+ * an equal change: perceived brightness grows roughly with the square root of the light output.
+ * (Android's own HLG slider curve is far steeper at the top: a small swipe there halved the
+ * brightness while the bar barely moved.)
  */
 object BrightnessCurve {
-    private const val R = 0.5f
-    private const val A = 0.17883277f
-    private const val B = 0.28466892f
-    private const val C = 0.55991073f
-
     /** Slider position (0..1) → linear brightness (0..1). */
     fun sliderToLinear(slider: Float): Float {
         val v = slider.coerceIn(0f, 1f)
-        val ret = if (v <= R) (v / R) * (v / R) else exp((v - C) / A) + B
-        return (ret / 12f).coerceIn(0f, 1f)
+        return v * v
     }
 
     /** Linear brightness (0..1) → slider position (0..1). */
-    fun linearToSlider(linear: Float): Float {
-        val v = linear.coerceIn(0f, 1f) * 12f
-        val ret = if (v <= 1f) R * sqrt(v) else A * ln(v - B) + C
-        return ret.coerceIn(0f, 1f)
-    }
+    fun linearToSlider(linear: Float): Float = sqrt(linear.coerceIn(0f, 1f))
 }

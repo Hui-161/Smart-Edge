@@ -44,7 +44,8 @@ class EdgeHandleView @JvmOverloads constructor(
         const val SEEK_BRIGHTNESS = 1
         const val SEEK_VOLUME = 2
         /** Finger travel for the full 0–100 % range at 100 % slide sensitivity. */
-        const val SEEK_RANGE_DP = 360f
+        const val BRIGHTNESS_RANGE_DP = 720f
+        const val VOLUME_RANGE_DP = 360f
     }
     
     var isRightSide: Boolean = true
@@ -453,7 +454,8 @@ class EdgeHandleView @JvmOverloads constructor(
                         isSlidingSeek = true
                         // Full range (0 → 100 %) in pixels; higher sensitivity = shorter way
                         val sensitivity = panelPrefs.slideSensitivity.coerceIn(1, 200)
-                        seekRangePx = SEEK_RANGE_DP * density * 100f / sensitivity
+                        val rangeDp = if (isSlidingVolume) VOLUME_RANGE_DP else BRIGHTNESS_RANGE_DP
+                        seekRangePx = rangeDp * density * 100f / sensitivity
                         handler.removeCallbacks(longPressRunnable)
                         handler.removeCallbacks(holdRunnable)
                         vibrateHaptic(10)

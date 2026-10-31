@@ -7,6 +7,7 @@
 ---
 
 ### Unreleased
+- **fix(handle)**: Brightness slide no longer races at the top: perceptual curve (equal finger travel ≈ equal felt change) instead of Android's steep HLG curve, longer finger travel for brightness (720 dp for 0–100 % at default sensitivity), start value from the precise brightness setting where readable.
 - **perf(handle)**: Brightness/volume slides follow the finger without lag: every touch move updates the level slider directly (no step buckets, no catch-up animation), system values are written on a background thread (only the newest value), brightness uses Android's own slider curve, volume bar moves smoothly between steps.
 - **feat(handle)**: Sliding on a handle shows the brightness or volume value in an Android-style level slider next to the handle (visible while the sidebar is closed; system accent color, muted icon at 0 %).
 - **feat(profiles)**: App profiles – different sidebar apps by time of day and/or while an Android mode (Do not disturb, Bedtime, …) is active, managed in Dashboard Tools settings.

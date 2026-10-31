@@ -162,7 +162,7 @@ class EdgeHandleViewTest {
         assertEquals("no step buckets: one update per touch move", 20, brightnessChanges.size)
         assertTrue("sliding up raises the value", brightnessChanges.all { it > 0f })
         val density = context.resources.displayMetrics.density
-        val expected = 200f / (EdgeHandleView.SEEK_RANGE_DP * density)
+        val expected = 200f / (EdgeHandleView.BRIGHTNESS_RANGE_DP * density)
         assertEquals(expected, brightnessChanges.sum(), 0.001f)
     }
 
